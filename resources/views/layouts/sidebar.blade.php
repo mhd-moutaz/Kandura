@@ -16,13 +16,13 @@
             <i class="fas fa-map-marker-alt"></i>
             <span>Address</span>
         </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Orders</span>
+        <a href="{{ route('designOptions.index') }}" class="menu-item {{ request()->routeIs('designOptions.*') ? 'active' : '' }}">
+            <i class="fas fa-palette"></i>
+            <span>Design Options</span>
         </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-box"></i>
-            <span>Products</span>
+        <a href="{{ route('designs.index') }}" class="menu-item {{ request()->routeIs('designs.*') ? 'active' : '' }}">
+            <i class="fas fa-tshirt"></i>
+            <span>Designs</span>
         </a>
         <a href="#" class="menu-item">
             <i class="fas fa-tags"></i>

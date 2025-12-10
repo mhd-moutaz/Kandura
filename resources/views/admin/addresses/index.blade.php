@@ -15,18 +15,16 @@
                     <div>
                         <label>Search</label>
                         <input type="text" name="search" value="{{ request('search') }}"
-                               placeholder="Search by street, district, or house number..."
-                               style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
+                            placeholder="Search by street, district, or house number..."
+                            style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                     </div>
 
                     <div>
                         <label>City</label>
-                        <select name="city"
-                                style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
+                        <select name="city" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                             <option value="">All Cities</option>
                             @foreach ($cities as $city)
-                                <option value="{{ $city->name }}"
-                                        {{ request('city') == $city->name ? 'selected' : '' }}>
+                                <option value="{{ $city->name }}" {{ request('city') == $city->name ? 'selected' : '' }}>
                                     {{ $city->name }}
                                 </option>
                             @endforeach
@@ -35,8 +33,7 @@
 
                     <div>
                         <label>Sort Dir</label>
-                        <select name="sort_dir"
-                                style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
+                        <select name="sort_dir" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                             <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>ASC</option>
                             <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>DESC</option>
                         </select>
@@ -45,11 +42,11 @@
                 </div>
 
                 <div style="margin-top:15px;display:flex;gap:10px;">
-                    <button type="submit" style="background:#3b82f6;color:white;padding:8px 16px;border:none;border-radius:6px;">
-                        Apply Filters
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> Filter
                     </button>
-                    <a href="{{ route('addresses.index') }}"
-                       style="background:#6b7280;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;">
+                    <a href="{{ route('designs.index') }}"
+                        style="background:#6b7280;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
                         Reset
                     </a>
                 </div>
@@ -114,7 +111,7 @@
 
 
     <!-- MAP SECTION -->
-    <h3 style="margin-top:30px;margin-bottom:10px;">Addresses Map</h3>
+    {{-- <h3 style="margin-top:30px;margin-bottom:10px;">Addresses Map</h3>
     <div id="map" style="width:100%;height:450px;border-radius:10px;"></div>
 
 
@@ -150,6 +147,6 @@
             var group = new L.featureGroup(markers);
             map.fitBounds(group.getBounds());
         }
-    </script>
+    </script> --}}
 
 @endsection

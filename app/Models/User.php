@@ -31,6 +31,9 @@ class User extends Authenticatable
         'is_active'
     ];
 
+    // شيلنا هاد السطر لأنو مش صح
+    // protected $guard_name = ['web', 'api'];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -54,9 +57,27 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * تحديد الـ guard المناسب حسب دور المستخدم
+     */
+    protected function getDefaultGuardName(): string
+    {
+        // إذا اليوزر عادي، استخدم api guard
+        if ($this->role === UserRoleEnum::USER) {
+            return 'api';
+        }
+        // وإلا استخدم web guard (للـ admin و super_admin)
+        return 'web';
+    }
+
     public function addresses()
     {
         return $this->hasMany(Address::class);
+    }
+
+    public function designs()
+    {
+        return $this->hasMany(Design::class);
     }
 
     public function scopeFilter($query, array $filters): void
@@ -82,6 +103,5 @@ class User extends Authenticatable
         if (in_array($sortColumn, ['id', 'created_at'])) {
             $query->orderBy($sortColumn, $sortDirection);
         }
-        
     }
 }

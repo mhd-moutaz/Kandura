@@ -25,7 +25,6 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- Header -->
-            @include('layouts.header')
             @yield('content')
         </main>
     </div>

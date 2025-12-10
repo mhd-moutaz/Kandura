@@ -20,21 +20,18 @@ class UserController extends Controller
     }
     public function show()
     {
-        Gate::authorize('view', User::class);
         $user = $this->userService->show();
         return $this->success(new UserResource($user),  'User retrieved successfully',200);
     }
 
     public function update(UpdateProfileRequest $request)
     {
-        Gate::authorize('update', User::class);
         $user = $this->userService->update($request->validated());
         return $this->success(new UserResource($user),  'User updated successfully',200);
     }
 
     public function destroy()
     {
-        Gate::authorize('delete', User::class);
         $this->userService->destroy();
         return $this->success(null, 'User deleted successfully', 200);
     }

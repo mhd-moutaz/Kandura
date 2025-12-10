@@ -21,22 +21,16 @@ class AddressController extends Controller
     }
     public function index(Request $request)
     {
-        Gate::authorize('viewAny', Address::class);
         $filters = $request->only(['search', 'city','district','street','house_number', 'sort_by', 'sort_dir']);
         $addresses = $this->addressService->index($filters);
         return $this->success( AddressResource::collection($addresses),  'Addresses retrieved successfully', 200);
     }
     public function store(StoreAddressRequest $request)
     {
-        Gate::authorize('create', Address::class);
         $address = $this->addressService->store($request->validated());
         return $this->success( new AddressResource($address),  'Address created successfully', 201);
     }
     public function show(string $id)
-    {
-        //
-    }
-    public function edit(string $id)
     {
         //
     }

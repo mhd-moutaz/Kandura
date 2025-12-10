@@ -22,27 +22,4 @@ class AddressController extends Controller
         $cities = $this->addressService->getAllCities();
         return view('admin.addresses.index', compact('addresses', 'cities'));
     }
-    /**
-     * Show the form for editing the specified user.
-     */
-    public function edit(User $user)
-    {
-        return view('admin.addresses.edit', compact(var_name: 'user'));
-    }
-
-    /**
-     * Update the specified user in storage.
-     */
-    public function update(Request $request, User $user)
-    {
-
-    }
-
-    /**
-     * Remove the specified user from storage.
-     */
-    public function destroy(User $user)
-    {
-
-    }
 }

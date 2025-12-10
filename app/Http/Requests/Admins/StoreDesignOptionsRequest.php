@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Global;
+namespace App\Http\Requests\Admins;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+class StoreDesignOptionsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,6 @@ class LoginRequest extends FormRequest
     {
 
         return true;
-
     }
 
     /**
@@ -24,8 +23,10 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|exists:users,email',
-            'password' => 'required|string|min:6',
+            'name' => 'required|array',
+            'name.en' => 'required|string|max:255',
+            'name.ar' => 'required|string|max:255',
+            'type' => 'required|max:100|in:color,dome_type,sleeve_type,fabric_type',
         ];
     }
 }

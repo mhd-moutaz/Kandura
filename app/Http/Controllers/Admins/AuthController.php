@@ -14,18 +14,24 @@ class AuthController extends Controller
 {
     protected $authService;
 
-    public function __construct(AuthService $authService){
+    public function __construct(AuthService $authService)
+    {
         $this->authService = $authService;
     }
 
-    public function loginView(){
+    public function loginView()
+    {
         return view("admin.login");
     }
 
-    public function login(LoginRequest $request){
+    public function login(LoginRequest $request)
+    {
         $attr = $request->validated();
         try {
             $user = $this->authService->login($attr);
+            if ($user->role !== UserRoleEnum::ADMIN && $user->role !== UserRoleEnum::SUPER_ADMIN) {
+                return redirect()->route('login')->with('error', 'You do not have permission to access the admin panel.');
+            }
             Auth::login($user);
             return redirect()->route('home');
         } catch (GeneralException $e) {
@@ -33,7 +39,8 @@ class AuthController extends Controller
         }
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

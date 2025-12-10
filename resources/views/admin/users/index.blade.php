@@ -77,13 +77,12 @@
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="filter-actions" style="display: flex; gap: 10px; align-items: center;">
-                    <button type="submit" class="filter-btn apply"
-                        style="background: #3b82f6; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">
-                        Apply Filters
+                <div style="margin-top:15px;display:flex;gap:10px;">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> Filter
                     </button>
-                    <a href="{{ route('users.index') }}" class="filter-btn reset"
-                        style="background: #6b7280;height: 31px; color: white; padding: 4px 16px 11px 16px; border: none; border-radius: 6px; text-decoration: none; display: inline-block;">
+                    <a href="{{ route('designs.index') }}"
+                        style="background:#6b7280;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
                         Reset
                     </a>
                 </div>

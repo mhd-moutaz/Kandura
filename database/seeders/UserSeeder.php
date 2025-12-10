@@ -6,7 +6,6 @@ use App\Enum\UserRoleEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class UserSeeder extends Seeder
 {
@@ -37,26 +36,26 @@ class UserSeeder extends Seeder
         ]);
         $admin->assignRole('admin');
 
-        // 3. Regular User
+        // 3. Regular User (API)
         $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'user@example.com',
-            'password' => Hash::make('password'),
+            'name' => 'moutaz',
+            'email' => 'moutaz@gmail.com',
+            'password' => Hash::make('123456'),
             'phone' => '1234567892',
             'role' => UserRoleEnum::USER,
             'email_verified_at' => now(),
         ]);
-        $user->assignRole('user');
+        $user->assignRole('user'); // رح يستخدم api guard تلقائياً من getDefaultGuardName()
 
-        // 4. Additional Regular User
+        // 4. Additional Regular User (API)
         $user2 = User::create([
-            'name' => 'Jane Smith',
-            'email' => 'jane@example.com',
-            'password' => Hash::make('password'),
+            'name' => 'moutaz1',
+            'email' => 'moutaz1@gmail.com',
+            'password' => Hash::make('123456'),
             'phone' => '1234567893',
             'role' => UserRoleEnum::USER,
             'email_verified_at' => now(),
         ]);
-        $user2->assignRole('user');
+        $user2->assignRole('user'); // رح يستخدم api guard تلقائياً من getDefaultGuardName()
     }
 }

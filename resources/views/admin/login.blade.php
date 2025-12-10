@@ -61,7 +61,12 @@
                 </div>
                 <button type="submit" class="login-btn">Login</button>
             </form>
-
+            @error('error')
+                <div class="alert error" id="errorAlert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorMessage">{{ $message }}</span>
+                </div>
+            @enderror
 
         </div>
     </div>

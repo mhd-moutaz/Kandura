@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enum\UserRoleEnum;
-
+use App\Http\Enum\RoleUserEnum;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -16,85 +16,105 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissions = [
-            // Profile --------------
+        // إنشاء الـ Permissions لكل guard
+        foreach ($this->permissions() as $guard => $names) {
+            $this->seed_for_guard($guard, $names);
+        }
+
+        // ====== User Role للـ API ======
+        $userRoleApi = Role::create([
+            'name' => UserRoleEnum::USER,
+            'guard_name' => 'api'
+        ]);
+        $userRoleApi->givePermissionTo([
+            // Profile
             'create profile',
             'update profile',
             'delete profile',
             'view profile',
-            // Address --------------
+            // Address
             'create address',
             'update address',
             'delete address',
             'view address',
-            // Measurement --------------
+            // Measurements
             'create measurement',
             'update measurement',
             'delete measurement',
             'view measurement',
-            // Design --------------
+            // Design (own only)
             'create design',
             'update design',
             'delete design',
             'view design',
-            // Order --------------
+            // Orders
             'create order',
             'view order',
-            // Wallet --------------
+            // Wallet
             'view wallet',
             'view transactions',
-            // Review --------------
+            // Reviews
             'create review',
             'view review',
-            // Notifications --------------
+            // Notifications
             'view notifications',
-            // Design (admin) --------------
+        ]);
+
+        // ملاحظة: ما في داعي لـ User Role للـ WEB
+        // لأنو اليوزر العادي بس بيستخدم الـ API
+
+        // ====== Admin Role للـ WEB ======
+        $AdminRole = Role::create([
+            'name' => UserRoleEnum::ADMIN,
+            'guard_name' => 'web'
+        ]);
+        $AdminRole->givePermissionTo([
+            // User Management
+            'view all users',
+            'disable user',
+            'delete user',
+            // Order Management
+            'view all orders',
+            'change order status',
+            // Address Management
+            'view all address',
+            // Design Management (all designs)
             'view all designs',
             'edit all designs',
             'delete all designs',
-            // Orders (admin) --------------
-            'view all orders',
-            'change order status',
-            // Wallet (admin) --------------
-            'manage wallet',
-            // Review (admin) --------------
-            'view all reviews',
-            'approve review',
-            'reject review',
-            'delete review',
-            // Notifications --------------
-            'send notifications',
-            // Coupons --------------
+            // Coupon Management
             'create coupon',
             'update coupon',
             'delete coupon',
             'view coupon',
-            // Design options --------------
+            // Design Options
             'manage design options',
-            // Users --------------
-            'view all users',
-            'disable user',
-            'delete user',
-            // Admin management (super admin) --------------
-            'create admin',
-            'update admin',
-            'delete admin',
-            'view admin',
-            'manage system settings',
-            'view reports',
-            'view statistics',
-            'manage roles',
-            'manage permissions',
-        ];
-        foreach ($permissions as $name) {
-            Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
-        }
+            // Review Management
+            'view all reviews',
+            'approve review',
+            'reject review',
+            'delete review',
+            // Notifications
+            'send notifications',
+            // Wallet Management
+            'manage wallet',
+        ]);
 
-        $userRole = Role::create(
-            ['name' => UserRoleEnum::USER, 'guard_name' => 'web']
+        // ====== Super Admin Role للـ WEB ======
+        $SuperAdminRole = Role::create([
+            'name' => UserRoleEnum::SUPER_ADMIN,
+            'guard_name' => 'web'
+        ]);
+        $SuperAdminRole->givePermissionTo(
+            Permission::where('guard_name', 'web')->get()
         );
-        $userRole->givePermissionTo(
-            [
+    }
+
+    public function permissions()
+    {
+        return [
+            'api' => [
+                //--------------User
                 // Profile
                 'create profile',
                 'update profile',
@@ -126,36 +146,55 @@ class PermissionSeeder extends Seeder
                 'view review',
                 // Notifications
                 'view notifications',
-            ]
-        );
-        $AdminRole = Role::create(
-            ['name' => UserRoleEnum::ADMIN, 'guard_name' => 'web']
-        );
-        $AdminRole->givePermissionTo(
-            [
+            ],
+            'web' => [
                 // User Management
-                'view all users','disable user','delete user',
+                'view all users',
+                'disable user',
+                'delete user',
                 // Order Management
-                'view all orders','change order status',
+                'view all orders',
+                'change order status',
                 // Design Management (all designs)
-                'view all designs','edit all designs','delete all designs',
+                'view all designs',
+                'edit all designs',
+                'delete all designs',
+                // Address Management
+                'view all address',
                 // Coupon Management
-                'create coupon','update coupon','delete coupon','view coupon',
+                'create coupon',
+                'update coupon',
+                'delete coupon',
+                'view coupon',
                 // Design Options
                 'manage design options',
                 // Review Management
-                'view all reviews','approve review','reject review','delete review',
+                'view all reviews',
+                'approve review',
+                'reject review',
+                'delete review',
                 // Notifications
                 'send notifications',
                 // Wallet Management
                 'manage wallet',
+                // Admin management (super admin) --------------
+                'create admin',
+                'update admin',
+                'delete admin',
+                'view admin',
+                'manage system settings',
+                'view reports',
+                'view statistics',
+                'manage roles',
+                'manage permissions',
             ]
-        );
-        $SuperAdminRole = Role::create(
-            ['name' => UserRoleEnum::SUPER_ADMIN, 'guard_name' => 'web']
-        );
-        $SuperAdminRole->givePermissionTo(
-            Permission::all()
-        );
+        ];
+    }
+
+    public function seed_for_guard(string $guard, array $names)
+    {
+        foreach ($names as $name) {
+            Permission::firstOrCreate(['name' => $name, 'guard_name' => $guard]);
+        }
     }
 }

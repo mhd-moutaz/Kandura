@@ -2,14 +2,12 @@
 
 namespace App\Policies;
 
+use App\Models\Design;
 use App\Models\User;
-use App\Models\Address;
-use App\Enum\UserRoleEnum;
 use App\Exceptions\GeneralException;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Facades\Auth;
 
-class AddressPolicy
+class DesignPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -22,12 +20,9 @@ class AddressPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Address $address): bool
+    public function view(User $user, Design $design): bool
     {
-        if($user->id === $address->user_id){
-            return true;
-        }
-        throw new GeneralException('You are not authorized to view this address', 403);
+        return false;
     }
 
     /**
@@ -41,29 +36,29 @@ class AddressPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Address $address): bool
+    public function update(User $user, Design $design): bool
     {
-        if($user->id === $address->user_id){
+        if($design->user_id === $user->id){
             return true;
         }
-        throw new GeneralException('You are not authorized to update this address', 403);
+        throw new GeneralException('You are not authorized to update this design', 403);
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Address $address): bool
+    public function delete(User $user, Design $design): bool
     {
-        if($user->id === $address->user_id){
+        if($design->user_id === $user->id){
             return true;
         }
-        throw new GeneralException('You are not authorized to delete this address', 403);
+        throw new GeneralException('You are not authorized to delete this design', 403);
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Address $address): bool
+    public function restore(User $user, Design $design): bool
     {
         return false;
     }
@@ -71,7 +66,7 @@ class AddressPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Address $address): bool
+    public function forceDelete(User $user, Design $design): bool
     {
         return false;
     }
