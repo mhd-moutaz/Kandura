@@ -69,6 +69,7 @@ class User extends Authenticatable
         // وإلا استخدم web guard (للـ admin و super_admin)
         return 'web';
     }
+    
 
     public function addresses()
     {

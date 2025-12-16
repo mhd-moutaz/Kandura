@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\LaravelPackageTools\Concerns\Package\HasTranslations;
+use Spatie\Translatable\HasTranslations;
 
 class DesignOption extends Model
 {
@@ -16,5 +16,9 @@ class DesignOption extends Model
     public function designs()
     {
         return $this->belongsToMany(Design::class, 'design_option_selection');
+    }
+    public function orderItems()
+    {
+        return $this->belongsToMany(OrderItems::class, 'order_item_design_option');
     }
 }
