@@ -20,6 +20,7 @@ class DesignOptionsController extends Controller
     public function index()
     {
         $designOptions = $this->designOptionService->index();
+        // dd($designOptions);
         return view('admin.design_options.index', compact('designOptions'));
     }
     public function create()

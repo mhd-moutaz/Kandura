@@ -4,8 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\AuthController;
 use App\Http\Controllers\Users\UserController;
-use App\Http\Controllers\Users\AddressController;
+use App\Http\Controllers\Users\OrderController;
 use App\Http\Controllers\Users\DesignController;
+use App\Http\Controllers\Users\AddressController;
+use App\Http\Controllers\Users\OrderItemsController;
 
 
 // Authentication routes -------------
@@ -35,5 +37,18 @@ Route::middleware('auth:api')->group(function () {
             Route::put('/{design}', [DesignController::class, 'update'])->middleware('permission:update design');
             Route::delete('/{design}', [DesignController::class, 'destroy'])->middleware('permission:delete design');
         });
+        // Order Items routes
+        Route::prefix('order-items')->group(function () {
+            Route::post('/', [OrderItemsController::class, 'store'])->middleware('permission:create order');
+            Route::put('/{orderItem}', [OrderItemsController::class, 'update'])->middleware('permission:create order');
+            Route::delete('/{orderItem}', [OrderItemsController::class, 'destroy'])->middleware('permission:create order');
+        });
+        // Order routes
+        Route::prefix('orders')->group(function () {
+            Route::get('/', [OrderController::class, 'index'])->middleware('permission:view order');
+            Route::put('/{order}/status', [OrderController::class, 'updateStatus']);
+        });
     });
 });
+// 'update order',
+//             'delete order',

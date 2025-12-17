@@ -24,8 +24,8 @@
                         <select name="city" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                             <option value="">All Cities</option>
                             @foreach ($cities as $city)
-                                <option value="{{ $city->name }}" {{ request('city') == $city->name ? 'selected' : '' }}>
-                                    {{ $city->name }}
+                                <option value="{{ $city->name['en'] }}" {{ request('city') == $city->name['en'] ? 'selected' : '' }}>
+                                    {{ $city->name['en'] }}
                                 </option>
                             @endforeach
                         </select>
@@ -67,7 +67,8 @@
                     <th>Address ID</th>
                     <th>User</th>
                     <th>Phone</th>
-                    <th>City</th>
+                    <th>City (En)</th>
+                    <th>City (Ar)</th>
                     <th>District</th>
                     <th>Street</th>
                     <th>House Number</th>
@@ -83,7 +84,8 @@
                         <td>#Addr-{{ $address->id }}</td>
                         <td>{{ $address->user->name ?? 'N/A' }}</td>
                         <td>{{ $address->user->phone ?? 'N/A' }}</td>
-                        <td>{{ $address->city->name ?? 'N/A' }}</td>
+                        <td>{{ $address->city->name['en'] ?? 'N/A' }}</td>
+                        <td>{{ $address->city->name['ar'] ?? 'N/A' }}</td>
                         <td>{{ $address->district }}</td>
                         <td>{{ $address->street }}</td>
                         <td>{{ $address->house_number }}</td>

@@ -49,6 +49,8 @@ class PermissionSeeder extends Seeder
             'view design',
             // Orders
             'create order',
+            'update order',
+            'delete order',
             'view order',
             // Wallet
             'view wallet',
@@ -137,6 +139,8 @@ class PermissionSeeder extends Seeder
                 'view design',
                 // Orders
                 'create order',
+                'update order',
+                'delete order',
                 'view order',
                 // Wallet
                 'view wallet',

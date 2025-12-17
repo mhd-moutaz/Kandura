@@ -32,6 +32,6 @@ class OrderItems extends Model
 
     public function designOptions()
     {
-        return $this->belongsToMany(DesignOption::class, 'order_item_design_option');
+        return $this->belongsToMany(DesignOption::class, 'order_item_design_option', 'order_item_id', 'design_option_id');
     }
 }

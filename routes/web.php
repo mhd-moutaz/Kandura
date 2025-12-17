@@ -2,6 +2,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admins\AuthController;
 use App\Http\Controllers\Admins\UserController;
+use App\Http\Controllers\Admins\OrderController;
 use App\Http\Controllers\Admins\DesignController;
 use App\Http\Controllers\Admins\AddressController;
 use App\Http\Controllers\Admins\DashboardController;
@@ -39,15 +40,22 @@ Route::middleware(['auth','role:admin||super_admin'])->group(function () {
         Route::put("{designOption}", [DesignOptionsController::class, "update"])->name("designOptions.update");
         Route::delete("{designOption}", [DesignOptionsController::class, "destroy"])->name("designOptions.destroy");
     });
+    // Routes for orders management
+    Route::prefix('orders')->group(function () {
+        Route::get('/', [OrderController::class, 'index'])->name('orders.index')->middleware('permission:view all orders');
+        Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show')->middleware('permission:view all orders');
+        Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus')->middleware('permission:change order status');
+    });
+    // Routes for designs management
+    Route::prefix('designs')->group(function () {
+        Route::get("", [DesignController::class, "index"])->name("designs.index");
+        Route::get('/create', [DesignController::class, 'create'])->name('designs.create');
+        Route::post('/', [DesignController::class, 'store'])->name('designs.store');
+        Route::get('{design}', [DesignController::class, 'show'])->name('designs.show');
+        Route::get('{design}/edit', [DesignController::class, 'edit'])->name('designs.edit');
+        Route::put('{design}', [DesignController::class, 'update'])->name('designs.update');
+        Route::delete('{design}', [DesignController::class, 'destroy'])->name('designs.destroy');
+    });
 });
 
-Route::prefix('designs')->group(function () {
-    Route::get("", [DesignController::class, "index"])->name("designs.index");
-    Route::get('/create', [DesignController::class, 'create'])->name('designs.create');
-    Route::post('/', [DesignController::class, 'store'])->name('designs.store');
-    Route::get('{design}', [DesignController::class, 'show'])->name('designs.show');
-    Route::get('{design}/edit', [DesignController::class, 'edit'])->name('designs.edit');
-    Route::put('{design}', [DesignController::class, 'update'])->name('designs.update');
-    Route::delete('{design}', [DesignController::class, 'destroy'])->name('designs.destroy');
-});
 

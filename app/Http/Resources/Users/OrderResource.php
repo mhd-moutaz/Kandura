@@ -17,10 +17,11 @@ class OrderResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'address_id' => $this->address_id,
+            'address_id' => AddressResource::make($this->whenLoaded('address')),
             'status' => $this->status,
             'total' => $this->total,
             'payment_method' => $this->payment_method,
+            'order_items' => OrderItemResource::collection($this->whenLoaded('orderItems')),
             'note' => $this->note,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

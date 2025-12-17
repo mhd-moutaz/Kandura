@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Users;
 
-use App\Http\Resources\Users\OrderResource;
-use GrahamCampbell\ResultType\Success;
-use Illuminate\Http\Request;
+use App\Models\Order;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreOrderRequest;
 use App\Http\Services\Users\OrderService;
+use App\Http\Resources\Users\OrderResource;
+use Illuminate\Support\Facades\Gate;
 
 class OrderController extends Controller
 {
@@ -16,9 +15,18 @@ class OrderController extends Controller
     {
         $this->orderService = $orderService;
     }
-    public function store(StoreOrderRequest $request){
-        $validated = $request->validated();
-        $order = $this->orderService->createOrder($validated);
-        return $this->success(new OrderResource($order), 'Order created successfully');
+    public function index()
+    {
+        $orders = $this->orderService->getUserOrders();
+        return $this->success(
+            OrderResource::collection($orders),
+            'User orders retrieved successfully'
+        );
+    }
+    public function updateStatus(Order $order)
+    {
+        Gate::authorize('update', $order);
+        $order = $this->orderService->updateStatus($order);
+        return $this->success(new OrderResource($order), 'Order status updated successfully');
     }
 }

@@ -24,9 +24,9 @@
             <i class="fas fa-tshirt"></i>
             <span>Designs</span>
         </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-tags"></i>
-            <span>Categories</span>
+        <a href="{{ route('orders.index') }}" class="menu-item {{ request()->routeIs('orders.*') ? 'active' : '' }}">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Orders</span>
         </a>
         <a href="#" class="menu-item">
             <i class="fas fa-percent"></i>
