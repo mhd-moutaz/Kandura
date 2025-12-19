@@ -6,8 +6,11 @@ use App\Http\Controllers\Users\AuthController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Users\OrderController;
 use App\Http\Controllers\Users\DesignController;
+use App\Http\Controllers\Users\StripeController;
+use App\Http\Controllers\Users\WalletController;
 use App\Http\Controllers\Users\AddressController;
 use App\Http\Controllers\Users\OrderItemsController;
+use App\Http\Controllers\Users\StripeWebhookController;
 
 
 // Authentication routes -------------
@@ -46,9 +49,24 @@ Route::middleware('auth:api')->group(function () {
         // Order routes
         Route::prefix('orders')->group(function () {
             Route::get('/', [OrderController::class, 'index'])->middleware('permission:view order');
-            Route::put('/{order}/status', [OrderController::class, 'updateStatus']);
+            Route::put('/{order}/status', [OrderController::class, 'confirmOrder']);
         });
+        // Wallet routes
+        Route::prefix('wallet')->group(function () {
+            Route::get('/balance', [WalletController::class, 'getBalance'])
+                ->middleware('permission:view wallet');
+
+            Route::get('/transactions', [WalletController::class, 'getTransactions'])
+                ->middleware('permission:view transactions');
+        });
+        // Stripe routes
+        // Route::prefix('stripe')->group(function () {
+        //     Route::post('/checkout', [StripeController::class, 'createCheckoutSession']);
+        //     Route::get('/success', [StripeController::class, 'success'])->name('stripe.success');
+        //     Route::get('/cancel', [StripeController::class, 'cancel'])->name('stripe.cancel');
+        // });
     });
 });
+// Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 // 'update order',
 //             'delete order',

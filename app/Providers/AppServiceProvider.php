@@ -27,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(OrderItems::class, OrderItemPolicy::class);
+        User::created(function ($user) {
+            $user->wallet()->create(['balance' => 0]);
+        });
 
     }
 }

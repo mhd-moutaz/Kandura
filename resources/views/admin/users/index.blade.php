@@ -98,20 +98,21 @@
                     <th>Email</th>
                     <th>Is Active</th>
                     <th>Phone</th>
+                    <th>Wallet Balance</th> {{-- عمود جديد --}}
                     <th>Registration Date</th>
                     <th>Actions</th>
                 </tr>
             </thead>
+
             <tbody>
                 @forelse($users as $user)
                     <tr>
                         <td>
                             @if ($user->profile_image)
                                 <img src="{{ asset('storage/' . $user->profile_image) }}"
-                                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                    style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
                             @else
-                                <div
-                                    style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%); display: flex; align-items: center; justify-content: center; color: #6b7280; font-weight: 600; font-size: 28px; border: 3px solid #d1d5db; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                                <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#e5e7eb,#d1d5db);display:flex;align-items:center;justify-content:center;color:#6b7280;font-weight:600;">
                                     {{ strtoupper(substr($user->name, 0, 1)) }}
                                 </div>
                             @endif
@@ -121,28 +122,44 @@
                         <td>{{ $user->email }}</td>
                         <td>
                             <span class="status-badge {{ $user->is_active ? 'active' : 'inactive' }}"
-                                style=" padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;{{ $user->is_active ? 'background: #d1fae5; color: #065f46;' : 'background: #fee2e2; color: #991b1b;' }}">
+                                style="padding:4px 8px;border-radius:12px;font-size:12px;font-weight:500;{{ $user->is_active ? 'background:#d1fae5;color:#065f46;' : 'background:#fee2e2;color:#991b1b;' }}">
                                 {{ $user->is_active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
                         <td>{{ $user->phone ?? 'N/A' }}</td>
+                        <td>
+                            {{-- عرض الرصيد --}}
+                            <span style="font-weight:600;color:#2d3748;background:#f0fdf4;padding:6px 12px;border-radius:8px;display:inline-block;">
+                                ${{ number_format($user->wallet->balance ?? 0, 2) }}
+                            </span>
+                        </td>
                         <td>{{ $user->created_at->format('Y-m-d') }}</td>
                         <td>
-                            <div class="actions">
-                                <a href="{{ route('users.edit', $user) }}" class="action-btn edit">Edit</a>
-                                <form action="{{ route('users.destroy', $user) }}" method="POST" style="display: inline;">
+                            <div class="actions" style="display:flex;gap:8px;">
+                                <a href="{{ route('users.edit', $user) }}" class="action-btn edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+
+                                <a href="{{ route('admin.wallet.show', $user) }}" class="action-btn"
+                                   style="background:#fef3c7;color:#92400e;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+                                    <i class="fas fa-wallet"></i> Wallet
+                                </a>
+
+                                <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="action-btn delete"
-                                        onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
+                                        onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align: center; padding: 20px; color: #6b7280;">
-                            No users found matching your criteria.
+                        <td colspan="9" style="text-align:center;padding:20px;color:#6b7280;">
+                            No users found.
                         </td>
                     </tr>
                 @endforelse

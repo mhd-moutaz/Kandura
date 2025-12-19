@@ -4,6 +4,7 @@ use App\Http\Controllers\Admins\AuthController;
 use App\Http\Controllers\Admins\UserController;
 use App\Http\Controllers\Admins\OrderController;
 use App\Http\Controllers\Admins\DesignController;
+use App\Http\Controllers\Admins\WalletController;
 use App\Http\Controllers\Admins\AddressController;
 use App\Http\Controllers\Admins\DashboardController;
 use App\Http\Controllers\Admins\DesignOptionsController;
@@ -16,7 +17,7 @@ Route::get("login", [AuthController::class, "loginView"])->name("login");
 Route::post("login", [AuthController::class, "login"])->name("login_action");
 
 
-Route::middleware(['auth','role:admin||super_admin'])->group(function () {
+Route::middleware(['auth', 'role:admin||super_admin'])->group(function () {
     Route::get("dashboard", [DashboardController::class, "index"])->name("home");
     Route::post("logout", [AuthController::class, "logout"])->name("logout");
     // Routes for users management
@@ -56,6 +57,15 @@ Route::middleware(['auth','role:admin||super_admin'])->group(function () {
         Route::put('{design}', [DesignController::class, 'update'])->name('designs.update');
         Route::delete('{design}', [DesignController::class, 'destroy'])->name('designs.destroy');
     });
+    Route::prefix('admin/wallet')->name('admin.wallet.')->group(function () {
+        Route::get('/{user}', [WalletController::class, 'showUserWallet'])->name('show');
+        Route::post('/{user}/deposit', [WalletController::class, 'deposit'])->name('deposit');
+        Route::post('/{user}/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');
+    });
 });
 
+
+/* todo :
+middleware('permission:manage wallet') => wallet routes
+*/
 

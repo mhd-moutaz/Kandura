@@ -7,7 +7,7 @@ use App\Models\User;
 class UserService
 {
     public function index(array $filters){
-        $users = User::where('role', 'user')->filter($filters)->paginate(5)->withQueryString();
+        $users = User::where('role', 'user')->with('wallet')->filter($filters)->paginate(5)->withQueryString();
         return $users;
     }
     public function update($data, $user){

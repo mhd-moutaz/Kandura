@@ -31,24 +31,11 @@ class User extends Authenticatable
         'is_active'
     ];
 
-    // شيلنا هاد السطر لأنو مش صح
-    // protected $guard_name = ['web', 'api'];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -69,7 +56,7 @@ class User extends Authenticatable
         // وإلا استخدم web guard (للـ admin و super_admin)
         return 'web';
     }
-    
+
 
     public function addresses()
     {
@@ -79,6 +66,17 @@ class User extends Authenticatable
     public function designs()
     {
         return $this->hasMany(Design::class);
+    }
+
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function getOrCreateWallet(): Wallet
+    {
+        return $this->wallet ?? $this->wallet()->create(['balance' => 0]);
     }
 
     public function scopeFilter($query, array $filters): void
