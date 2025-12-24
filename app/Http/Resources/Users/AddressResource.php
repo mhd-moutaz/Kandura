@@ -19,8 +19,8 @@ class AddressResource extends JsonResource
             'user_id' => $this->user_id,
             'city' => [
                 'id'        => $this->city->id,
-                'name_ar'   => $this->city->getTranslation('name', 'ar') ,
-                'name_en'   => $this->city->getTranslation('name', 'en') ,
+                'name_en' => $this->city->name['en'],
+                'name_ar' => $this->city->name['ar'],
             ],
             'district' => $this->district,
             'street' => $this->street,

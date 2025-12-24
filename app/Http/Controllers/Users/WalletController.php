@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Users;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Services\Users\WalletService;
+use App\Http\Services\Global\WalletService;
 use App\Http\Resources\Users\WalletResource;
 use App\Http\Resources\Users\WalletTransactionResource;
 

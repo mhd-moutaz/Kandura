@@ -3,174 +3,504 @@
 @section('title', 'Users Management')
 
 @section('content')
-    <!-- Users Table -->
-    <div class="table-card">
+    <div class="users-container">
 
         @if (session('success'))
-            <div class="alert-auto-hide">{{ session('success') }}</div>
-            <style>
-                .alert-auto-hide {
-                    background: #d1fae5;
-                    color: #065f46;
-                    padding: 12px;
-                    border-radius: 6px;
-                    margin-bottom: 20px;
-                    border: 1px solid #a7f3d0;
-                    animation: fade 3s forwards;
-                }
-
-                @keyframes fade {
-
-                    0%,
-                    60% {
-                        opacity: 1;
-                    }
-
-                    100% {
-                        opacity: 0;
-                        display: none;
-                    }
-                }
-            </style>
+            <div class="alert-auto-hide">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+            </div>
         @endif
 
         <!-- Search and Filter Section -->
-        <div class="search-filter-card" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <div class="search-filter-card">
             <form method="GET" action="{{ route('users.index') }}" id="searchFilterForm">
-                <div class="search-filter-grid"
-                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                <div class="search-filter-grid">
 
                     <!-- Search Input -->
                     <div class="search-group">
-                        <label for="search"
-                            style="display: block; margin-bottom: 5px; font-weight: 500; color: #374151;">Search</label>
+                        <label for="search">Search</label>
                         <input type="text" name="search" id="search" value="{{ request('search') }}"
-                            placeholder="Search by name or email..."
-                            style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;">
+                            placeholder="Search by name or email...">
                     </div>
 
                     <!-- Status Filter -->
                     <div class="filter-group">
-                        <label for="is_active"
-                            style="display: block; margin-bottom: 5px; font-weight: 500; color: #374151;">Status</label>
-                        <select name="is_active" id="status"
-                            style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;">
+                        <label for="is_active">Status</label>
+                        <select name="is_active" id="status">
                             <option value="">All Status</option>
                             <option value="1" {{ request('is_active') == '1' ? 'selected' : '' }}>Active</option>
-                            <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>Inactive
-                            </option>
+                            <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>Inactive</option>
                         </select>
                     </div>
 
                     <!-- Sort By -->
                     <div class="sort-group">
-                        <label for="sort_dir"
-                            style="display: block; margin-bottom: 5px; font-weight: 500; color: #374151;">Sort Dir</label>
-                        <select name="sort_dir" id="sort_by"
-                            style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;">
-                            <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>ASC
-                            </option>
-                            <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>DESC
-                            </option>
+                        <label for="sort_dir">Sort Direction</label>
+                        <select name="sort_dir" id="sort_by">
+                            <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>Newest First</option>
+                            <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>Oldest First</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <div style="margin-top:15px;display:flex;gap:10px;">
+                <div class="filter-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-filter"></i> Filter
                     </button>
-                    <a href="{{ route('designs.index') }}"
-                        style="background:#6b7280;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
-                        Reset
+                    <a href="{{ route('users.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reset
                     </a>
                 </div>
             </form>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>User ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Is Active</th>
-                    <th>Phone</th>
-                    <th>Wallet Balance</th> {{-- عمود جديد --}}
-                    <th>Registration Date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @forelse($users as $user)
-                    <tr>
-                        <td>
+        <!-- Users Grid -->
+        <div class="users-grid">
+            @forelse($users as $user)
+                <div class="user-card">
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <!-- User Avatar -->
+                        <div class="user-avatar">
                             @if ($user->profile_image)
                                 <img src="{{ asset('storage/' . $user->profile_image) }}"
-                                    style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                                    alt="{{ $user->name }}">
                             @else
-                                <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#e5e7eb,#d1d5db);display:flex;align-items:center;justify-content:center;color:#6b7280;font-weight:600;">
+                                <div class="avatar-placeholder">
                                     {{ strtoupper(substr($user->name, 0, 1)) }}
                                 </div>
                             @endif
-                        </td>
-                        <td>#USR-{{ $user->id }}</td>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->email }}</td>
-                        <td>
-                            <span class="status-badge {{ $user->is_active ? 'active' : 'inactive' }}"
-                                style="padding:4px 8px;border-radius:12px;font-size:12px;font-weight:500;{{ $user->is_active ? 'background:#d1fae5;color:#065f46;' : 'background:#fee2e2;color:#991b1b;' }}">
-                                {{ $user->is_active ? 'Active' : 'Inactive' }}
-                            </span>
-                        </td>
-                        <td>{{ $user->phone ?? 'N/A' }}</td>
-                        <td>
-                            {{-- عرض الرصيد --}}
-                            <span style="font-weight:600;color:#2d3748;background:#f0fdf4;padding:6px 12px;border-radius:8px;display:inline-block;">
-                                ${{ number_format($user->wallet->balance ?? 0, 2) }}
-                            </span>
-                        </td>
-                        <td>{{ $user->created_at->format('Y-m-d') }}</td>
-                        <td>
-                            <div class="actions" style="display:flex;gap:8px;">
-                                <a href="{{ route('users.edit', $user) }}" class="action-btn edit">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
+                        </div>
 
-                                <a href="{{ route('admin.wallet.show', $user) }}" class="action-btn"
-                                   style="background:#fef3c7;color:#92400e;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
-                                    <i class="fas fa-wallet"></i> Wallet
-                                </a>
+                        <!-- Status Badge -->
+                        <span class="status-badge {{ $user->is_active ? 'active' : 'inactive' }}">
+                            <i class="fas fa-{{ $user->is_active ? 'check-circle' : 'times-circle' }}"></i>
+                            {{ $user->is_active ? 'Active' : 'Inactive' }}
+                        </span>
+                    </div>
 
-                                <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="action-btn delete"
-                                        onclick="return confirm('Are you sure?')">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                </form>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <!-- User Name -->
+                        <h3 class="user-name">{{ $user->name }}</h3>
+                        <p class="user-id">ID: #USR-{{ $user->id }}</p>
+
+                        <!-- User Details -->
+                        <div class="user-details">
+                            <div class="detail-item">
+                                <label>Email</label>
+                                <p>{{ $user->email }}</p>
                             </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="9" style="text-align:center;padding:20px;color:#6b7280;">
-                            No users found.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+
+                            <div class="detail-item">
+                                <label>Phone</label>
+                                <p>{{ $user->phone ?? 'N/A' }}</p>
+                            </div>
+
+                            <div class="detail-item">
+                                <label>Wallet Balance</label>
+                                <p class="wallet-balance">${{ number_format($user->wallet->balance ?? 0, 2) }}</p>
+                            </div>
+
+                            <div class="detail-item">
+                                <label>Joined</label>
+                                <p>{{ $user->created_at->format('M d, Y') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer -->
+                    <div class="card-footer">
+                        <a href="{{ route('users.edit', $user) }}" class="btn-action edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+
+                        <a href="{{ route('admin.wallet.show', $user) }}" class="btn-action wallet">
+                            <i class="fas fa-wallet"></i> Wallet
+                        </a>
+
+                        <form action="{{ route('users.destroy', $user) }}" method="POST" class="delete-form">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-action delete"
+                                onclick="return confirm('Are you sure you want to delete this user?')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h3>No Users Found</h3>
+                    <p>No users match your search criteria</p>
+                </div>
+            @endforelse
+        </div>
 
         <!-- Pagination -->
         @if ($users->hasPages())
-            <div class="pagination">
+            <div class="pagination-wrapper">
                 {{ $users->links() }}
             </div>
         @endif
+
     </div>
+
+    <style>
+        .users-container {
+            padding: 20px;
+        }
+
+        .alert-auto-hide {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border-left: 4px solid #10b981;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: fadeOut 3s forwards;
+        }
+
+        @keyframes fadeOut {
+            0%, 60% { opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
+
+        /* Search & Filter Section */
+        .search-filter-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-group, .filter-group, .sort-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-group label, .filter-group label, .sort-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .search-group input, .filter-group select, .sort-group select {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .search-group input:focus, .filter-group select:focus, .sort-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        /* Users Grid */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .user-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-card:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-8px);
+        }
+
+        /* Card Header */
+        .card-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid white;
+            flex-shrink: 0;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-badge.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Card Body */
+        .card-body {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0 0 4px 0;
+        }
+
+        .user-id {
+            font-size: 13px;
+            color: #9ca3af;
+            margin: 0 0 16px 0;
+        }
+
+        .user-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-item label {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-item p {
+            font-size: 14px;
+            color: #1f2937;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .wallet-balance {
+            color: #10b981;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* Card Footer */
+        .card-footer {
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+            min-width: 70px;
+        }
+
+        .btn-action.edit {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .btn-action.edit:hover {
+            background: #bfdbfe;
+        }
+
+        .btn-action.wallet {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .btn-action.wallet:hover {
+            background: #fde68a;
+        }
+
+        .btn-action.delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-action.delete:hover {
+            background: #fecaca;
+        }
+
+        .delete-form {
+            flex: 1;
+            display: contents;
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #cbd5e0;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        /* Pagination */
+        .pagination-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-details {
+                grid-template-columns: 1fr;
+            }
+
+            .card-footer {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                min-width: unset;
+            }
+        }
+    </style>
+
 @endsection

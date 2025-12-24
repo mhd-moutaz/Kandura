@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Services\Users;
+namespace App\Http\Services\Global;
 
 use App\Models\User;
 use App\Models\WalletTransaction;

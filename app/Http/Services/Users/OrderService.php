@@ -4,9 +4,10 @@ namespace App\Http\Services\Users;
 
 use App\Models\Order;
 use App\Enum\StatusOrderEnum;
+use Illuminate\Support\Facades\DB;
 use App\Exceptions\GeneralException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\Http\Services\Global\WalletService;
 
 class OrderService
 {
@@ -57,6 +58,9 @@ class OrderService
                         [
                             'order_id' => $order->id,
                             'payment_method' => 'wallet',
+                            'user_id' => $user->id,
+                            'user_name' => $user->name,
+                            'user_email' => $user->email,
                         ]
                     );
                     break;

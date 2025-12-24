@@ -26,7 +26,7 @@ class Wallet extends Model
     /**
      * إضافة رصيد للمحفظة
      */
-    public function deposit(float $amount, string $description = null, array $metadata = []): WalletTransaction
+    public function deposit(float $amount, string $description = "Deposit to wallet", array $metadata = []): WalletTransaction
     {
         $balanceBefore = $this->balance;
         $this->increment('balance', $amount);
@@ -37,7 +37,7 @@ class Wallet extends Model
             'amount' => $amount,
             'balance_before' => $balanceBefore,
             'balance_after' => $this->balance,
-            'description' => $description ?? 'Deposit to wallet',
+            'description' => $description,
             'metadata' => $metadata,
         ]);
     }
@@ -45,7 +45,7 @@ class Wallet extends Model
     /**
      * سحب رصيد من المحفظة
      */
-    public function withdraw(float $amount, string $description = null, array $metadata = []): WalletTransaction
+    public function withdraw(float $amount, string $description = "Withdraw from wallet", array $metadata = []): WalletTransaction
     {
         if ($this->balance < $amount) {
             throw new \Exception('Insufficient balance');
@@ -60,7 +60,7 @@ class Wallet extends Model
             'amount' => $amount,
             'balance_before' => $balanceBefore,
             'balance_after' => $this->balance,
-            'description' => $description ?? 'Withdraw from wallet',
+            'description' => $description,
             'metadata' => $metadata,
         ]);
     }
@@ -68,7 +68,7 @@ class Wallet extends Model
     /**
      * الدفع من المحفظة
      */
-    public function pay(float $amount, string $description = null, array $metadata = []): WalletTransaction
+    public function pay(float $amount, string $description = "Payment from wallet", array $metadata = []): WalletTransaction
     {
         if ($this->balance < $amount) {
             throw new \Exception('Insufficient balance');
@@ -83,7 +83,7 @@ class Wallet extends Model
             'amount' => $amount,
             'balance_before' => $balanceBefore,
             'balance_after' => $this->balance,
-            'description' => $description ?? 'Payment from wallet',
+            'description' => $description,
             'metadata' => $metadata,
         ]);
     }
@@ -91,7 +91,7 @@ class Wallet extends Model
     /**
      * استرجاع مبلغ للمحفظة
      */
-    public function refund(float $amount, string $description = null, array $metadata = []): WalletTransaction
+    public function refund(float $amount, string $description = "Refund to wallet", array $metadata = []): WalletTransaction
     {
         $balanceBefore = $this->balance;
         $this->increment('balance', $amount);
@@ -102,7 +102,7 @@ class Wallet extends Model
             'amount' => $amount,
             'balance_before' => $balanceBefore,
             'balance_after' => $this->balance,
-            'description' => $description ?? 'Refund to wallet',
+            'description' => $description,
             'metadata' => $metadata,
         ]);
     }

@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Http\Services\Users\WalletService;
+use App\Http\Services\Global\WalletService;
 use Stripe\Exception\SignatureVerificationException;
 
 class StripeWebhookController extends Controller

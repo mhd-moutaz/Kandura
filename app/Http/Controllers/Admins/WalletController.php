@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Services\Users\WalletService;
+use App\Http\Services\Global\WalletService;
 
 class WalletController extends Controller
 {
@@ -50,6 +50,9 @@ class WalletController extends Controller
                     'admin_id' => Auth::id(),
                     'admin_name' => Auth::user()->name,
                     'admin_email' => Auth::user()->email,
+                    'user_id' => $user->id,
+                    'user_name' => $user->name,
+                    'user_email' => $user->email,
                 ]
             );
 
@@ -84,6 +87,9 @@ class WalletController extends Controller
                     'admin_id' => Auth::id(),
                     'admin_name' => Auth::user()->name,
                     'admin_email' => Auth::user()->email,
+                    'user_id' => $user->id,
+                    'user_name' => $user->name,
+                    'user_email' => $user->email,
                 ]
             );
 

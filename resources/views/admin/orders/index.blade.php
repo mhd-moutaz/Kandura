@@ -60,7 +60,7 @@
                 </button>
                 <a href="{{ route('orders.index') }}"
                     style="background:#6b7280;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
-                    Reset
+                    <i class="fas fa-redo"></i> Reset
                 </a>
             </div>
 
