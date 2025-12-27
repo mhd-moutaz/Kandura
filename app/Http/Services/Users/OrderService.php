@@ -41,6 +41,14 @@ class OrderService
             throw new GeneralException('Order is already confirmed');
         }
 
+        if ($order->status === StatusOrderEnum::CANCELLED) {
+            throw new GeneralException('Cannot confirm a cancelled order', 400);
+        }
+
+        if ($order->orderItems->isEmpty()) {
+            throw new GeneralException('Order has no items', 400);
+        }
+
         return DB::transaction(function () use ($order, $data) {
             $user = Auth::user();
             $payment_method = $data['payment_method'];
@@ -50,7 +58,6 @@ class OrderService
                     if (!$this->walletService->hasEnoughBalance($user, $order->total)) {
                         throw new GeneralException('Insufficient wallet balance');
                     }
-
                     $this->walletService->pay(
                         $user,
                         $order->total,
@@ -63,22 +70,34 @@ class OrderService
                             'user_email' => $user->email,
                         ]
                     );
+
+                    $order->update([
+                        'payment_method' => $payment_method,
+                        'status' => StatusOrderEnum::CONFIRMED,
+                    ]);
                     break;
 
                 case 'card':
-                    break;
+                    // الدفع بالبطاقة - سيتم التأكيد عبر Stripe Webhook
+                    // فقط نحفظ طريقة الدفع وننتظر تأكيد Stripe
+                    $order->update([
+                        'payment_method' => $payment_method,
+                        // الحالة تبقى pending حتى يتم التأكيد من Stripe
+                    ]);
+
+                    // إرجاع رسالة للمستخدم ليكمل الدفع عبر Stripe
+                    return $order->fresh();
 
                 case 'cash':
+                    $order->update([
+                        'payment_method' => $payment_method,
+                        'status' => StatusOrderEnum::CONFIRMED,
+                    ]);
                     break;
 
                 default:
                     throw new GeneralException('Invalid payment method');
             }
-
-            $order->update([
-                'payment_method' => $payment_method,
-                'status' => StatusOrderEnum::CONFIRMED,
-            ]);
 
             // يمكن إضافة حدث هنا إذا كنت تستخدم Events
             // event(new OrderConfirmed($order));

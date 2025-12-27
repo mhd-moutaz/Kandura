@@ -1,11 +1,11 @@
 <?php
 namespace App\Http\Controllers\Users;
 
+use Stripe\Stripe;
 use Illuminate\Http\Request;
+use Stripe\Checkout\Session;
 use App\Http\Controllers\Controller;
 use App\Http\Services\Global\WalletService;
-use Stripe\Stripe;
-use Stripe\Checkout\Session;
 
 class StripeController extends Controller
 {
@@ -17,9 +17,9 @@ class StripeController extends Controller
     }
 
     /**
-     * إنشاء جلسة دفع Stripe
+     * إنشاء جلسة دفع Stripe لشحن المحفظة
      */
-    public function createCheckoutSession(Request $request)
+    public function createWalletCheckout(Request $request)
     {
         $request->validate([
             'amount' => 'required|numeric|min:1|max:10000',
@@ -29,7 +29,7 @@ class StripeController extends Controller
         $amount = $request->amount;
 
         try {
-            Stripe::setApiKey(env('STRIPE_SECRET'));
+            Stripe::setApiKey(config('stripe.secret'));
 
             $session = Session::create([
                 'customer_email' => $user->email,
@@ -41,13 +41,13 @@ class StripeController extends Controller
                             'name' => 'Wallet Recharge',
                             'description' => 'Add funds to your wallet',
                         ],
-                        'unit_amount' => $amount * 100, // تحويل إلى سنت
+                        'unit_amount' => $amount * 100,
                     ],
                     'quantity' => 1,
                 ]],
                 'mode' => 'payment',
-                'success_url' => route('stripe.checkoutSuccess') . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('stripe.cancel'),
+                'success_url' => route('stripe.wallet.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('stripe.wallet.cancel'),
                 'metadata' => [
                     'user_id' => $user->id,
                     'amount' => $amount,
@@ -55,14 +55,10 @@ class StripeController extends Controller
                 ]
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Checkout session created successfully',
-                'data' => [
-                    'session_id' => $session->id,
-                    'checkout_url' => $session->url
-                ]
-            ]);
+            return $this->success([
+                'session_id' => $session->id,
+                'checkout_url' => $session->url
+            ], 'Checkout session created successfully');
 
         } catch (\Exception $e) {
             return response()->json([
@@ -73,26 +69,126 @@ class StripeController extends Controller
     }
 
     /**
-     * صفحة النجاح
+     * إنشاء جلسة دفع Stripe للطلب
      */
-    public function checkoutSuccess(Request $request)
+    public function createOrderCheckout(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|exists:orders,id',
+        ]);
+
+        $user = $request->user();
+        $order = \App\Models\Order::findOrFail($request->order_id);
+
+        // التحقق من أن الطلب يخص المستخدم
+        if ($order->user_id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        // التحقق من حالة الطلب
+        if ($order->status !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order is not in pending status'
+            ], 400);
+        }
+
+        try {
+            Stripe::setApiKey(config('stripe.secret'));
+
+            // إنشاء line items من عناصر الطلب
+            $lineItems = [];
+            foreach ($order->orderItems as $item) {
+                $lineItems[] = [
+                    'price_data' => [
+                        'currency' => 'usd',
+                        'product_data' => [
+                            'name' => $item->design->name['en'] ?? $item->design->name['ar'],
+                            'description' => 'Size: ' . $item->measurement->size,
+                        ],
+                        'unit_amount' => $item->unit_price * 100,
+                    ],
+                    'quantity' => $item->quantity,
+                ];
+            }
+
+            $session = Session::create([
+                'customer_email' => $user->email,
+                'payment_method_types' => ['card'],
+                'line_items' => $lineItems,
+                'mode' => 'payment',
+                'success_url' => route('stripe.order.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('stripe.order.cancel'),
+                'metadata' => [
+                    'user_id' => $user->id,
+                    'order_id' => $order->id,
+                    'type' => 'order_payment',
+                ]
+            ]);
+
+            return $this->success([
+                'session_id' => $session->id,
+                'checkout_url' => $session->url
+            ], 'Checkout session created successfully');
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error creating checkout session: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * صفحة نجاح شحن المحفظة
+     */
+    public function walletSuccess(Request $request)
     {
         $sessionId = $request->query('session_id');
 
         if (!$sessionId) {
-            return redirect()->route('wallet.index')->with('error', 'Invalid session');
+            return $this->success(null, 'Invalid session');
         }
 
-        // يمكنك إضافة منطق إضافي هنا
-        return view('users.wallet.success', compact('sessionId'));
+        return $this->success([
+            'session_id' => $sessionId,
+            'message' => 'Payment successful! Your wallet will be updated shortly.'
+        ], 'Payment completed successfully');
     }
 
     /**
-     * صفحة الإلغاء
+     * صفحة إلغاء شحن المحفظة
      */
-    public function cancel()
+    public function walletCancel()
     {
-        return view('users.wallet.cancel');
+        return $this->success(null, 'Payment cancelled');
+    }
+
+    /**
+     * صفحة نجاح دفع الطلب
+     */
+    public function orderSuccess(Request $request)
+    {
+        $sessionId = $request->query('session_id');
+
+        if (!$sessionId) {
+            return $this->success(null, 'Invalid session');
+        }
+
+        return $this->success([
+            'session_id' => $sessionId,
+            'message' => 'Payment successful! Your order will be confirmed shortly.'
+        ], 'Payment completed successfully');
+    }
+
+    /**
+     * صفحة إلغاء دفع الطلب
+     */
+    public function orderCancel()
+    {
+        return $this->success(null, 'Payment cancelled');
     }
 }
-

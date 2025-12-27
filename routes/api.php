@@ -18,6 +18,9 @@ Route::post('auth/register', [AuthController::class, 'register']);
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::get('designs/allDesigns', [DesignController::class, 'allDesigns']);
 
+// Stripe Webhook (يجب أن يكون خارج middleware لأن Stripe يرسل البيانات بدون authentication)
+Route::post('stripe/webhook', [StripeWebhookController::class, 'handle']);
+
 Route::middleware('auth:api')->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
     // User routes --------------
@@ -60,13 +63,24 @@ Route::middleware('auth:api')->group(function () {
                 ->middleware('permission:view transactions');
         });
         // Stripe routes
-        // Route::prefix('stripe')->group(function () {
-        //     Route::post('/checkout', [StripeController::class, 'createCheckoutSession']);
-        //     Route::get('/success', [StripeController::class, 'success'])->name('stripe.success');
-        //     Route::get('/cancel', [StripeController::class, 'cancel'])->name('stripe.cancel');
-        // });
+        Route::prefix('stripe')->group(function () {
+            // شحن المحفظة
+            Route::post('/wallet/checkout', [StripeController::class, 'createWalletCheckout'])
+                ->middleware('permission:view wallet');
+            Route::get('/wallet/success', [StripeController::class, 'walletSuccess'])
+                ->name('stripe.wallet.success');
+            Route::get('/wallet/cancel', [StripeController::class, 'walletCancel'])
+                ->name('stripe.wallet.cancel');
+
+            // دفع الطلب
+            Route::post('/order/checkout', [StripeController::class, 'createOrderCheckout'])
+                ->middleware('permission:create order');
+            Route::get('/order/success', [StripeController::class, 'orderSuccess'])
+                ->name('stripe.order.success');
+            Route::get('/order/cancel', [StripeController::class, 'orderCancel'])
+                ->name('stripe.order.cancel');
+        });
     });
 });
-// Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 // 'update order',
 //             'delete order',
