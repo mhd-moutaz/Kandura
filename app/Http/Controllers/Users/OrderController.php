@@ -24,6 +24,34 @@ class OrderController extends Controller
             'User orders retrieved successfully'
         );
     }
+    public function show($orderId)
+    {
+        try {
+            $order = $this->orderService->getOrderDetails($orderId);
+            return $this->success(
+                new OrderResource($order),
+                'Order details retrieved successfully'
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], $e->getCode() ?: 400);
+        }
+    }
+    public function getPending()
+    {
+        $order = $this->orderService->getPendingOrder();
+
+        if (!$order) {
+            return $this->success(null, 'No pending order found');
+        }
+
+        return $this->success(
+            new OrderResource($order),
+            'Pending order retrieved successfully'
+        );
+    }
     public function confirmOrder(Order $order,ConfirmOrderRequest $request)
     {
         Gate::authorize('update', $order);

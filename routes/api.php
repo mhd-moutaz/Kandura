@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\AuthController;
 use App\Http\Controllers\Users\UserController;
@@ -23,64 +22,58 @@ Route::post('stripe/webhook', [StripeWebhookController::class, 'handle']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
-    // User routes --------------
+    // User routes
     Route::prefix('users')->group(function () {
-        // Profile routes ------------
+
+        // Profile routes
         Route::get('/', [UserController::class, 'show'])->middleware('permission:view profile');
         Route::put('/', [UserController::class, 'update'])->middleware('permission:update profile');
         Route::delete('/', [UserController::class, 'destroy'])->middleware('permission:delete profile');
-        // Address routes ------------
+
+        // Address routes
         Route::prefix('address')->group(function () {
             Route::get('/', [AddressController::class, 'index'])->middleware('permission:view address');
             Route::post('/', [AddressController::class, 'store'])->middleware('permission:create address');
             Route::put('/{address}', [AddressController::class, 'update'])->middleware('permission:update address');
             Route::delete('/{address}', [AddressController::class, 'destroy'])->middleware('permission:delete address');
         });
-        // Design routes ------------
+
+        // Design routes
         Route::prefix('designs')->group(function () {
             Route::get('/myDesigns', [DesignController::class, 'myDesigns'])->middleware('permission:view design');
             Route::post('/', [DesignController::class, 'store'])->middleware('permission:create design');
             Route::put('/{design}', [DesignController::class, 'update'])->middleware('permission:update design');
             Route::delete('/{design}', [DesignController::class, 'destroy'])->middleware('permission:delete design');
         });
+
         // Order Items routes
         Route::prefix('order-items')->group(function () {
             Route::post('/', [OrderItemsController::class, 'store'])->middleware('permission:create order');
             Route::put('/{orderItem}', [OrderItemsController::class, 'update'])->middleware('permission:create order');
             Route::delete('/{orderItem}', [OrderItemsController::class, 'destroy'])->middleware('permission:create order');
         });
+
         // Order routes
-        Route::prefix('orders')->group(function () {
+        Route::prefix('orders')->middleware('permission:view order')->group(function () {
             Route::get('/', [OrderController::class, 'index'])->middleware('permission:view order');
-            Route::put('/{order}/status', [OrderController::class, 'confirmOrder']);
+            Route::get('/pending', [OrderController::class, 'getPending']);
+            Route::get('/{order}', [OrderController::class, 'show']);
+            Route::put('/{order}/confirm', [OrderController::class, 'confirmOrder']);
         });
+
         // Wallet routes
         Route::prefix('wallet')->group(function () {
-            Route::get('/balance', [WalletController::class, 'getBalance'])
-                ->middleware('permission:view wallet');
-
-            Route::get('/transactions', [WalletController::class, 'getTransactions'])
-                ->middleware('permission:view transactions');
+            Route::get('/balance', [WalletController::class, 'getBalance'])->middleware('permission:view wallet');
+            Route::get('/transactions', [WalletController::class, 'getTransactions'])->middleware('permission:view transactions');
         });
+
         // Stripe routes
         Route::prefix('stripe')->group(function () {
-            // شحن المحفظة
-            Route::post('/wallet/checkout', [StripeController::class, 'createWalletCheckout'])
-                ->middleware('permission:view wallet');
-            Route::get('/wallet/success', [StripeController::class, 'walletSuccess'])
-                ->name('stripe.wallet.success');
-            Route::get('/wallet/cancel', [StripeController::class, 'walletCancel'])
-                ->name('stripe.wallet.cancel');
-
-            // دفع الطلب
-            Route::post('/order/checkout', [StripeController::class, 'createOrderCheckout'])
-                ->middleware('permission:create order');
-            Route::get('/order/success', [StripeController::class, 'orderSuccess'])
-                ->name('stripe.order.success');
-            Route::get('/order/cancel', [StripeController::class, 'orderCancel'])
-                ->name('stripe.order.cancel');
+            Route::post('/order/{order}/checkout', [StripeController::class, 'createOrderCheckout'])->middleware('permission:create order');
+            Route::get('/order/success', [StripeController::class, 'orderSuccess'])->name('stripe.order.success');
+            Route::get('/order/cancel', [StripeController::class, 'orderCancel'])->name('stripe.order.cancel');
         });
     });
 });
 // 'update order',
-//             'delete order',
+// 'delete order',

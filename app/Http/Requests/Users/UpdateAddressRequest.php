@@ -27,8 +27,8 @@ class UpdateAddressRequest extends FormRequest
             'street' => ['sometimes', 'string', 'max:255'],
             'house_number' => ['sometimes', 'string', 'max:50'],
             'notes' => ['nullable', 'string', 'max:500'],
-            'Langitude' => ['nullable', 'integer', 'max:100'],
-            'Latitude' => ['nullable', 'integer', 'max:100'],
+            'Langitude' => ['nullable', 'numeric', 'max:100'],
+            'Latitude' => ['nullable', 'numeric', 'max:100'],
         ];
     }
 }

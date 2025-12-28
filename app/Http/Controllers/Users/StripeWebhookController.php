@@ -76,63 +76,12 @@ class StripeWebhookController extends Controller
     private function handleCheckoutCompleted($session)
     {
         $type = $session->metadata->type ?? null;
-
-        if ($type === 'wallet_recharge') {
-            $this->handleWalletRecharge($session);
-        } elseif ($type === 'order_payment') {
+        if ($type === 'order_payment') {
             $this->handleOrderPayment($session);
         }
     }
 
-    /**
-     * معالجة شحن المحفظة
-     */
-    private function handleWalletRecharge($session)
-    {
-        DB::beginTransaction();
-        try {
-            $userId = $session->metadata->user_id ?? null;
-            $amount = $session->metadata->amount ?? null;
 
-            if (!$userId || !$amount) {
-                throw new \Exception('Missing user_id or amount in metadata');
-            }
-
-            $user = User::find($userId);
-            if (!$user) {
-                throw new \Exception('User not found');
-            }
-
-            // إضافة الرصيد للمحفظة
-            $this->walletService->deposit(
-                $user,
-                (float) $amount,
-                'Stripe payment - Session: ' . $session->id,
-                [
-                    'stripe_session_id' => $session->id,
-                    'stripe_payment_intent' => $session->payment_intent,
-                    'payment_status' => $session->payment_status,
-                    'amount_total' => $session->amount_total / 100,
-                    'currency' => $session->currency,
-                ]
-            );
-
-            DB::commit();
-
-            Log::info('Wallet recharged successfully', [
-                'user_id' => $userId,
-                'amount' => $amount,
-                'session_id' => $session->id
-            ]);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Wallet recharge failed', [
-                'error' => $e->getMessage(),
-                'session_id' => $session->id
-            ]);
-        }
-    }
 
     /**
      * معالجة دفع الطلب
