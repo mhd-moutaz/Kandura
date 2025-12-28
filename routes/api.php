@@ -70,8 +70,6 @@ Route::middleware('auth:api')->group(function () {
         // Stripe routes
         Route::prefix('stripe')->group(function () {
             Route::post('/order/{order}/checkout', [StripeController::class, 'createOrderCheckout'])->middleware('permission:create order');
-            Route::get('/order/success', [StripeController::class, 'orderSuccess'])->name('stripe.order.success');
-            Route::get('/order/cancel', [StripeController::class, 'orderCancel'])->name('stripe.order.cancel');
         });
     });
 });

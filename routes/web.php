@@ -3,6 +3,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admins\AuthController;
 use App\Http\Controllers\Admins\UserController;
 use App\Http\Controllers\Admins\OrderController;
+use App\Http\Controllers\Users\StripeController;
 use App\Http\Controllers\Admins\DesignController;
 use App\Http\Controllers\Admins\WalletController;
 use App\Http\Controllers\Admins\AddressController;
@@ -15,7 +16,8 @@ Route::get("", function () {
 
 Route::get("login", [AuthController::class, "loginView"])->name("login");
 Route::post("login", [AuthController::class, "login"])->name("login_action");
-
+Route::get('stripe/order/success', [StripeController::class, 'orderSuccess'])->name('stripe.order.success');
+Route::get('stripe/order/cancel', [StripeController::class, 'orderCancel'])->name('stripe.order.cancel');
 
 Route::middleware(['auth', 'role:admin||super_admin'])->group(function () {
     Route::get("dashboard", [DashboardController::class, "index"])->name("home");
