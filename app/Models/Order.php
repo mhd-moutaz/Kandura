@@ -10,8 +10,11 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'address_id',
+        'coupon_id',
         'status',
         'total',
+        'discount_amount',
+        'total_before_discount',
         'payment_method',
         'note',
     ];
@@ -28,6 +31,15 @@ class Order extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItems::class);
+    }
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class);
+    }
+
+    public function couponUsage()
+    {
+        return $this->hasOne(CouponUsage::class);
     }
     public function scopeFilter($query, array $filters): void
     {

@@ -10,7 +10,7 @@ use App\Http\Controllers\Users\WalletController;
 use App\Http\Controllers\Users\AddressController;
 use App\Http\Controllers\Users\OrderItemsController;
 use App\Http\Controllers\Users\StripeWebhookController;
-
+use App\Http\Controllers\Users\CouponController;
 
 // Authentication routes -------------
 Route::post('auth/register', [AuthController::class, 'register']);
@@ -59,6 +59,11 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/pending', [OrderController::class, 'getPending']);
             Route::get('/{order}', [OrderController::class, 'show']);
             Route::put('/{order}/confirm', [OrderController::class, 'confirmOrder']);
+            // Coupon routes for orders
+            Route::post('/{order}/coupon/apply', [CouponController::class, 'apply']);
+            Route::delete('/{order}/coupon/remove', [CouponController::class, 'remove']);
+            Route::post('/{order}/coupon/validate', [CouponController::class, 'validate']);
+
         });
 
         // Wallet routes

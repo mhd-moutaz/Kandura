@@ -28,6 +28,10 @@
             <i class="fas fa-shopping-cart"></i>
             <span>Orders</span>
         </a>
+        <a href="{{ route('coupons.index') }}" class="menu-item {{ request()->routeIs('coupons.*') ? 'active' : '' }}">
+            <i class="fas fa-ticket-alt"></i>
+            <span>Coupons</span>
+        </a>
         <a href="#" class="menu-item">
             <i class="fas fa-percent"></i>
             <span>Discounts</span>

@@ -7,15 +7,18 @@ use App\Enum\StatusOrderEnum;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\GeneralException;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Services\Global\CouponService;
 use App\Http\Services\Global\WalletService;
 
 class OrderService
 {
     protected $walletService;
+    protected $couponService;
 
-    public function __construct(WalletService $walletService)
+    public function __construct(WalletService $walletService, CouponService $couponService)
     {
         $this->walletService = $walletService;
+        $this->couponService = $couponService;
     }
 
     public function createOrder($data)
@@ -33,6 +36,42 @@ class OrderService
         return Order::where('user_id', Auth::id())
             ->with('orderItems', 'address')
             ->get();
+    }
+    public function applyCoupon(Order $order, string $couponCode): Order
+    {
+        if ($order->status !== StatusOrderEnum::PENDING) {
+            throw new GeneralException('Can only apply coupons to pending orders', 400);
+        }
+
+        $user = Auth::user();
+
+        // Remove existing coupon if any
+        if ($order->coupon_id) {
+            $order = $this->couponService->removeCouponFromOrder($order);
+        }
+
+        // Validate and calculate discount
+        $couponData = $this->couponService->validateAndApplyCoupon($couponCode, $order, $user);
+
+        // Apply coupon to order
+        $order = $this->couponService->applyCouponToOrder(
+            $couponData['coupon'],
+            $order,
+            $couponData['discount']
+        );
+
+        return $order->fresh(['coupon', 'orderItems']);
+    }
+    /**
+     * Remove coupon from order
+     */
+    public function removeCoupon(Order $order): Order
+    {
+        if ($order->status !== StatusOrderEnum::PENDING) {
+            throw new GeneralException('Can only remove coupons from pending orders', 400);
+        }
+
+        return $this->couponService->removeCouponFromOrder($order);
     }
 
     public function confirmOrder(Order $order, $data): Order
@@ -71,14 +110,16 @@ class OrderService
 
     private function processWalletPayment(Order $order, $user): Order
     {
+        $finalAmount = $order->total;
+
         if (!$this->walletService->hasEnoughBalance($user, $order->total)) {
             throw new GeneralException('Insufficient wallet balance', 400);
         }
 
         $this->walletService->pay(
             $user,
-            $order->total,
-            "Payment for Order #{$order->id}",
+            $finalAmount,
+            "Payment for Order #{$order->id}" . ($order->coupon_id ? " (Coupon Applied)" : ""),
             [
                 'order_id' => $order->id,
                 'payment_method' => 'wallet',
@@ -86,6 +127,8 @@ class OrderService
                 'user_name' => $user->name,
                 'user_email' => $user->email,
                 'order_total' => $order->total,
+                'discount_amount' => $order->discount_amount ?? 0,
+                'coupon_code' => $order->coupon->code ?? null,
                 'items_count' => $order->orderItems->count(),
             ]
         );
@@ -94,6 +137,10 @@ class OrderService
             'payment_method' => 'wallet',
             'status' => StatusOrderEnum::CONFIRMED,
         ]);
+        // Record coupon usage if coupon was applied
+        if ($order->coupon_id) {
+            $this->couponService->recordCouponUsage($order->coupon, $order, $user);
+        }
 
         return $order->fresh();
     }
@@ -108,10 +155,17 @@ class OrderService
     }
     private function processCashPayment(Order $order): Order
     {
+        $user = Auth::user();
+
         $order->update([
             'payment_method' => 'cash',
             'status' => StatusOrderEnum::CONFIRMED,
         ]);
+
+         // Record coupon usage if coupon was applied
+        if ($order->coupon_id) {
+            $this->couponService->recordCouponUsage($order->coupon, $order, $user);
+        }
 
         return $order->fresh();
     }
@@ -133,6 +187,11 @@ class OrderService
             $order->update([
                 'status' => StatusOrderEnum::CONFIRMED,
             ]);
+
+            // Record coupon usage if coupon was applied
+            if ($order->coupon_id) {
+                $this->couponService->recordCouponUsage($order->coupon, $order, $order->user);
+            }
 
             return $order->fresh();
         });
@@ -165,6 +224,7 @@ class OrderService
                         'order_id' => $order->id,
                         'original_payment_method' => 'wallet',
                         'cancellation_reason' => $reason,
+                        'coupon_code' => $order->coupon->code ?? null,
                     ]
                 );
             }
@@ -189,7 +249,8 @@ class OrderService
             'orderItems.measurement',
             'orderItems.designOptions',
             'address.city',
-            'user'
+            'user',
+            'coupon'
         ])->findOrFail($orderId);
 
         // التحقق من الصلاحية
@@ -210,7 +271,8 @@ class OrderService
             ->with([
                 'orderItems.design.designImages',
                 'orderItems.measurement',
-                'orderItems.designOptions'
+                'orderItems.designOptions',
+                'coupon'
             ])
             ->first();
     }

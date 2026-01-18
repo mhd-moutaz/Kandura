@@ -9,6 +9,7 @@ use App\Http\Controllers\Admins\WalletController;
 use App\Http\Controllers\Admins\AddressController;
 use App\Http\Controllers\Admins\DashboardController;
 use App\Http\Controllers\Admins\DesignOptionsController;
+use App\Http\Controllers\Admins\CouponController;
 
 Route::get("", function () {
     return redirect()->route("login");
@@ -63,6 +64,17 @@ Route::middleware(['auth', 'role:admin||super_admin'])->group(function () {
         Route::get('/{user}', [WalletController::class, 'showUserWallet'])->name('show');
         Route::post('/{user}/deposit', [WalletController::class, 'deposit'])->name('deposit');
         Route::post('/{user}/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');
+    });
+    // Coupon Management Routes
+    Route::prefix('coupons')->middleware('permission:view coupon')->group(function () {
+        Route::get('/', [CouponController::class, 'index'])->name('coupons.index');
+        Route::get('/create', [CouponController::class, 'create'])->name('coupons.create')->middleware('permission:create coupon');
+        Route::post('/', [CouponController::class, 'store'])->name('coupons.store')->middleware('permission:create coupon');
+        Route::get('/{coupon}', [CouponController::class, 'show'])->name('coupons.show');
+        Route::get('/{coupon}/edit', [CouponController::class, 'edit'])->name('coupons.edit')->middleware('permission:update coupon');
+        Route::put('/{coupon}', [CouponController::class, 'update'])->name('coupons.update')->middleware('permission:update coupon');
+        Route::delete('/{coupon}', [CouponController::class, 'destroy'])->name('coupons.destroy')->middleware('permission:delete coupon');
+        Route::post('/{coupon}/toggle', [CouponController::class, 'toggle'])->name('coupons.toggle')->middleware('permission:update coupon');
     });
 });
 
