@@ -1,0 +1,375 @@
+/* Sidebar Styles */
+
+/* Sidebar Base Styles */
+.sidebar {
+    width: 260px;
+    background: #ffffff;
+    color: #4a5568;
+    padding: 20px 0;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.03);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-right: 1px solid #e2e8f0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Collapsed State (Default) */
+.sidebar.collapsed {
+    width: 70px;
+}
+
+/* توسيط الأيقونات في الحالة المطوية */
+.sidebar.collapsed .menu-item {
+    justify-content: center;
+    gap: 0;
+}
+
+.sidebar.collapsed .menu-item i {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* عند التمرير لإظهار الشريط بالكامل */
+.sidebar.collapsed:hover .menu-item {
+    justify-content: flex-start;
+    gap: 15px;
+}
+
+/* توسيط زر تسجيل الخروج أيضًا */
+.sidebar.collapsed .logout-btn {
+    justify-content: center;
+    gap: 0;
+}
+
+.sidebar.collapsed:hover .logout-btn {
+    justify-content: center;
+    gap: 8px;
+}
+
+/* توسيط الأيقونة في زر تسجيل الخروج */
+.sidebar.collapsed .logout-btn i {
+    margin: 0;
+}
+
+/* توسيط زر التثبيت (Pin Button) في الحالة المطوية */
+.sidebar.collapsed .pin-button {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    opacity: 0;
+}
+
+.sidebar.collapsed:hover .pin-button {
+    left: auto;
+    right: 15px;
+    transform: none;
+    opacity: 1;
+}
+
+.sidebar.collapsed .logo-text,
+.sidebar.collapsed .menu-item span,
+.sidebar.collapsed .logout-btn span {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+}
+
+.sidebar.collapsed .menu-item,
+.sidebar.collapsed .logout-btn {
+    justify-content: center;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.sidebar.collapsed .pin-button {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Hover Effect - Expand */
+.sidebar.collapsed:hover {
+    width: 260px;
+}
+
+.sidebar.collapsed:hover .logo-text,
+.sidebar.collapsed:hover .menu-item span,
+.sidebar.collapsed:hover .logout-btn span {
+    opacity: 1;
+    width: auto;
+}
+
+.sidebar.collapsed:hover .logo {
+    justify-content: flex-start;
+    padding-left: 20px;
+}
+
+.sidebar.collapsed:hover .menu-item,
+.sidebar.collapsed:hover .logout-btn {
+    justify-content: flex-start;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.sidebar.collapsed:hover .pin-button {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Pinned State - Always Expanded */
+.sidebar.pinned {
+    width: 260px !important;
+}
+
+.sidebar.pinned .logo-text,
+.sidebar.pinned .menu-item span,
+.sidebar.pinned .logout-btn span {
+    opacity: 1 !important;
+    width: auto !important;
+}
+
+.sidebar.pinned .logo {
+    justify-content: flex-start !important;
+    padding-left: 20px !important;
+}
+
+.sidebar.pinned .menu-item,
+.sidebar.pinned .logout-btn {
+    justify-content: flex-start !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+}
+
+.sidebar.pinned .pin-button {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    background: #5a67d8;
+    color: white;
+    transform: rotate(45deg);
+}
+
+.sidebar.pinned .pin-button:hover {
+    background: #4c51bf;
+}
+
+/* Pin Button */
+.pin-button {
+    position: absolute;
+    top: 20px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.pin-button:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.pin-button i {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+/* Logo */
+.logo {
+    text-align: left;
+    padding: 20px;
+    font-size: 22px;
+    font-weight: 600;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 20px;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.logo i {
+    color: #5a67d8;
+    min-width: 24px;
+}
+
+.logo-text {
+    transition: opacity 0.3s ease, width 0.3s ease;
+    white-space: nowrap;
+}
+
+/* Navigation */
+nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Menu Items */
+.menu-item {
+    padding: 12px 25px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #718096;
+    text-decoration: none;
+    margin: 0 10px;
+    border-radius: 8px;
+}
+
+.menu-item i {
+    min-width: 20px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.menu-item span {
+    transition: opacity 0.3s ease, width 0.3s ease;
+    white-space: nowrap;
+}
+
+.menu-item:hover {
+    background: #f7fafc;
+    color: #5a67d8;
+}
+
+.menu-item.active {
+    background: #edf2f7;
+    color: #5a67d8;
+    font-weight: 500;
+}
+
+/* Logout Container */
+.logout-container {
+    padding: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.logout-btn:hover {
+    background: #fee2e2;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logout-btn i {
+    min-width: 20px;
+}
+
+.logout-btn span {
+    transition: opacity 0.3s ease, width 0.3s ease;
+    white-space: nowrap;
+}
+
+/* Main Content Adjustment */
+body .main-content {
+    margin-left: 70px;
+    padding: 20px;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body .sidebar.pinned ~ .main-content {
+    margin-left: 260px;
+}
+
+/* Scrollbar Styling */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.collapsed:hover,
+    .sidebar.pinned {
+        transform: translateX(0);
+    }
+
+    body .main-content {
+        margin-left: 0 !important;
+    }
+
+    .sidebar.pinned ~ .sidebar-overlay {
+        display: block;
+        opacity: 1;
+    }
+}
+
+/* Smooth transitions for all text elements */
+.sidebar * {
+    transition: opacity 0.3s ease, width 0.3s ease;
+}

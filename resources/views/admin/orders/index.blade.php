@@ -2,6 +2,10 @@
 
 @section('title', 'Orders Management')
 
+@push('styles')
+<link href="{{ asset('css/admin/orders.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
 
 <div class="table-card">
@@ -71,21 +75,6 @@
         <div class="alert-auto-hide">
             <i class="fas fa-check-circle"></i> {{ session('success') }}
         </div>
-        <style>
-            .alert-auto-hide {
-                background: #d1fae5;
-                color: #065f46;
-                padding: 12px;
-                border-radius: 6px;
-                margin-bottom: 20px;
-                border: 1px solid #a7f3d0;
-                animation: fade 3s forwards;
-            }
-            @keyframes fade {
-                0%, 60% { opacity: 1; }
-                100% { opacity: 0; display: none; }
-            }
-        </style>
     @endif
 
     <!-- Header -->

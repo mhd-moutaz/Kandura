@@ -1,7 +1,5 @@
-{{-- resources/views/layouts/admin.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,23 +11,22 @@
 
     <!-- Custom CSS -->
     <link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/admin/sidebar.css') }}" rel="stylesheet">
 
     @stack('styles')
 </head>
 
 <body>
-    <div class="container">
-        <!-- Sidebar -->
-        @include('layouts.sidebar')
+    @include('layouts.sidebar')
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Header -->
-            @yield('content')
-        </main>
-    </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        @yield('content')
+    </main>
 
-
+    <!-- Sidebar JS -->
+    <script src="{{ asset('js/admin/sidebar.js') }}"></script>
+    
+    @stack('scripts')
 </body>
-
 </html>

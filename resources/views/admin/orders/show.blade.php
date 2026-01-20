@@ -2,6 +2,10 @@
 
 @section('title', 'Order Details #' . $order->id)
 
+@push('styles')
+<link href="{{ asset('css/admin/orders.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
 
 <div style="max-width:1400px;margin:0 auto;">
@@ -241,13 +245,5 @@
     </div>
 
 </div>
-
-<style>
-    @media (max-width: 1024px) {
-        [style*="grid-template-columns:1fr 380px"] {
-            grid-template-columns: 1fr !important;
-        }
-    }
-</style>
 
 @endsection

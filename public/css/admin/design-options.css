@@ -1,0 +1,17 @@
+/* Design Options Page Styles */
+
+/* Alert Auto Hide */
+.alert-auto-hide {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #a7f3d0;
+    animation: fade 3s forwards;
+}
+
+@keyframes fade {
+    0%, 60% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+}

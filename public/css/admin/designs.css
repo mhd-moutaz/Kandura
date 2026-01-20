@@ -1,0 +1,53 @@
+/* Designs Page Styles */
+
+/* Hover effects for action buttons */
+[style*="background:#dbeafe"]:hover {
+    background: #bfdbfe !important;
+}
+
+[style*="background:#fee2e2"]:hover {
+    background: #fecaca !important;
+}
+
+/* Responsive Grid */
+@media (max-width: 1200px) {
+    [style*="grid-template-columns:repeat(3,1fr)"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    [style*="grid-template-columns:repeat(3,1fr)"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Design Show Page Styles */
+@media (max-width: 1024px) {
+    [style*="grid-template-columns:1.2fr 1fr"],
+    [style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Button hover effects */
+[href*="designs.edit"]:hover {
+    background: #2563eb !important;
+}
+
+[style*="background:#ef4444"]:hover {
+    background: #dc2626 !important;
+}
+
+/* Smooth transitions */
+.main-gallery-image {
+    transition: display 0.3s ease;
+}
+
+.thumbnail-image {
+    transition: all 0.3s ease;
+}
+
+.thumbnail-image:hover {
+    transform: scale(1.05);
+}

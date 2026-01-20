@@ -2,6 +2,10 @@
 
 @section('title', 'Design Details')
 
+@push('styles')
+<link href="{{ asset('css/admin/designs.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
 
 <div style="max-width:1400px;margin:0 auto;">
@@ -260,95 +264,11 @@
 
 </div>
 
-<script>
-    let currentImageIndex = 0;
-    const totalImages = {{ $design->designImages->count() }};
-
-    function changeMainImage(direction) {
-        const images = document.querySelectorAll('.main-gallery-image');
-        const thumbnails = document.querySelectorAll('.thumbnail-image');
-
-        images[currentImageIndex].style.display = 'none';
-        if (thumbnails[currentImageIndex]) {
-            thumbnails[currentImageIndex].style.borderColor = '#e2e8f0';
-        }
-
-        currentImageIndex += direction;
-
-        if (currentImageIndex >= totalImages) {
-            currentImageIndex = 0;
-        }
-        if (currentImageIndex < 0) {
-            currentImageIndex = totalImages - 1;
-        }
-
-        images[currentImageIndex].style.display = 'block';
-        if (thumbnails[currentImageIndex]) {
-            thumbnails[currentImageIndex].style.borderColor = '#3b82f6';
-        }
-    }
-
-    function showMainImage(index) {
-        const images = document.querySelectorAll('.main-gallery-image');
-        const thumbnails = document.querySelectorAll('.thumbnail-image');
-
-        images[currentImageIndex].style.display = 'none';
-        if (thumbnails[currentImageIndex]) {
-            thumbnails[currentImageIndex].style.borderColor = '#e2e8f0';
-        }
-
-        currentImageIndex = index;
-
-        images[currentImageIndex].style.display = 'block';
-        if (thumbnails[currentImageIndex]) {
-            thumbnails[currentImageIndex].style.borderColor = '#3b82f6';
-        }
-    }
-
-    // Hover effects for thumbnails
-    document.querySelectorAll('.thumbnail-image').forEach(thumb => {
-        thumb.addEventListener('mouseenter', function() {
-            if (this.getAttribute('data-index') != currentImageIndex) {
-                this.style.borderColor = '#93c5fd';
-            }
-        });
-        thumb.addEventListener('mouseleave', function() {
-            if (this.getAttribute('data-index') != currentImageIndex) {
-                this.style.borderColor = '#e2e8f0';
-            }
-        });
-    });
-</script>
-
-<style>
-    /* Responsive Design */
-    @media (max-width: 1024px) {
-        [style*="grid-template-columns:1fr 1fr"] {
-            grid-template-columns: 1fr !important;
-        }
-    }
-
-    /* Button hover effects */
-    [href*="designs.edit"]:hover {
-        background: #2563eb !important;
-    }
-
-    [style*="background:#ef4444"]:hover {
-        background: #dc2626 !important;
-    }
-
-    /* Smooth transitions */
-    .main-gallery-image {
-        transition: display 0.3s ease;
-    }
-
-    .thumbnail-image {
-        transition: all 0.3s ease;
-    }
-
-    .thumbnail-image:hover {
-        transform: scale(1.05);
-    }
-</style>
-
 @endsection
+
+@push('scripts')
+<script>
+    const totalImages = {{ $design->designImages->count() }};
+</script>
+<script src="{{ asset('js/admin/designs-show.js') }}"></script>
+@endpush

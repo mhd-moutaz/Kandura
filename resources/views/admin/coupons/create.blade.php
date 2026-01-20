@@ -2,6 +2,10 @@
 
 @section('title', 'Create Coupon')
 
+@push('styles')
+<link href="{{ asset('css/admin/coupons.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
 
 <!-- Header -->
@@ -173,16 +177,8 @@
     </form>
 </div>
 
-<script>
-// Update placeholder based on discount type
-document.getElementById('discount_type')?.addEventListener('change', function(e) {
-    const valueInput = document.querySelector('input[name="discount_value"]');
-    if (e.target.value === 'percentage') {
-        valueInput.placeholder = 'e.g., 10 (for 10% off)';
-    } else {
-        valueInput.placeholder = 'e.g., 20.00 (for $20 off)';
-    }
-});
-</script>
-
 @endsection
+
+@push('scripts')
+<script src="{{ asset('js/admin/coupons.js') }}"></script>
+@endpush
