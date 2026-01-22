@@ -34,7 +34,16 @@ class CouponController extends Controller
         $validated = $request->validate([
             'code' => 'required|string|max:50|unique:coupons,code',
             'discount_type' => 'required|in:percentage,fixed',
-            'discount_value' => 'required|numeric|min:0',
+            'discount_value' => [
+                'required',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->discount_type === 'percentage' && $value > 100) {
+                        $fail('The discount value cannot exceed 100% for percentage discounts.');
+                    }
+                },
+            ],
             'start_date' => 'nullable|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'usage_limit' => 'required|integer|min:1',
@@ -67,7 +76,16 @@ class CouponController extends Controller
         $validated = $request->validate([
             'code' => 'required|string|max:50|unique:coupons,code,' . $coupon->id,
             'discount_type' => 'required|in:percentage,fixed',
-            'discount_value' => 'required|numeric|min:0',
+            'discount_value' => [
+                'required',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->discount_type === 'percentage' && $value > 100) {
+                        $fail('The discount value cannot exceed 100% for percentage discounts.');
+                    }
+                },
+            ],
             'start_date' => 'nullable|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'usage_limit' => 'required|integer|min:1',
