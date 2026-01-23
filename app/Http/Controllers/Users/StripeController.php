@@ -38,7 +38,6 @@ class StripeController extends Controller
         try {
             Stripe::setApiKey(config('stripe.secret'));
             $session = Session::retrieve($sessionId);
-
             $orderId = $session->metadata->order_id ?? null;
             $order = Order::find($orderId);
 

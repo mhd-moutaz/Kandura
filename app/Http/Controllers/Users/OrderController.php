@@ -55,7 +55,19 @@ class OrderController extends Controller
     public function confirmOrder(Order $order,ConfirmOrderRequest $request)
     {
         Gate::authorize('update', $order);
-        $order = $this->orderService->confirmOrder($order, $request->validated());
-        return $this->success(new OrderResource($order), 'Order confirmed successfully');
+        $result = $this->orderService->confirmOrder($order, $request->validated());
+        
+        // Check if payment is required (card payment)
+        if (is_array($result) && isset($result['payment_required'])) {
+            return $this->success([
+                'order' => new OrderResource($result['order']),
+                'payment_required' => true,
+                'session_id' => $result['session_id'],
+                'checkout_url' => $result['checkout_url'],
+            ], 'Proceed to payment');
+        }
+        
+        // For wallet and cash payments
+        return $this->success(new OrderResource($result), 'Order confirmed successfully');
     }
 }

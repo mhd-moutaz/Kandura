@@ -14,11 +14,14 @@ class OrderService
 {
     protected $walletService;
     protected $couponService;
+    protected $stripeService;
 
-    public function __construct(WalletService $walletService, CouponService $couponService)
+
+    public function __construct(WalletService $walletService, CouponService $couponService, StripeService $stripeService)
     {
         $this->walletService = $walletService;
         $this->couponService = $couponService;
+        $this->stripeService = $stripeService;
     }
 
     public function createOrder($data)
@@ -74,7 +77,7 @@ class OrderService
         return $this->couponService->removeCouponFromOrder($order);
     }
 
-    public function confirmOrder(Order $order, $data): Order
+    public function confirmOrder(Order $order, $data)
     {
         if ($order->status === StatusOrderEnum::CONFIRMED) {
             throw new GeneralException('Order is already confirmed', 400);
@@ -145,13 +148,21 @@ class OrderService
         return $order->fresh();
     }
 
-    private function processCardPayment(Order $order): Order
+    private function processCardPayment(Order $order): array
     {
         $order->update([
             'payment_method' => 'card',
         ]);
 
-        return $order->fresh();
+        // Create Stripe checkout session
+        $session = $this->stripeService->createOrderCheckout($order->fresh());
+
+        return [
+            'order' => $order->fresh(),
+            'payment_required' => true,
+            'session_id' => $session->id,
+            'checkout_url' => $session->url,
+        ];
     }
     private function processCashPayment(Order $order): Order
     {
