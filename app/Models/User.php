@@ -98,12 +98,17 @@ class User extends Authenticatable
             $q->where('is_active', $filters['is_active']);
         });
 
+        // فلترة حسب الدور (Role)
+        $query->when($filters['role'] ?? null, function ($q, $role) {
+            $q->where('role', $role);
+        });
+
         // 3. الترتيب (Sorting)
-        $sortColumn = $filters['sort_by'] ?? 'id';
-        $sortDirection = $filters['sort_dir'] ?? 'asc';
+        $sortColumn = $filters['sort_by'] ?? 'created_at';
+        $sortDirection = $filters['sort_dir'] ?? 'desc';
 
         // حماية: تأكد أن العمود موجود لمنع أخطاء SQL
-        if (in_array($sortColumn, ['id', 'created_at'])) {
+        if (in_array($sortColumn, ['id', 'created_at', 'name', 'email'])) {
             $query->orderBy($sortColumn, $sortDirection);
         }
     }

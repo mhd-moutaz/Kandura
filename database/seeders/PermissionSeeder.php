@@ -62,47 +62,11 @@ class PermissionSeeder extends Seeder
             'view notifications',
         ]);
 
-        // ملاحظة: ما في داعي لـ User Role للـ WEB
-        // لأنو اليوزر العادي بس بيستخدم الـ API
-
-        // ====== Admin Role للـ WEB ======
         $AdminRole = Role::create([
             'name' => UserRoleEnum::ADMIN,
             'guard_name' => 'web'
         ]);
-        $AdminRole->givePermissionTo([
-            // User Management
-            'view all users',
-            'disable user',
-            'delete user',
-            // Order Management
-            'view all orders',
-            'change order status',
-            // Address Management
-            'view all address',
-            // Design Management (all designs)
-            'view all designs',
-            'edit all designs',
-            'delete all designs',
-            // Coupon Management
-            'create coupon',
-            'update coupon',
-            'delete coupon',
-            'view coupon',
-            // Design Options
-            'manage design options',
-            // Review Management
-            'view all reviews',
-            'approve review',
-            'reject review',
-            'delete review',
-            // Notifications
-            'send notifications',
-            // Wallet Management
-            'manage wallet',
-        ]);
 
-        // ====== Super Admin Role للـ WEB ======
         $SuperAdminRole = Role::create([
             'name' => UserRoleEnum::SUPER_ADMIN,
             'guard_name' => 'web'

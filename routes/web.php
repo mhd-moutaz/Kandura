@@ -10,6 +10,7 @@ use App\Http\Controllers\Admins\AddressController;
 use App\Http\Controllers\Admins\DashboardController;
 use App\Http\Controllers\Admins\DesignOptionsController;
 use App\Http\Controllers\Admins\CouponController;
+use App\Http\Controllers\SuperAdmin\AdminManagementController;
 
 Route::get("", function () {
     return redirect()->route("login");
@@ -75,6 +76,17 @@ Route::middleware(['auth', 'role:admin||super_admin'])->group(function () {
         Route::put('/{coupon}', [CouponController::class, 'update'])->name('coupons.update')->middleware('permission:update coupon');
         Route::delete('/{coupon}', [CouponController::class, 'destroy'])->name('coupons.destroy')->middleware('permission:delete coupon');
         Route::post('/{coupon}/toggle', [CouponController::class, 'toggle'])->name('coupons.toggle')->middleware('permission:update coupon');
+    });
+
+    // Super Admin - Admin Management Routes
+    Route::prefix('super-admin/admins')->middleware('role:super_admin')->name('super-admin.admins.')->group(function () {
+        Route::get('/', [AdminManagementController::class, 'index'])->name('index');
+        Route::get('/create', [AdminManagementController::class, 'create'])->name('create');
+        Route::post('/', [AdminManagementController::class, 'store'])->name('store');
+        Route::get('/{admin}', [AdminManagementController::class, 'show'])->name('show');
+        Route::get('/{admin}/edit', [AdminManagementController::class, 'edit'])->name('edit');
+        Route::put('/{admin}', [AdminManagementController::class, 'update'])->name('update');
+        Route::delete('/{admin}', [AdminManagementController::class, 'destroy'])->name('destroy');
     });
 });
 

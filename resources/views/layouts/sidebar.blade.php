@@ -15,6 +15,12 @@
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
         </a>
+        @if(auth()->user()->role === 'super_admin')
+        <a href="{{ route('super-admin.admins.index') }}" class="menu-item {{ request()->routeIs('super-admin.admins.*') ? 'active' : '' }}" title="Admin Management">
+            <i class="fas fa-user-shield"></i>
+            <span>Admin Management</span>
+        </a>
+        @endif
         <a href="{{ route('users.index') }}" class="menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}" title="Users">
             <i class="fas fa-users"></i>
             <span>Users</span>
@@ -39,12 +45,12 @@
             <i class="fas fa-percent"></i>
             <span>Coupons</span>
         </a>
-        <a href="#" class="menu-item" title="Settings">
+
+        {{-- <a href="#" class="menu-item" title="Settings">
             <i class="fas fa-cog"></i>
             <span>Settings</span>
-        </a>
+        </a> --}}
     </nav>
-
     <div class="logout-container">
         <form action="{{ route('logout') }}" method="POST" class="logout-form">
             @csrf
@@ -54,6 +60,7 @@
             </button>
         </form>
     </div>
+
 </aside>
 
 <!-- Overlay for pinned state on mobile -->
