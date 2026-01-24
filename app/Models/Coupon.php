@@ -67,6 +67,34 @@ class Coupon extends Model
         return $query->where('code', strtoupper($code));
     }
 
+    public function scopeFilter($query, array $filters)
+    {
+        // Search
+        if (!empty($filters['search'])) {
+            $query->where('code', 'like', '%' . $filters['search'] . '%');
+        }
+
+        // Filter by active status
+        if (isset($filters['is_active']) && $filters['is_active'] !== '') {
+            if ($filters['is_active'] === 'expired') {
+                $query->where('end_date', '<', Carbon::now());
+            } else {
+                $query->where('is_active', $filters['is_active']);
+            }
+        }
+
+        // Filter by discount type
+        if (!empty($filters['discount_type'])) {
+            $query->where('discount_type', $filters['discount_type']);
+        }
+
+        // Sort
+        $sortDir = $filters['sort_dir'] ?? 'desc';
+        $query->orderBy('created_at', $sortDir);
+
+        return $query;
+    }
+
     // Methods
     public function isValid(): bool
     {
@@ -115,7 +143,7 @@ class Coupon extends Model
         return true;
     }
 
-    public function calculateDiscount(float $orderTotal): float
+    public function calculateDiscount(float $orderTotal)
     {
         if ($this->discount_type === 'percentage') {
             return round(($orderTotal * $this->discount_value) / 100, 2);

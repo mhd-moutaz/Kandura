@@ -31,6 +31,7 @@
                         <option value="">All Status</option>
                         <option value="1" {{ request('is_active') == '1' ? 'selected' : '' }}>Active</option>
                         <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>Inactive</option>
+                        <option value="expired" {{ request('is_active') == 'expired' ? 'selected' : '' }}>Expired</option>
                     </select>
                 </div>
 
@@ -127,11 +128,11 @@
                     </td>
                     <td>
                         <div style="font-size:13px;">{{ $coupon->end_date->format('Y-m-d') }}</div>
-                        @if($coupon->end_date->isPast())
+                        {{-- @if($coupon->end_date->isPast())
                             <span class="badge danger" style="background:#fee2e2;color:#991b1b;font-size:11px;">Expired</span>
                         @elseif($coupon->end_date->isToday())
                             <span class="badge warning" style="background:#fef3c7;color:#92400e;font-size:11px;">Expires Today</span>
-                        @endif
+                        @endif --}}
                     </td>
                     <td>
                         <div style="font-size:13px;">

@@ -8,30 +8,10 @@ class CouponService
 {
     public function index(array $filters)
     {
-        $query = Coupon::with('creator');
-
-        // Search
-        if (!empty($filters['search'])) {
-            $query->where(function ($q) use ($filters) {
-                $q->where('code', 'like', '%' . $filters['search'] . '%');
-            });
-        }
-
-        // Filter by active status
-        if (isset($filters['is_active']) && $filters['is_active'] !== '') {
-            $query->where('is_active', $filters['is_active']);
-        }
-
-        // Filter by discount type
-        if (!empty($filters['discount_type'])) {
-            $query->where('discount_type', $filters['discount_type']);
-        }
-
-        // Sort
-        $sortDir = $filters['sort_dir'] ?? 'desc';
-        $query->orderBy('created_at', $sortDir);
-
-        return $query->paginate(10)->withQueryString();
+        return Coupon::with('creator')
+            ->filter($filters)
+            ->paginate(10)
+            ->withQueryString();
     }
 
     public function store(array $data)
