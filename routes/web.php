@@ -11,6 +11,8 @@ use App\Http\Controllers\Admins\DashboardController;
 use App\Http\Controllers\Admins\DesignOptionsController;
 use App\Http\Controllers\Admins\CouponController;
 use App\Http\Controllers\SuperAdmin\AdminManagementController;
+use App\Http\Controllers\Admins\ReviewController;
+use App\Http\Controllers\Admins\InvoiceController;
 
 Route::get("", function () {
     return redirect()->route("login");
@@ -50,6 +52,8 @@ Route::middleware(['auth', 'role:admin||super_admin'])->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('orders.index')->middleware('permission:view all orders');
         Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show')->middleware('permission:view all orders');
         Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus')->middleware('permission:change order status');
+        Route::get('/{order}/invoice', [InvoiceController::class, 'show'])->name('orders.invoice')->middleware('permission:view all orders');
+        Route::post('/{order}/invoice/regenerate', [InvoiceController::class, 'regenerate'])->name('orders.invoice.regenerate')->middleware('permission:change order status');
     });
     // Routes for designs management
     Route::prefix('designs')->group(function () {
@@ -76,6 +80,13 @@ Route::middleware(['auth', 'role:admin||super_admin'])->group(function () {
         Route::put('/{coupon}', [CouponController::class, 'update'])->name('coupons.update')->middleware('permission:update coupon');
         Route::delete('/{coupon}', [CouponController::class, 'destroy'])->name('coupons.destroy')->middleware('permission:delete coupon');
         Route::post('/{coupon}/toggle', [CouponController::class, 'toggle'])->name('coupons.toggle')->middleware('permission:update coupon');
+    });
+
+    // Review Management Routes
+    Route::prefix('reviews')->middleware('permission:view all reviews')->group(function () {
+        Route::get('/', [ReviewController::class, 'index'])->name('reviews.index');
+        Route::get('/stats', [ReviewController::class, 'stats'])->name('reviews.stats');
+        Route::delete('/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy')->middleware('permission:delete review');
     });
 
     // Super Admin - Admin Management Routes

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services\Global;
+namespace App\Http\Services\Users;
 
 use App\Models\Coupon;
 use App\Models\Order;

@@ -7,7 +7,7 @@ use App\Enum\StatusOrderEnum;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\GeneralException;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Services\Global\CouponService;
+use App\Http\Services\Users\CouponService;
 use App\Http\Services\Global\WalletService;
 
 class OrderService

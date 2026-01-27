@@ -72,7 +72,7 @@ class CouponController extends Controller
 
         try {
             $user = $request->user();
-            $couponService = app(\App\Http\Services\Global\CouponService::class);
+            $couponService = app(\App\Http\Services\Users\CouponService::class);
 
             $result = $couponService->validateAndApplyCoupon(
                 $request->coupon_code,

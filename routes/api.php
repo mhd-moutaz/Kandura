@@ -11,6 +11,8 @@ use App\Http\Controllers\Users\AddressController;
 use App\Http\Controllers\Users\OrderItemsController;
 use App\Http\Controllers\Users\StripeWebhookController;
 use App\Http\Controllers\Users\CouponController;
+use App\Http\Controllers\Users\ReviewController;
+use App\Http\Controllers\Users\InvoiceController;
 
 // Authentication routes -------------
 Route::post('auth/register', [AuthController::class, 'register']);
@@ -63,7 +65,8 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/{order}/coupon/apply', [CouponController::class, 'apply']);
             Route::delete('/{order}/coupon/remove', [CouponController::class, 'remove']);
             Route::post('/{order}/coupon/validate', [CouponController::class, 'validate']);
-
+            // Invoice route for orders
+            Route::get('/{order}/invoice', [InvoiceController::class, 'show']);
         });
 
         // Wallet routes
@@ -75,6 +78,13 @@ Route::middleware('auth:api')->group(function () {
         // Stripe routes
         Route::prefix('stripe')->group(function () {
             Route::post('/order/{order}/checkout', [StripeController::class, 'createOrderCheckout'])->middleware('permission:create order');
+        });
+
+        // Review routes
+        Route::prefix('reviews')->group(function () {
+            Route::get('/', [ReviewController::class, 'index'])->middleware('permission:view review');
+            Route::post('/orders/{order}', [ReviewController::class, 'store'])->middleware('permission:create review');
+            Route::delete('/{review}', [ReviewController::class, 'destroy'])->middleware('permission:view review');
         });
     });
 });
