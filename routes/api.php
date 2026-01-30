@@ -5,7 +5,6 @@ use App\Http\Controllers\Users\AuthController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Users\OrderController;
 use App\Http\Controllers\Users\DesignController;
-use App\Http\Controllers\Users\StripeController;
 use App\Http\Controllers\Users\WalletController;
 use App\Http\Controllers\Users\AddressController;
 use App\Http\Controllers\Users\OrderItemsController;
@@ -28,9 +27,11 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('users')->group(function () {
 
         // Profile routes
-        Route::get('/', [UserController::class, 'show'])->middleware('permission:view profile');
-        Route::put('/', [UserController::class, 'update'])->middleware('permission:update profile');
-        Route::delete('/', [UserController::class, 'destroy'])->middleware('permission:delete profile');
+        Route::prefix('profile')->group(function () {
+            Route::get('/', [UserController::class, 'show'])->middleware('permission:view profile');
+            Route::put('/', [UserController::class, 'update'])->middleware('permission:update profile');
+            Route::delete('/', [UserController::class, 'destroy'])->middleware('permission:delete profile');
+        });
 
         // Address routes
         Route::prefix('address')->group(function () {
@@ -42,7 +43,7 @@ Route::middleware('auth:api')->group(function () {
 
         // Design routes
         Route::prefix('designs')->group(function () {
-            Route::get('/myDesigns', [DesignController::class, 'myDesigns'])->middleware('permission:view design');
+            Route::get('/myDesigns', [DesignController::class, 'show'])->middleware('permission:view design');
             Route::post('/', [DesignController::class, 'store'])->middleware('permission:create design');
             Route::put('/{design}', [DesignController::class, 'update'])->middleware('permission:update design');
             Route::delete('/{design}', [DesignController::class, 'destroy'])->middleware('permission:delete design');
@@ -73,11 +74,6 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('wallet')->group(function () {
             Route::get('/balance', [WalletController::class, 'getBalance'])->middleware('permission:view wallet');
             Route::get('/transactions', [WalletController::class, 'getTransactions'])->middleware('permission:view transactions');
-        });
-
-        // Stripe routes
-        Route::prefix('stripe')->group(function () {
-            Route::post('/order/{order}/checkout', [StripeController::class, 'createOrderCheckout'])->middleware('permission:create order');
         });
 
         // Review routes

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Users;
 
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Services\Users\UserService;
 use App\Http\Resources\Users\UserResource;

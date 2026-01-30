@@ -24,10 +24,7 @@ class AddressPolicy
      */
     public function view(User $user, Address $address): bool
     {
-        if($user->id === $address->user_id){
-            return true;
-        }
-        throw new GeneralException('You are not authorized to view this address', 403);
+        return false;
     }
 
     /**

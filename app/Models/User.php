@@ -28,7 +28,8 @@ class User extends Authenticatable
         'phone',
         'role',
         'profile_image',
-        'is_active'
+        'is_active',
+        'fcm_token'
     ];
 
     protected $hidden = [
@@ -87,6 +88,14 @@ class User extends Authenticatable
     public function getOrCreateWallet(): Wallet
     {
         return $this->wallet ?? $this->wallet()->create(['balance' => 0]);
+    }
+
+    /**
+     * Route notifications for the FCM channel.
+     */
+    public function routeNotificationForFcm()
+    {
+        return $this->fcm_token;
     }
 
     public function scopeFilter($query, array $filters): void

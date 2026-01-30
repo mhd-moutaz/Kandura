@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admins;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Global\SearchRequest;
 use App\Http\Services\Admins\DesignService;
 use App\Models\Design;
+use App\Http\Requests\Global\SearchDesignsRequest;
 
 
 class DesignController extends Controller
@@ -15,7 +15,7 @@ class DesignController extends Controller
     {
         $this->designService = $designService;
     }
-    public function index(SearchRequest $request)
+    public function index(SearchDesignsRequest $request)
     {
         $data = $this->designService->index($request->validated());
         $designs = $data['designs'];

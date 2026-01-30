@@ -7,6 +7,7 @@ use App\Http\Services\ReviewService;
 use App\Http\Requests\Users\CreateReviewRequest;
 use App\Http\Resources\ReviewResource;
 use App\Models\Order;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -26,10 +27,9 @@ class ReviewController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->user();
         $filters = $request->only(['rating', 'per_page']);
 
-        $reviews = $this->reviewService->getUserReviews($user, $filters);
+        $reviews = $this->reviewService->getUserReviews($filters);
 
         return ReviewResource::collection($reviews);
     }
@@ -50,11 +50,9 @@ class ReviewController extends Controller
     /**
      * Delete user's own review
      */
-    public function destroy(Request $request, $reviewId)
+    public function destroy(Review $review)
     {
-        $review = \App\Models\Review::findOrFail($reviewId);
         $this->authorize('delete', $review);
-
         $this->reviewService->deleteReview($review);
 
         return response()->json([

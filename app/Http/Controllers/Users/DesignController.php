@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\Users;
 
-use App\Http\Resources\Users\DesignResource;
-use Illuminate\Http\Request;
+use App\Models\Design;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Global\SearchRequest;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Services\Users\DesignService;
+use App\Http\Resources\Users\DesignResource;
 use App\Http\Requests\Users\StoreDesignRequest;
 use App\Http\Requests\Users\UpdateDesignRequest;
-use App\Models\Design;
-use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\Global\SearchDesignsRequest;
 
 class DesignController extends Controller
 {
@@ -19,21 +18,15 @@ class DesignController extends Controller
     {
         $this->designService = $designService;
     }
-    public function allDesigns(SearchRequest $request)
+    public function allDesigns(SearchDesignsRequest $request)
     {
         $designs = $this->designService->allDesigns($request->validated());
         return $this->success(DesignResource::collection($designs), "All designs retrieved successfully");
     }
-    public function myDesigns(SearchRequest $request)
+    public function show(SearchDesignsRequest $request)
     {
         $designs = $this->designService->myDesigns($request->validated());
         return $this->success(DesignResource::collection($designs), "Designs retrieved successfully");
-    }
-
-    public function show($id)
-    {
-        // Logic to handle showing a specific design
-        return $this->success([], "Design details retrieved successfully");
     }
 
     public function store(StoreDesignRequest $request)

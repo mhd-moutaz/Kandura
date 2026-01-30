@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Enum\StatusOrderEnum;
 use App\Exceptions\GeneralException;
+use Illuminate\Container\Attributes\Auth;
 
 class ReviewService
 {
@@ -77,8 +78,9 @@ class ReviewService
     /**
      * Get user's reviews
      */
-    public function getUserReviews(User $user, array $filters = [])
+    public function getUserReviews(array $filters = [])
     {
+        $user = Auth::user();
         $query = Review::with(['order'])
             ->where('user_id', $user->id);
 
@@ -107,7 +109,7 @@ class ReviewService
     {
         $totalReviews = Review::count();
         $averageRating = Review::avg('rating');
-        
+
         $ratingDistribution = [
             5 => Review::where('rating', 5)->count(),
             4 => Review::where('rating', 4)->count(),

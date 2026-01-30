@@ -26,7 +26,7 @@ class UpdateProfileRequest extends FormRequest
             'email' => 'sometimes|email|unique:users,email,' . $this->user()->id,
             'password' => 'sometimes|string|min:6|confirmed',
             'phone' => 'sometimes|string|max:13|unique:users,phone,' . $this->user()->id,
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'profile_image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }

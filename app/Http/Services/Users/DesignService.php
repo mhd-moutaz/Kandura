@@ -14,14 +14,13 @@ class DesignService
 {
     public function allDesigns($data)
     {
-        $designs = Design::filter($data)
+        return Design::filter($data)
         ->with(['user', 'designImages', 'measurements'])
         ->paginate($data['per_page'] ?? 15);
-        return $designs;
     }
     public function myDesigns($data)
     {
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         return $user->designs()->filterUser($data)
             ->with('designImages', 'measurements', 'designOptions')
             ->paginate($data['per_page'] ?? 15);
@@ -155,7 +154,7 @@ class DesignService
             throw new GeneralException("No valid design options found", 400);
         }
 
-        
+
         $design->designOptions()->sync($designOptionIds);
     }
 

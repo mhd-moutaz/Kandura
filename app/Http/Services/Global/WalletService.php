@@ -3,6 +3,7 @@ namespace App\Http\Services\Global;
 
 use App\Models\User;
 use App\Models\WalletTransaction;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\DB;
 
 class WalletService
@@ -10,8 +11,9 @@ class WalletService
     /**
      * الحصول على رصيد المحفظة
      */
-    public function getBalance(User $user): float
+    public function getBalance(): float
     {
+        $user = Auth::user();
         $wallet = $user->getOrCreateWallet();
         return (float) $wallet->balance;
     }
@@ -19,8 +21,9 @@ class WalletService
     /**
      * الحصول على المعاملات
      */
-    public function getTransactions(User $user, array $filters = [])
+    public function getTransactions(array $filters = [])
     {
+        $user = Auth::user();
         $wallet = $user->getOrCreateWallet();
 
         $query = $wallet->transactions()

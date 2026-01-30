@@ -21,9 +21,9 @@ class WalletController extends Controller
     /**
      * الحصول على رصيد المحفظة
      */
-    public function getBalance(Request $request)
+    public function getBalance()
     {
-        $balance = $this->walletService->getBalance($request->user());
+        $balance = $this->walletService->getBalance();
 
         return $this->success([
             'balance' => $balance,

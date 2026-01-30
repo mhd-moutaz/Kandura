@@ -6,8 +6,6 @@ use App\Models\User;
 use App\Enum\UserRoleEnum;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Permission;
 use App\Http\Services\SuperAdmin\AdminManagementService;
 use App\Http\Requests\SuperAdmin\StoreAdminRequest;
 use App\Http\Requests\SuperAdmin\UpdateAdminRequest;

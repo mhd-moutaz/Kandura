@@ -3,8 +3,9 @@
 namespace App\Http\Services\Users;
 
 use App\Models\City;
-use App\Exceptions\GeneralException;
 use App\Models\Address;
+use Illuminate\Support\Facades\DB;
+use App\Exceptions\GeneralException;
 use Illuminate\Support\Facades\Auth;
 
 class AddressService
@@ -17,46 +18,34 @@ class AddressService
             ->withQueryString();
     }
 
-
-
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created address.
      */
-    public function store(array $data)
+    public function store(array $data): Address
     {
-        $data['user_id'] = Auth::id();
-        $city = City::byName($data['city'])->first();
-        if (! $city) {
-            throw new GeneralException('City not found');
-        }
-        $data['city_id'] = $city->id;
-        unset($data['city']);
-        $address = Address::create($data);
-        return $address;
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show()
-    {
-        //
-    }
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(array $data, $address)
-    {
-        if(isset($data['city'])){
-            $city = City::byName($data['city'])->first();
-            if (! $city) {
-                throw new GeneralException('City not found');
-            }
-            $data['city_id'] = $city->id;
+        return DB::transaction(function () use ($data) {
+            $data['user_id'] = Auth::id();
+            $data['city_id'] = $this->getCityIdByName($data['city']);
             unset($data['city']);
-        }
-        $address->update($data);
-        return $address;
+
+            return Address::create($data);
+        });
+    }
+
+    /**
+     * Update the specified address.
+     */
+    public function update(array $data, Address $address): Address
+    {
+        return DB::transaction(function () use ($data, $address) {
+            if (isset($data['city'])) {
+                $data['city_id'] = $this->getCityIdByName($data['city']);
+                unset($data['city']);
+            }
+
+            $address->update($data);
+            return $address->fresh();
+        });
     }
 
     /**
@@ -67,4 +56,12 @@ class AddressService
         $address->delete();
     }
 
+    private function getCityIdByName(string $cityName): int
+    {
+        $city = City::byName($cityName)->first();
+        if (!$city) {
+            throw new GeneralException('City not found');
+        }
+        return $city->id;
+    }
 }
