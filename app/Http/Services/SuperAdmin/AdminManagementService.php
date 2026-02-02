@@ -6,13 +6,14 @@ use App\Models\User;
 use App\Enum\UserRoleEnum;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class AdminManagementService
 {
     public function index(array $filters = [])
     {
         $query = User::where('role', UserRoleEnum::ADMIN)
-            ->with('roles', 'permissions');
+            ->with(['roles']);
 
         // استخدام scope الفلترة
         if (!empty($filters)) {
@@ -26,15 +27,38 @@ class AdminManagementService
 
     public function getAllPermissions()
     {
-        return Permission::where('guard_name', 'web')->get()->groupBy(function($permission) {
-            // تجميع الصلاحيات حسب آخر كلمة في الاسم (مثل: "create coupon" -> "coupon")
-            $parts = explode(' ', $permission->name);
-            return count($parts) > 1 ? ucfirst(end($parts)) : ucfirst($parts[0]);
-        });
+        // Get allowed permissions for admin role from config
+        $allowedPermissions = config('role_permissions.admin');
+
+        return Permission::where('guard_name', 'web')
+            ->whereIn('name', $allowedPermissions)
+            ->get()
+            ->groupBy(function ($permission) {
+                // تجميع الصلاحيات حسب آخر كلمة في الاسم (مثل: "create coupon" -> "coupon")
+                $parts = explode(' ', $permission->name);
+                return count($parts) > 1 ? ucfirst(end($parts)) : ucfirst($parts[0]);
+            });
+    }
+
+    public function getAllRoles()
+    {
+        return Role::where('guard_name', 'web')
+            ->where('name', '!=', 'user') // Exclude user role from admin assignment
+            ->where('name', '!=', 'super_admin') // Exclude super_admin role from assignment
+            ->orderBy('name')
+            ->get();
     }
 
     public function store(array $data)
     {
+        if (empty($data['roles'])) {
+            abort(403, 'At least one role must be assigned');
+        }
+
+        if (!empty($data['roles']) && in_array('super_admin', $data['roles'])) {
+            abort(403, 'Cannot assign super_admin role');
+        }
+
         $admin = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -44,18 +68,16 @@ class AdminManagementService
             'email_verified_at' => now(),
             'is_active' => true,
         ]);
-
-        $admin->assignRole('admin');
-
-        if (!empty($data['permissions'])) {
-            $admin->givePermissionTo($data['permissions']);
-        }
-
+        $admin->assignRole($data['roles']);
         return $admin;
     }
 
     public function update(User $admin, array $data)
     {
+        if (!empty($data['roles']) && in_array('super_admin', $data['roles'])) {
+            abort(403, 'Cannot assign super_admin role');
+        }
+
         $admin->update([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -67,7 +89,7 @@ class AdminManagementService
             $admin->update(['password' => Hash::make($data['password'])]);
         }
 
-        $admin->syncPermissions($data['permissions'] ?? []);
+        $admin->syncRoles($data['roles']);
 
         return $admin;
     }
@@ -77,15 +99,9 @@ class AdminManagementService
         return $admin->delete();
     }
 
-    public function getAdminPermissions(User $admin)
+    public function show(User $admin)
     {
-        return $admin->permissions->pluck('name')->toArray();
-    }
-
-    public function validateAdmin(User $admin)
-    {
-        if ($admin->role !== UserRoleEnum::ADMIN) {
-            abort(404);
-        }
+        $admin->load('roles.permissions');
+        return $admin;
     }
 }

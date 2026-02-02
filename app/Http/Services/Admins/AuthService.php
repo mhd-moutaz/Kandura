@@ -13,8 +13,12 @@ class AuthService
 {
     public function login(array $data)
     {
-        if (Auth::attempt($data)) {
+        if (Auth::attempt($data) ) {
             $user = User::find(Auth::id());
+            if($user->is_active == 0){
+                Auth::logout();
+                throw new GeneralException('Your account is deactivated. Please contact support.', 403);
+            }
             $user->access_token = $user->createToken("API Token")->accessToken;
             return $user;
         }

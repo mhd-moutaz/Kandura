@@ -3,142 +3,159 @@
 @section('title', 'Admins Management')
 
 @push('styles')
-<link href="{{ asset('css/admin/admin-management.css') }}" rel="stylesheet">
+<link href="{{ asset('css/admin/users.css') }}" rel="stylesheet">
 @endpush
 
 @section('content')
+    <div class="users-container">
 
-<!-- Search & Filter Section -->
-
-<div class="table-card">
-    <div class="search-filter-card">
-        <form method="GET" action="{{ route('super-admin.admins.index') }}">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;">
-
-                <!-- Search -->
-                <div>
-                    <label>Search</label>
-                    <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Search by name, email...">
-                </div>
-
-                <!-- Status Filter -->
-                <div>
-                    <label>Status</label>
-                    <select name="is_active">
-                        <option value="">All Status</option>
-                        <option value="1" {{ request('is_active') == '1' ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>Inactive</option>
-                    </select>
-                </div>
-
-                <!-- Sort Direction -->
-                <div>
-                    <label>Sort Direction</label>
-                    <select name="sort_dir">
-                        <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>Newest First</option>
-                        <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>Oldest First</option>
-                    </select>
-                </div>
-
+        @if (session('success'))
+            <div class="alert-auto-hide">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
             </div>
+        @endif
 
-            <div style="margin-top:15px;display:flex;gap:10px;">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-filter"></i> Filter
-                </button>
-                <a href="{{ route('super-admin.admins.index') }}"
-                    style="background:#6b7280;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
-                    <i class="fas fa-redo"></i> Reset
-                </a>
-                <a href="{{ route('super-admin.admins.create') }}" class="btn btn-primary" style="margin-left:auto;">
-                    <i class="fas fa-plus"></i> Create New Admin
-                </a>
-            </div>
-        </form>
-    </div>
-    <div class="table-header" style="margin-bottom:20px;">
-        <h3>Admins List ({{ $admins->total() }} admins)</h3>
-    </div>
+        <!-- Search and Filter Section -->
+        <div class="search-filter-card">
+            <form method="GET" action="{{ route('super-admin.admins.index') }}" id="searchFilterForm">
+                <div class="search-filter-grid">
 
-    @if (session('success'))
-        <div class="alert-auto-hide">
-            <i class="fas fa-check-circle"></i> {{ session('success') }}
+                    <!-- Search Input -->
+                    <div class="search-group">
+                        <label for="search">Search</label>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}"
+                            placeholder="Search by name or email...">
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="filter-group">
+                        <label for="is_active">Status</label>
+                        <select name="is_active" id="status">
+                            <option value="">All Status</option>
+                            <option value="1" {{ request('is_active') == '1' ? 'selected' : '' }}>Active</option>
+                            <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort By -->
+                    <div class="sort-group">
+                        <label for="sort_dir">Sort Direction</label>
+                        <select name="sort_dir" id="sort_by">
+                            <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>Newest First</option>
+                            <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>Oldest First</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <a href="{{ route('super-admin.admins.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reset
+                    </a>
+                    <a href="{{ route('super-admin.admins.create') }}" class="btn btn-primary" style="margin-left: auto;">
+                        <i class="fas fa-plus"></i> Create Admin
+                    </a>
+                </div>
+            </form>
         </div>
-    @endif
 
-    <div class="admins-grid">
-        @forelse ($admins as $admin)
-            <div class="admin-card">
-                <div class="admin-card-header">
-                    <div class="admin-avatar">
-                        {{ strtoupper(substr($admin->name, 0, 1)) }}
-                    </div>
-                    <div class="admin-info">
-                        <div class="admin-name">{{ $admin->name }}</div>
-                        <div class="admin-email">{{ $admin->email }}</div>
-                    </div>
-                </div>
+        <!-- Admins Grid -->
+        <div class="users-grid">
+            @forelse($admins as $admin)
+                <div class="user-card">
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <!-- Admin Avatar -->
+                        <div class="user-avatar">
+                            <div class="avatar-placeholder">
+                                {{ strtoupper(substr($admin->name, 0, 1)) }}
+                            </div>
+                        </div>
 
-                <div class="admin-card-body">
-                    <div class="admin-detail">
-                        <i class="fas fa-phone"></i>
-                        <span class="label">Phone:</span>
-                        <span class="value">{{ $admin->phone }}</span>
-                    </div>
-                    <div class="admin-detail">
-                        <i class="fas fa-calendar"></i>
-                        <span class="label">Created:</span>
-                        <span class="value">{{ $admin->created_at->format('Y-m-d') }}</span>
-                    </div>
-
-                    <div class="admin-badges">
-                        <span class="badge" style="background:#dbeafe;color:#1e40af;">
-                            <i class="fas fa-key"></i> {{ $admin->permissions->count() }} permissions
+                        <!-- Status Badge -->
+                        <span class="status-badge {{ $admin->is_active ? 'active' : 'inactive' }}">
+                            <i class="fas fa-{{ $admin->is_active ? 'check-circle' : 'times-circle' }}"></i>
+                            {{ $admin->is_active ? 'Active' : 'Inactive' }}
                         </span>
-                        @if($admin->is_active)
-                            <span class="badge success" style="background:#d1fae5;color:#065f46;">
-                                <i class="fas fa-check-circle"></i> Active
-                            </span>
-                        @else
-                            <span class="badge" style="background:#f3f4f6;color:#6b7280;">
-                                <i class="fas fa-pause-circle"></i> Inactive
-                            </span>
-                        @endif
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <!-- Admin Name -->
+                        <h3 class="user-name">{{ $admin->name }}</h3>
+                        <p class="user-id">ID: #ADM-{{ $admin->id }}</p>
+
+                        <!-- Admin Details -->
+                        <div class="user-details">
+                            <div class="detail-item">
+                                <label>Email</label>
+                                <p>{{ $admin->email }}</p>
+                            </div>
+
+                            <div class="detail-item">
+                                <label>Phone</label>
+                                <p>{{ $admin->phone ?? 'N/A' }}</p>
+                            </div>
+
+                            <div class="detail-item">
+                                <label>Roles & Permissions</label>
+                                @if($admin->roles->count() > 0)
+                                    @foreach($admin->roles as $role)
+                                        <p class="wallet-balance">
+                                            <strong>{{ $role->name }}:</strong> {{ $role->permissions->count() }} permissions
+                                        </p>
+                                    @endforeach
+                                @else
+                                    <p>No roles assigned</p>
+                                @endif
+                            </div>
+
+                            <div class="detail-item">
+                                <label>Joined</label>
+                                <p>{{ $admin->created_at->format('M d, Y') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer -->
+                    <div class="card-footer">
+                        <a href="{{ route('super-admin.admins.show', $admin) }}" class="btn-action edit">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+
+                        <a href="{{ route('super-admin.admins.edit', $admin) }}" class="btn-action wallet">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+
+                        <form action="{{ route('super-admin.admins.destroy', $admin) }}" method="POST" class="delete-form">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-action delete"
+                                onclick="return confirm('Are you sure you want to delete this admin?')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
                     </div>
                 </div>
-
-                <div class="admin-card-footer">
-                    <a href="{{ route('super-admin.admins.show', $admin) }}" class="action-btn" style="background:#eff6ff;color:#1e40af;">
-                        <i class="fas fa-eye"></i> View
-                    </a>
-                    <a href="{{ route('super-admin.admins.edit', $admin) }}" class="action-btn edit">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-                    <form action="{{ route('super-admin.admins.destroy', $admin) }}" method="POST"
-                          onsubmit="return confirm('Are you sure you want to delete this admin?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="action-btn delete">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </form>
+            @empty
+                <div class="empty-state">
+                    <i class="fas fa-user-shield"></i>
+                    <h3>No Admins Found</h3>
+                    <p>No admins match your search criteria</p>
                 </div>
-            </div>
-        @empty
-            <div style="grid-column:1/-1;text-align:center;padding:60px;color:#9ca3af;">
-                <i class="fas fa-user-shield" style="font-size:64px;margin-bottom:20px;display:block;opacity:0.5;"></i>
-                <p style="font-size:18px;font-weight:500;">No admins found</p>
-                <p style="font-size:14px;margin-top:8px;">Create your first admin to get started</p>
-            </div>
-        @endforelse
-    </div>
-
-    @if ($admins->hasPages())
-        <div class="pagination" style="margin-top:30px;">
-            {{ $admins->links() }}
+            @endforelse
         </div>
-    @endif
-</div>
+
+        <!-- Pagination -->
+        @if ($admins->hasPages())
+            <div class="pagination-wrapper">
+                {{ $admins->links() }}
+            </div>
+        @endif
+
+    </div>
 
 @endsection

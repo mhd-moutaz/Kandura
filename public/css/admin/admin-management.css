@@ -266,9 +266,22 @@
 .admin-card-footer .action-btn {
     flex: 1;
     text-align: center;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    gap: 6px;
     font-size: 13px;
     padding: 8px 12px;
+    height: 40px;
+    box-sizing: border-box;
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.admin-card-footer .action-btn:not(.edit):not(.delete):hover {
+    background: #dbeafe;
+    color: #1e40af;
+    transform: translateY(-1px);
 }
 
 .admin-card-footer form {
@@ -277,4 +290,194 @@
 
 .admin-card-footer form button {
     width: 100%;
+    height: 40px;
+}
+
+/* --- NEW ROLE SELECTION STYLES --- */
+.roles-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.role-card {
+    position: relative;
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.role-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+/* Selected State */
+.role-card.selected {
+    background-color: #eff6ff;
+    border-color: #3b82f6;
+}
+
+.role-card .role-info {
+    flex: 1;
+}
+
+.role-card .role-title {
+    font-weight: 600;
+    color: #1f2937;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.role-card .role-count {
+    font-size: 12px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.role-card .check-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    transition: all 0.2s;
+}
+
+.role-card.selected .check-icon {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+/* Hide the actual checkbox */
+.role-card input[type="checkbox"] {
+    display: none;
+}
+
+/* --- PERMISSIONS DISPLAY STYLES --- */
+.permissions-wrapper {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.permissions-group-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.perm-group-title {
+    grid-column: 1 / -1;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-top: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.perm-group-title:first-child {
+    margin-top: 0;
+}
+
+.permission-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #6b7280;
+    transition: all 0.3s ease;
+}
+
+/* Active Permission State */
+.permission-tag.active {
+    background: #ecfdf5;
+    border-color: #10b981;
+    color: #065f46;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.permission-tag i {
+    margin-right: 6px;
+    font-size: 12px;
+    color: #d1d5db;
+}
+
+.permission-tag.active i {
+    color: #10b981;
+}
+
+/* Selectable Permission Tags (for edit page) */
+.permission-tag-selectable {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #6b7280;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.permission-tag-selectable:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
+}
+
+.permission-tag-selectable input[type="checkbox"] {
+    display: none;
+}
+
+.permission-tag-selectable.selected {
+    background: #ecfdf5;
+    border-color: #10b981;
+    color: #065f46;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.permission-tag-selectable i {
+    margin-right: 6px;
+    font-size: 12px;
+    color: #d1d5db;
+}
+
+.permission-tag-selectable.selected i {
+    color: #10b981;
+}
+
+.permission-tag-selectable.selected i.fa-circle {
+    display: none;
+}
+
+.permission-tag-selectable.selected::before {
+    content: '\f058';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    margin-right: 6px;
+    color: #10b981;
 }

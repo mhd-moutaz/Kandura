@@ -22,19 +22,15 @@
                 <h1>KANDURA STORE</h1>
             </div>
 
-            <div class="alert error" id="errorAlert">
-                <i class="fas fa-exclamation-circle"></i>
-                <span id="errorMessage">Username or password is incorrect</span>
-            </div>
             @if($errors->any())
-                <div class="alert error" id="errorAlert">
+                <div class="alert error" style="display: block;">
                     <i class="fas fa-exclamation-circle"></i>
-                    <span id="errorMessage">{{ $errors->first() }}</span>
+                    <span>{{ $errors->first() }}</span>
                 </div>
             @elseif(session('error'))
-                <div class="alert error" id="errorAlert">
+                <div class="alert error" style="display: block;">
                     <i class="fas fa-exclamation-circle"></i>
-                    <span id="errorMessage">{{ session('error') }}</span>
+                    <span>{{ session('error') }}</span>
                 </div>
             @endif
             <form action="{{ route('login_action') }}" method="POST" class="login-form" id="loginForm">

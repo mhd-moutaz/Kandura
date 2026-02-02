@@ -69,29 +69,53 @@
 
         <hr class="section-divider">
 
-        <h3 class="section-header">Assign Permissions</h3>
-        <p class="section-description">Select the permissions you want to give to this admin</p>
+        <h3 class="section-header">Assign Role</h3>
+        <p class="section-description">Select one or more roles to assign to this admin</p>
 
-        <div class="permissions-grid">
-            @foreach($permissions as $group => $groupPermissions)
-                <div class="permission-group">
-                    <h4>
-                        <i class="fas fa-shield-alt" style="color:#3b82f6;margin-right:5px;"></i>
+        <div class="roles-grid-container" style="margin-bottom:30px;">
+            @foreach($roles as $role)
+                <label class="role-card" onclick="toggleRole(this)">
+                    <input type="checkbox"
+                           name="roles[]"
+                           value="{{ $role->name }}"
+                           data-role-name="{{ $role->name }}"
+                           data-permissions='{{ json_encode($role->permissions->pluck('name')->toArray()) }}'
+                           {{ in_array($role->name, old('roles', [])) ? 'checked' : '' }}>
+                    <div class="role-info">
+                        <span class="role-title">{{ ucwords(str_replace('_', ' ', $role->name)) }}</span>
+                        <span class="role-count">
+                            <i class="fas fa-key"></i> {{ $role->permissions->count() }} Permissions
+                        </span>
+                    </div>
+                    <div class="check-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </label>
+            @endforeach
+        </div>
+        @error('roles')
+            <span class="error-message" style="display:block;margin-top:-20px;margin-bottom:20px;">{{ $message }}</span>
+        @enderror
+
+        <h3 class="section-header">Role Permissions</h3>
+        <p class="section-description">Permissions from selected roles (display only)</p>
+
+        <div class="permissions-wrapper">
+            <div class="permissions-group-grid">
+                @foreach($permissions as $group => $groupPermissions)
+                    <div class="perm-group-title">
+                        <i class="fas fa-shield-alt" style="color:#3b82f6;"></i>
                         {{ $group }} Permissions
-                        <span style="color:#6b7280;font-size:12px;font-weight:normal;">({{ $groupPermissions->count() }})</span>
-                    </h4>
+                        <span style="color:#6b7280;font-size:12px;font-weight:normal;margin-left:5px;">({{ $groupPermissions->count() }})</span>
+                    </div>
                     @foreach($groupPermissions as $permission)
-                        <div class="permission-item">
-                            <input type="checkbox"
-                                   name="permissions[]"
-                                   value="{{ $permission->name }}"
-                                   id="perm_{{ $permission->id }}"
-                                   {{ in_array($permission->name, old('permissions', [])) ? 'checked' : '' }}>
-                            <label for="perm_{{ $permission->id }}">{{ $permission->name }}</label>
+                        <div class="permission-tag" data-perm-name="{{ $permission->name }}">
+                            <i class="fas fa-circle"></i> {{ $permission->name }}
                         </div>
                     @endforeach
-                </div>
-            @endforeach
+                @endforeach
+
+            </div>
         </div>
 
         <div class="form-actions">
@@ -105,4 +129,83 @@
     </form>
 </div>
 
+@push('scripts')
+<script>
+function toggleRole(cardElement) {
+    const checkbox = cardElement.querySelector('input[type="checkbox"]');
+
+    setTimeout(() => {
+        // Check if admin role is being selected
+        const isAdminRole = checkbox.dataset.roleName === 'admin';
+
+        if(checkbox.checked && isAdminRole) {
+            // Uncheck all other roles
+            const allCheckboxes = document.querySelectorAll('.role-card input[type="checkbox"]');
+            allCheckboxes.forEach(cb => {
+                if (cb !== checkbox) {
+                    cb.checked = false;
+                    cb.closest('.role-card').classList.remove('selected');
+                }
+            });
+            cardElement.classList.add('selected');
+        } else if(checkbox.checked) {
+            // If another role is selected, uncheck admin
+            const adminCheckbox = document.querySelector('.role-card input[data-role-name="admin"]');
+            if (adminCheckbox && adminCheckbox.checked) {
+                adminCheckbox.checked = false;
+                adminCheckbox.closest('.role-card').classList.remove('selected');
+            }
+            cardElement.classList.add('selected');
+        } else {
+            cardElement.classList.remove('selected');
+        }
+
+        updatePermissions();
+    }, 10);
+}
+
+function updatePermissions() {
+    // 1. Find all checked roles
+    const checkedRoles = document.querySelectorAll('.role-card input[type="checkbox"]:checked');
+
+    // 2. Collect all permissions from checked roles
+    let activePermissions = new Set();
+
+    checkedRoles.forEach(role => {
+        const perms = JSON.parse(role.dataset.permissions || '[]');
+        perms.forEach(p => activePermissions.add(p));
+    });
+
+    // 3. Update UI for permissions list
+    const permissionTags = document.querySelectorAll('.permission-tag');
+
+    permissionTags.forEach(tag => {
+        const permName = tag.getAttribute('data-perm-name');
+
+        if (activePermissions.has(permName)) {
+            tag.classList.add('active');
+            tag.querySelector('i').className = 'fas fa-check-circle';
+        } else {
+            tag.classList.remove('active');
+            tag.querySelector('i').className = 'fas fa-circle';
+        }
+    });
+}
+
+// Initialize state on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const checkboxes = document.querySelectorAll('.role-card input[type="checkbox"]');
+
+    // Sync UI with any pre-checked values (if editing)
+    checkboxes.forEach(box => {
+        const card = box.closest('.role-card');
+        if(box.checked) card.classList.add('selected');
+    });
+
+    updatePermissions();
+});
+</script>
+@endpush
+
 @endsection
+

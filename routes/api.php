@@ -43,31 +43,31 @@ Route::middleware('auth:api')->group(function () {
 
         // Design routes
         Route::prefix('designs')->group(function () {
-            Route::get('/myDesigns', [DesignController::class, 'show'])->middleware('permission:view design');
-            Route::post('/', [DesignController::class, 'store'])->middleware('permission:create design');
-            Route::put('/{design}', [DesignController::class, 'update'])->middleware('permission:update design');
-            Route::delete('/{design}', [DesignController::class, 'destroy'])->middleware('permission:delete design');
+            Route::get('/myDesigns', [DesignController::class, 'show'])->middleware('permission:view designs');
+            Route::post('/', [DesignController::class, 'store'])->middleware('permission:create designs');
+            Route::put('/{design}', [DesignController::class, 'update'])->middleware('permission:update designs');
+            Route::delete('/{design}', [DesignController::class, 'destroy'])->middleware('permission:delete designs');
         });
 
         // Order Items routes
         Route::prefix('order-items')->group(function () {
             Route::post('/', [OrderItemsController::class, 'store'])->middleware('permission:create order');
-            Route::put('/{orderItem}', [OrderItemsController::class, 'update'])->middleware('permission:create order');
-            Route::delete('/{orderItem}', [OrderItemsController::class, 'destroy'])->middleware('permission:create order');
+            Route::put('/{orderItem}', [OrderItemsController::class, 'update'])->middleware('permission:update order');
+            Route::delete('/{orderItem}', [OrderItemsController::class, 'destroy'])->middleware('permission:delete order');
         });
 
         // Order routes
-        Route::prefix('orders')->middleware('permission:view order')->group(function () {
+        Route::prefix('orders')->group(function () {
             Route::get('/', [OrderController::class, 'index'])->middleware('permission:view order');
-            Route::get('/pending', [OrderController::class, 'getPending']);
-            Route::get('/{order}', [OrderController::class, 'show']);
-            Route::put('/{order}/confirm', [OrderController::class, 'confirmOrder']);
+            Route::get('/pending', [OrderController::class, 'getPending'])->middleware('permission:view order');
+            Route::get('/{order}', [OrderController::class, 'show'])->middleware('permission:view order');
+            Route::put('/{order}/confirm', [OrderController::class, 'confirmOrder'])->middleware('permission:update order');
             // Coupon routes for orders
-            Route::post('/{order}/coupon/apply', [CouponController::class, 'apply']);
-            Route::delete('/{order}/coupon/remove', [CouponController::class, 'remove']);
-            Route::post('/{order}/coupon/validate', [CouponController::class, 'validate']);
+            Route::post('/{order}/coupon/apply', [CouponController::class, 'apply'])->middleware('permission:apply coupon');
+            Route::delete('/{order}/coupon/remove', [CouponController::class, 'remove'])->middleware('permission:remove coupon');
+            Route::post('/{order}/coupon/validate', [CouponController::class, 'validate'])->middleware('permission:validate coupon');
             // Invoice route for orders
-            Route::get('/{order}/invoice', [InvoiceController::class, 'show']);
+            Route::get('/{order}/invoice', [InvoiceController::class, 'show'])->middleware('permission:view invoice');
         });
 
         // Wallet routes
@@ -80,9 +80,7 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('reviews')->group(function () {
             Route::get('/', [ReviewController::class, 'index'])->middleware('permission:view review');
             Route::post('/orders/{order}', [ReviewController::class, 'store'])->middleware('permission:create review');
-            Route::delete('/{review}', [ReviewController::class, 'destroy'])->middleware('permission:view review');
+            // Route::delete('/{review}', [ReviewController::class, 'destroy'])->middleware('permission:view review');
         });
     });
 });
-// 'update order',
-// 'delete order',

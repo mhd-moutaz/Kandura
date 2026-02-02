@@ -28,8 +28,8 @@ class UpdateAdminRequest extends FormRequest
             'email' => 'required|email|unique:users,email,' . $adminId,
             'password' => 'nullable|string|min:6|confirmed',
             'phone' => 'required|string|max:20',
-            'permissions' => 'nullable|array',
-            'permissions.*' => 'exists:permissions,name',
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'exists:roles,name',
             'is_active' => 'boolean'
         ];
     }

@@ -279,10 +279,6 @@
                     <i class="fas fa-inbox" style="font-size:64px;color:#cbd5e0;margin-bottom:20px;"></i>
                     <h3 style="color:#4a5568;font-size:20px;margin-bottom:10px;">No Designs Found</h3>
                     <p style="color:#9ca3af;font-size:14px;">Try adjusting your filters or create a new design.</p>
-                    <a href="{{ route('designs.create') }}" class="btn btn-primary"
-                        style="margin-top:20px;display:inline-flex;">
-                        <i class="fas fa-plus"></i> Create Your First Design
-                    </a>
                 </div>
             @endforelse
         </div>

@@ -1,0 +1,187 @@
+@extends('layouts.admin')
+
+@section('title', 'Edit Role')
+
+@push('styles')
+<link href="{{ asset('css/admin/admin-management.css') }}" rel="stylesheet">
+@endpush
+
+@section('content')
+
+<!-- Header -->
+<div class="header">
+    <div class="header-left">
+        <h2>Edit Role: {{ ucwords(str_replace('_', ' ', $role->name)) }}</h2>
+    </div>
+    <div class="header-right">
+        <a href="{{ route('super-admin.roles.index') }}" class="btn" style="background:#f3f4f6;color:#4b5563;">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="table-card">
+    @if($errors->any())
+    <div class="alert-auto-hide" style="background:#fee2e2;color:#991b1b;margin-bottom:20px;">
+        <ul style="margin:0;padding-left:20px;">
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert-auto-hide" style="background:#fee2e2;color:#991b1b;margin-bottom:20px;">
+        <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+    </div>
+    @endif
+
+    @if(in_array($role->name, ['user', 'admin', 'super_admin']))
+    <div class="alert-auto-hide" style="background:#fef3c7;color:#92400e;margin-bottom:20px;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>Warning:</strong> This is a system role. You can modify permissions but cannot change the role name.
+    </div>
+    @endif
+
+    <form action="{{ route('super-admin.roles.update', $role) }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <div class="form-grid">
+            <div class="form-field">
+                <label>Role Name *</label>
+                <input type="text"
+                       name="name"
+                       value="{{ old('name', $role->name) }}"
+                       placeholder="e.g., content_manager, moderator"
+                       {{ in_array($role->name, ['user', 'admin', 'super_admin']) ? 'readonly' : 'required' }}>
+                <small style="color:#6b7280;font-size:13px;margin-top:5px;display:block;">
+                    @if(in_array($role->name, ['user', 'admin', 'super_admin']))
+                    System role names cannot be changed
+                    @else
+                    Use lowercase letters and underscores only
+                    @endif
+                </small>
+                @error('name')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="form-field">
+                <label>Guard Type</label>
+                <input type="text"
+                       value="{{ $guardNames[$role->guard_name] ?? $role->guard_name }}"
+                       readonly>
+                <small style="color:#6b7280;font-size:13px;margin-top:5px;display:block;">Guard type cannot be changed after role creation</small>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <h3 class="section-header">Manage Permissions</h3>
+        <p class="section-description">Update the permissions for this role</p>
+
+        <div style="margin-bottom:15px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;background:#f9fafb;padding:10px 15px;border-radius:6px;width:fit-content;">
+                <input type="checkbox" id="select-all-permissions" style="cursor:pointer;">
+                <strong>Select All Permissions</strong>
+            </label>
+        </div>
+
+        <div class="permissions-wrapper">
+            <div class="permissions-group-grid">
+                @foreach($permissions as $resource => $resourcePermissions)
+                    <div class="perm-group-title">
+                        <i class="fas fa-shield-alt" style="color:#3b82f6;"></i>
+                        {{ ucwords($resource) }} Permissions
+                        <span style="color:#6b7280;font-size:12px;font-weight:normal;margin-left:5px;">
+                            ({{ count($resourcePermissions) }})
+                        </span>
+                    </div>
+                    @foreach($resourcePermissions as $permission)
+                        <label for="perm_{{ $permission->id }}" class="permission-tag {{ in_array($permission->id, $rolePermissionIds) ? 'active' : '' }}" style="cursor:pointer;">
+                            <input type="checkbox"
+                                   name="permissions[]"
+                                   value="{{ $permission->name }}"
+                                   class="permission-checkbox"
+                                   id="perm_{{ $permission->id }}"
+                                   style="display:none;"
+                                   {{ in_array($permission->id, $rolePermissionIds) ? 'checked' : '' }}>
+                            <i class="fas {{ in_array($permission->id, $rolePermissionIds) ? 'fa-check-circle' : 'fa-circle' }}"></i>
+                            {{ $permission->name }}
+                        </label>
+                    @endforeach
+                @endforeach
+            </div>
+        </div>
+
+        <div style="background:#dbeafe;color:#1e40af;padding:15px;border-radius:8px;margin-top:20px;margin-bottom:20px;">
+            <i class="fas fa-info-circle"></i>
+            This role is currently assigned to <strong>{{ $role->users->count() }}</strong> user(s).
+            Changes to permissions will affect all users with this role.
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Update Role
+            </button>
+            <a href="{{ route('super-admin.roles.index') }}" class="btn" style="background:#f3f4f6;color:#4b5563;">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+@endsection
+
+@push('scripts')
+<script>
+// Toggle permission tag active state
+function updatePermissionTagState(checkbox) {
+    const label = checkbox.closest('.permission-tag');
+    const icon = label.querySelector('i.fas');
+    if (checkbox.checked) {
+        label.classList.add('active');
+        icon.classList.remove('fa-circle');
+        icon.classList.add('fa-check-circle');
+    } else {
+        label.classList.remove('active');
+        icon.classList.remove('fa-check-circle');
+        icon.classList.add('fa-circle');
+    }
+}
+
+// Check initial state of select all
+document.addEventListener('DOMContentLoaded', function() {
+    const allCheckboxes = document.querySelectorAll('.permission-checkbox');
+    const checkedCheckboxes = document.querySelectorAll('.permission-checkbox:checked');
+    const selectAllCheckbox = document.getElementById('select-all-permissions');
+
+    if (allCheckboxes.length > 0 && allCheckboxes.length === checkedCheckboxes.length) {
+        selectAllCheckbox.checked = true;
+    }
+});
+
+// Select All Permissions
+document.getElementById('select-all-permissions').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.permission-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+        updatePermissionTagState(checkbox);
+    });
+});
+
+// Update Select All if individual checkboxes change
+document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        updatePermissionTagState(this);
+        const allCheckboxes = document.querySelectorAll('.permission-checkbox');
+        const checkedCheckboxes = document.querySelectorAll('.permission-checkbox:checked');
+        const selectAllCheckbox = document.getElementById('select-all-permissions');
+
+        selectAllCheckbox.checked = allCheckboxes.length === checkedCheckboxes.length;
+    });
+});
+</script>
+@endpush

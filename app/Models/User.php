@@ -45,9 +45,6 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * تحديد الـ guard المناسب حسب دور المستخدم
-     */
     protected function getDefaultGuardName(): string
     {
         // إذا اليوزر عادي، استخدم api guard
@@ -58,6 +55,15 @@ class User extends Authenticatable
         return 'web';
     }
 
+    /**
+     * Scope to get users with specific Spatie role
+     */
+    public function scopeWithRole($query, string $roleName)
+    {
+        return $query->whereHas('roles', function($q) use ($roleName) {
+            $q->where('name', $roleName);
+        });
+    }
 
     public function addresses()
     {
@@ -113,9 +119,11 @@ class User extends Authenticatable
             $q->where('is_active', $filters['is_active']);
         });
 
-        // فلترة حسب الدور (Role)
+        // فلترة حسب الدور (Role) - using spatie roles
         $query->when($filters['role'] ?? null, function ($q, $role) {
-            $q->where('role', $role);
+            $q->whereHas('roles', function($subQ) use ($role) {
+                $subQ->where('name', $role);
+            });
         });
 
         // 3. الترتيب (Sorting)
