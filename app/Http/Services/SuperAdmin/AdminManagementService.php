@@ -34,10 +34,16 @@ class AdminManagementService
             ->whereIn('name', $allowedPermissions)
             ->get()
             ->groupBy(function ($permission) {
-                // تجميع الصلاحيات حسب آخر كلمة في الاسم (مثل: "create coupon" -> "coupon")
-                $parts = explode(' ', $permission->name);
-                return count($parts) > 1 ? ucfirst(end($parts)) : ucfirst($parts[0]);
-            });
+                // Split permission name by space
+                $parts = explode(' ', trim($permission->name));
+
+                // Get the last word (resource name)
+                $resource = end($parts);
+
+                // Normalize and capitalize
+                return ucfirst(strtolower($resource));
+            })
+            ->sortKeys();
     }
 
     public function getAllRoles()

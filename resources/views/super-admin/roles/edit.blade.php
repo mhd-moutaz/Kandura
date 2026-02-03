@@ -67,14 +67,6 @@
                     <span class="error-message">{{ $message }}</span>
                 @enderror
             </div>
-
-            <div class="form-field">
-                <label>Guard Type</label>
-                <input type="text"
-                       value="{{ $guardNames[$role->guard_name] ?? $role->guard_name }}"
-                       readonly>
-                <small style="color:#6b7280;font-size:13px;margin-top:5px;display:block;">Guard type cannot be changed after role creation</small>
-            </div>
         </div>
 
         <hr class="section-divider">

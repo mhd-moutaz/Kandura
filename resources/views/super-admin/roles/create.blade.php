@@ -53,24 +53,6 @@
                     <span class="error-message">{{ $message }}</span>
                 @enderror
             </div>
-
-            <div class="form-field">
-                <label>Guard Type *</label>
-                <select name="guard_name" required>
-                    <option value="">-- Select Guard --</option>
-                    @foreach($guardNames as $key => $label)
-                    <option value="{{ $key }}" {{ old('guard_name') == $key ? 'selected' : '' }}>
-                        {{ $label }}
-                    </option>
-                    @endforeach
-                </select>
-                <small style="color:#6b7280;font-size:13px;margin-top:5px;display:block;">
-                    Web: For admin panel users | API: For mobile/external app users
-                </small>
-                @error('guard_name')
-                    <span class="error-message">{{ $message }}</span>
-                @enderror
-            </div>
         </div>
 
         <hr class="section-divider">

@@ -25,9 +25,8 @@ class StoreRoleRequest extends FormRequest
                 'string',
                 'max:255',
                 'regex:/^[a-z_]+$/', // Only lowercase and underscores
-                'unique:roles,name,NULL,id,guard_name,' . ($this->guard_name ?? 'web')
+                'unique:roles,name,NULL,id,guard_name,web'
             ],
-            'guard_name' => 'required|in:web,api',
             'permissions' => 'nullable|array',
             'permissions.*' => 'exists:permissions,name',
         ];
@@ -40,7 +39,6 @@ class StoreRoleRequest extends FormRequest
     {
         return [
             'name' => 'Role Name',
-            'guard_name' => 'Guard',
             'permissions' => 'Permissions',
         ];
     }

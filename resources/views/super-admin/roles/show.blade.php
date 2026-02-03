@@ -62,16 +62,6 @@
                 <i class="fas fa-info-circle" style="color:#3b82f6;"></i> Basic Information
             </h3>
             <div style="background:#f8fafc;padding:15px;border-radius:8px;">
-                {{-- <div class="admin-detail">
-                    <i class="fas fa-tag"></i>
-                    <span class="label">Role Name:</span>
-                    <span class="value">{{ $role->name }}</span>
-                </div>
-                <div class="admin-detail">
-                    <i class="fas fa-shield-alt"></i>
-                    <span class="label">Guard:</span>
-                    <span class="value">{{ $role->guard_name }}</span>
-                </div> --}}
                 <div class="admin-detail">
                     <i class="fas fa-calendar-plus"></i>
                     <span class="label">Created:</span>
@@ -136,7 +126,7 @@
                         </span>
                     </div>
                     @foreach($resourcePermissions as $permission)
-                        <div class="permission-tag {{ in_array($permission->name, $rolePermissionNames) ? 'active' : 'role-inherited' }}"></div>
+                        <div class="permission-tag {{ in_array($permission->name, $rolePermissionNames) ? 'active' : '' }}">
                             <i class="fas {{ in_array($permission->name, $rolePermissionNames) ? 'fa-check-circle' : 'fa-circle' }}"></i>
                             {{ $permission->name }}
                         </div>
