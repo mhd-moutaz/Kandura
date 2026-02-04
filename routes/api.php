@@ -12,6 +12,7 @@ use App\Http\Controllers\Users\StripeWebhookController;
 use App\Http\Controllers\Users\CouponController;
 use App\Http\Controllers\Users\ReviewController;
 use App\Http\Controllers\Users\InvoiceController;
+use App\Http\Controllers\Users\NotificationController;
 
 // Authentication routes -------------
 Route::post('auth/register', [AuthController::class, 'register']);
@@ -23,6 +24,16 @@ Route::post('stripe/webhook', [StripeWebhookController::class, 'handle']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
+
+    // Notification routes
+    // Route::prefix('notifications')->group(function () {
+    //     Route::post('/update-fcm-token', [NotificationController::class, 'updateFcmToken']);
+    //     Route::get('/', [NotificationController::class, 'index']);
+    //     Route::put('/{id}/read', [NotificationController::class, 'markAsRead']);
+    //     Route::put('/read-all', [NotificationController::class, 'markAllAsRead']);
+    //     Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+    // });
+
     // User routes
     Route::prefix('users')->group(function () {
 
