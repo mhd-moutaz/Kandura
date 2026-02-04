@@ -30,7 +30,9 @@ class OrderItemsService
             if (!$design) {
                 throw new GeneralException('Design not found.', 404);
             }
-
+            if($design->state == false){
+                throw new GeneralException('This design is inactive and cannot be ordered.', 400);
+            }
             if (!$design->designOptions()->exists()) {
                 throw new GeneralException('This design has no design options.', 400);
             }
@@ -126,6 +128,7 @@ class OrderItemsService
         return DB::transaction(function () use ($orderItem, $data) {
             $user = Auth::user();
             $order = $orderItem->order;
+
 
             // التحقق من أن الطلب يخص المستخدم
             if ($order->user_id !== $user->id) {

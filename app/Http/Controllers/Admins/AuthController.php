@@ -41,6 +41,12 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        // Clear FCM token on logout to prevent notifications on this device
+        $user = Auth::user();
+        if ($user) {
+            $user->update(['fcm_token' => null]);
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

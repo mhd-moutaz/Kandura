@@ -97,6 +97,15 @@
                         </select>
                     </div>
 
+                    <div>
+                        <label>Status</label>
+                        <select name="state" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
+                            <option value="">All Status</option>
+                            <option value="1" {{ request('state') === '1' ? 'selected' : '' }}>Active</option>
+                            <option value="0" {{ request('state') === '0' ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                    </div>
+
                 </div>
 
                 <div style="margin-top:15px;display:flex;gap:10px;">
@@ -115,7 +124,13 @@
 
         @if (session('success'))
             <div style="background:#d1fae5;color:#065f46;padding:12px;border-radius:6px;margin-bottom:20px;">
-                {{ session('success') }}
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div style="background:#fee2e2;color:#991b1b;padding:12px;border-radius:6px;margin-bottom:20px;">
+                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
             </div>
         @endif
 
@@ -126,9 +141,8 @@
         <!-- Designs Cards Grid -->
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px;">
             @forelse ($designs as $design)
-                <div class="design-card" data-href="{{ route('designs.show', $design->id) }}" role="button" tabindex="0"
-                    onclick="window.location='{{ route('designs.show', $design->id) }}';"
-                    style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:all 0.3s;border:1px solid #e2e8f0;cursor:pointer;">
+                <div class="design-card"
+                    style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:all 0.3s;border:1px solid #e2e8f0;">
 
                     <!-- Design Image -->
                     <div style="height:200px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;"
@@ -180,6 +194,12 @@
                                 <i class="fas fa-images"></i> {{ $design->designImages->count() }}
                             </span>
                         @endif
+
+                        <!-- State Badge -->
+                        <span style="position:absolute;top:10px;left:10px;background:{{ $design->state ? '#10b981' : '#ef4444' }};color:white;padding:4px 10px;border-radius:20px;font-size:11px;z-index:10;font-weight:500;">
+                            <i class="fas {{ $design->state ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
+                            {{ $design->state ? 'Active' : 'Inactive' }}
+                        </span>
                     </div>
 
                     <!-- Design Info -->
@@ -255,22 +275,26 @@
                             </div>
                         @endif
 
-                        <!-- Actions -->
-                        {{-- <div style="display:flex;gap:8px;">
-                            <a href="{{ route('designs.edit', $design->id) }}" onclick="event.stopPropagation();"
-                               style="flex:1;text-align:center;padding:10px;background:#dbeafe;color:#1e40af;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;transition:all 0.2s;">
-                                <i class="fas fa-edit"></i> Edit
+                        <!-- Action Buttons -->
+                        <div style="display:flex;gap:8px;margin-top:15px;">
+                            <!-- View Details Button -->
+                            <a href="{{ route('designs.show', $design->id) }}"
+                               style="flex:1;text-align:center;padding:10px;background:#dbeafe;color:#1e40af;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;">
+                                <i class="fas fa-eye"></i> View Details
                             </a>
-                            <form action="{{ route('designs.destroy', $design->id) }}" method="POST" style="flex:1;"
-                                  onsubmit="event.stopPropagation(); return confirm('Are you sure you want to delete this design?');">
+
+                            <!-- Toggle State Button -->
+                            <form action="{{ route('designs.toggleState', $design->id) }}" method="POST" style="flex:1;">
                                 @csrf
-                                @method('DELETE')
+                                @method('PATCH')
                                 <button type="submit"
-                                        style="width:100%;padding:10px;background:#fee2e2;color:#991b1b;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.2s;">
-                                    <i class="fas fa-trash"></i> Delete
+                                        onclick="return confirm('{{ $design->state ? 'Are you sure you want to deactivate this design?' : 'Are you sure you want to activate this design?' }}')"
+                                        style="width:100%;padding:10px;background:{{ $design->state ? '#fef2f2' : '#f0fdf4' }};color:{{ $design->state ? '#dc2626' : '#16a34a' }};border:1px solid {{ $design->state ? '#fecaca' : '#bbf7d0' }};border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;">
+                                    <i class="fas {{ $design->state ? 'fa-toggle-off' : 'fa-toggle-on' }}"></i>
+                                    {{ $design->state ? 'Deactivate' : 'Activate' }}
                                 </button>
                             </form>
-                        </div> --}}
+                        </div>
 
                     </div>
                 </div>

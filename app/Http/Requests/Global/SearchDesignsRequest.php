@@ -35,6 +35,8 @@ class SearchDesignsRequest extends FormRequest
 
             'creator' => ['nullable'],
 
+            'state' => ['nullable', 'in:0,1'],
+
             // الترتيب
             'sort_by' => ['nullable', 'string', 'in:id,name,price,created_at,updated_at'],
             'sort_dir' => ['nullable', 'string', 'in:asc,desc'],

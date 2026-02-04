@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Services\Admins\DesignService;
 use App\Models\Design;
 use App\Http\Requests\Global\SearchDesignsRequest;
+use App\Exceptions\GeneralException;
 
 
 class DesignController extends Controller
@@ -33,5 +34,21 @@ class DesignController extends Controller
     {
         $design = Design::with(['designImages', 'measurements', 'user'])->findOrFail($id);
         return view('admin.designs.show', compact('design'));
+    }
+
+    /**
+     * Toggle design state (active/inactive)
+     *
+     * @param  Design  $design
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function toggleState(Design $design)
+    {
+        try {
+            $result = $this->designService->toggleState($design);
+            return back()->with('success', $result['message']);
+        } catch (GeneralException $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 }

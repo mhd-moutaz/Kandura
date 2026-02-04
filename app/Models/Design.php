@@ -12,6 +12,7 @@ class Design extends Model
         'name',
         'description',
         'price',
+        'state',
         'user_id'
     ];
 
@@ -21,6 +22,7 @@ class Design extends Model
             'name' => 'array',
             'description' => 'array',
             'price' => 'decimal:2',
+            'state' => 'boolean',
         ];
     }
 
@@ -48,14 +50,34 @@ class Design extends Model
 
     public function scopeFilter(Builder $query, array $filters): void
     {
+        $isAdmin = Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'super_admin');
 
-        $includeUserName = Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'super_admin');
-        $this->applySearch($query, $filters['search'] ?? null, $includeUserName);
+        // Filter by state: users see only active designs, admins see all
+        $this->applyFilterByState($query, $isAdmin, $filters['state'] ?? null);
+
+        $this->applySearch($query, $filters['search'] ?? null, $isAdmin);
         $this->applyFilterBySize($query, $filters['size'] ?? null);
         $this->applyFilterByPriceRange($query, $filters['min_price'] ?? null, $filters['max_price'] ?? null);
         $this->applyFilterByDesignOption($query, $filters['design_option'] ?? null);
         $this->applyFilterByCreator($query, $filters['creator'] ?? null);
         $this->applySorting($query, $filters['sort_by'] ?? 'created_at', $filters['sort_dir'] ?? 'asc');
+    }
+
+    private function applyFilterByState(Builder $query, bool $isAdmin, mixed $state): void
+    {
+        // If admin and specific state filter provided, use it
+        if ($isAdmin && $state !== null && $state !== '') {
+            $query->where('state', (bool) $state);
+            return;
+        }
+
+        // If admin without filter, show all (no constraint)
+        if ($isAdmin) {
+            return;
+        }
+
+        // For regular users, only show active designs (state = true)
+        $query->where('state', true);
     }
 
     private function applySearch(Builder $query, ?string $search, bool $includeUserName = false): void
@@ -65,8 +87,13 @@ class Design extends Model
         }
 
         $query->where(function ($q) use ($search, $includeUserName) {
+            // البحث حسب ID إذا كان رقماً
+            if (is_numeric($search)) {
+                $q->where('id', $search);
+            }
+
             // البحث في name و description
-            $q->where('name->ar', 'like', "%{$search}%")
+            $q->orWhere('name->ar', 'like', "%{$search}%")
                 ->orWhere('name->en', 'like', "%{$search}%")
                 ->orWhere('description->ar', 'like', "%{$search}%")
                 ->orWhere('description->en', 'like', "%{$search}%");
@@ -74,7 +101,7 @@ class Design extends Model
             // إذا كان Admin، بحث في اسم المستخدم
             if ($includeUserName) {
                 $q->orWhereHas('user', function ($userQ) use ($search) {
-                    $userQ->where('name', 'like', "{$search}");
+                    $userQ->where('name', 'like', "%{$search}%");
                 });
             }
         });

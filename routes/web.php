@@ -31,16 +31,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post("logout", [AuthController::class, "logout"])->name("logout");
 
     // Notification routes for admins
-    // Route::prefix('admin/notifications')->name('admin.notifications.')->group(function () {
-    //     Route::post('/update-fcm-token', [NotificationController::class, 'updateFcmToken'])->name('update-fcm-token');
-    //     Route::post('/test-notification', [NotificationController::class, 'sendTestNotification'])->name('test')->middleware('permission:send notifications');
-    //     Route::post('/send-to-users', [NotificationController::class, 'sendToMultipleUsers'])->name('send-to-users')->middleware('permission:send notifications');
-    //     Route::post('/send-to-admins', [NotificationController::class, 'sendToAllAdmins'])->name('send-to-admins')->middleware('permission:send notifications');
-    //     Route::get('/', [NotificationController::class, 'index'])->name('index');
-    //     Route::put('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
-    //     Route::put('/read-all', [NotificationController::class, 'markAllAsRead'])->name('read-all');
-    //     Route::get('/unread-count', [NotificationController::class, 'unreadCount'])->name('unread-count');
-    // });
+    Route::prefix('admin/notifications')->name('admin.notifications.')->group(function () {
+        Route::post('/update-fcm-token', [NotificationController::class, 'updateFcmToken'])->name('update-fcm-token');
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::put('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
+        Route::put('/read-all', [NotificationController::class, 'markAllAsRead'])->name('read-all');
+        Route::get('/unread-count', [NotificationController::class, 'unreadCount'])->name('unread-count');
+    });
 
     // Routes for users management
     Route::prefix('users')->group(function () {
@@ -84,6 +81,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('{design}', [DesignController::class, 'show'])->name('designs.show')->middleware('permission:view designs');
         Route::get('{design}/edit', [DesignController::class, 'edit'])->name('designs.edit')->middleware('permission:update all designs');
         Route::put('{design}', [DesignController::class, 'update'])->name('designs.update')->middleware('permission:update all designs');
+        Route::patch('{design}/toggle-state', [DesignController::class, 'toggleState'])->name('designs.toggleState')->middleware('permission:update all designs');
         Route::delete('{design}', [DesignController::class, 'destroy'])->name('designs.destroy')->middleware('permission:delete all designs');
     });
 
