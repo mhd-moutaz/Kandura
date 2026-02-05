@@ -20,6 +20,17 @@ Route::get("", function () {
     return redirect()->route("login");
 });
 
+// Language Switcher Route
+Route::get('language/{locale}', function (string $locale) {
+    $availableLocales = config('app.my_langs', ['en', 'ar']);
+
+    if (in_array($locale, $availableLocales)) {
+        session(['locale' => $locale]);
+    }
+
+    return redirect()->back();
+})->name('language.switch');
+
 Route::get("login", [AuthController::class, "loginView"])->name("login");
 Route::post("login", [AuthController::class, "login"])->name("login_action");
 Route::get('stripe/order/success', [StripeController::class, 'orderSuccess'])->name('stripe.order.success');

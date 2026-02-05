@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Orders Management')
+@section('title', __('messages.orders_management'))
 
 @push('styles')
 <link href="{{ asset('css/admin/orders.css') }}" rel="stylesheet">
@@ -18,41 +18,41 @@
 
                 <!-- Search -->
                 <div>
-                    <label>Search</label>
+                    <label>{{ __('messages.search') }}</label>
                     <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Order ID, Customer, Note..."
+                        placeholder="{{ __('messages.search_order') }}"
                         style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                 </div>
 
                 <!-- Status Filter -->
                 <div>
-                    <label>Status</label>
+                    <label>{{ __('messages.status') }}</label>
                     <select name="status" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                        <option value="">All Status</option>
-                        <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                        <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Processing</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        <option value="">{{ __('messages.all_status') }}</option>
+                        <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>{{ __('messages.confirmed') }}</option>
+                        <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>{{ __('messages.processing') }}</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>{{ __('messages.completed') }}</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>{{ __('messages.cancelled') }}</option>
                     </select>
                 </div>
 
                 <!-- Payment Method -->
                 <div>
-                    <label>Payment Method</label>
+                    <label>{{ __('messages.payment_method') }}</label>
                     <select name="payment_method" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                        <option value="">All Methods</option>
-                        <option value="cash" {{ request('payment_method') == 'cash' ? 'selected' : '' }}>Cash</option>
-                        <option value="card" {{ request('payment_method') == 'card' ? 'selected' : '' }}>Card</option>
-                        <option value="wallet" {{ request('payment_method') == 'wallet' ? 'selected' : '' }}>Wallet</option>
+                        <option value="">{{ __('messages.all_methods') }}</option>
+                        <option value="cash" {{ request('payment_method') == 'cash' ? 'selected' : '' }}>{{ __('messages.cash') }}</option>
+                        <option value="card" {{ request('payment_method') == 'card' ? 'selected' : '' }}>{{ __('messages.card') }}</option>
+                        <option value="wallet" {{ request('payment_method') == 'wallet' ? 'selected' : '' }}>{{ __('messages.wallet') }}</option>
                     </select>
                 </div>
 
                 <!-- Sort Direction -->
                 <div>
-                    <label>Sort Direction</label>
+                    <label>{{ __('messages.sort_direction') }}</label>
                     <select name="sort_dir" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                        <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>Newest First</option>
-                        <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>Oldest First</option>
+                        <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>{{ __('messages.newest_first') }}</option>
+                        <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>{{ __('messages.oldest_first') }}</option>
                     </select>
                 </div>
 
@@ -60,11 +60,11 @@
 
             <div style="margin-top:15px;display:flex;gap:10px;">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-filter"></i> Filter
+                    <i class="fas fa-filter"></i> {{ __('messages.filter') }}
                 </button>
                 <a href="{{ route('orders.index') }}"
                     style="background:#6b7280;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
-                    <i class="fas fa-redo"></i> Reset
+                    <i class="fas fa-redo"></i> {{ __('messages.reset') }}
                 </a>
             </div>
 
@@ -79,7 +79,7 @@
 
     <!-- Header -->
     <div class="table-header" style="margin-bottom:20px;">
-        <h3>Orders List ({{ $orders->total() }} orders)</h3>
+        <h3>{{ __('messages.orders_list') }} ({{ __('messages.orders_count', ['count' => $orders->total()]) }})</h3>
     </div>
 
     <!-- Orders Grid -->
@@ -95,7 +95,7 @@
                     <!-- Header -->
                     <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #f0f0f0;">
                         <div>
-                            <div style="font-size:12px;color:#6b7280;margin-bottom:4px;">Order ID</div>
+                            <div style="font-size:12px;color:#6b7280;margin-bottom:4px;">{{ __('messages.order_id') }}</div>
                             <div style="font-size:18px;font-weight:700;color:#1f2937;">#{{ $order->id }}</div>
                         </div>
                         <div style="text-align:right;">
@@ -109,7 +109,7 @@
                                 $color = $statusColors[$order->status] ?? ['bg' => '#f3f4f6', 'text' => '#4b5563'];
                             @endphp
                             <span style="display:inline-block;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;background:{{ $color['bg'] }};color:{{ $color['text'] }};">
-                                {{ ucfirst($order->status) }}
+                                {{ __('messages.' . $order->status) }}
                             </span>
                         </div>
                     </div>
@@ -130,21 +130,21 @@
                     <!-- Order Details -->
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
                         <div style="background:#f8fafc;padding:10px;border-radius:8px;">
-                            <div style="font-size:11px;color:#6b7280;margin-bottom:4px;">Items</div>
+                            <div style="font-size:11px;color:#6b7280;margin-bottom:4px;">{{ __('messages.items') }}</div>
                             <div style="font-size:16px;font-weight:700;color:#1f2937;">{{ $order->orderItems->count() }}</div>
                         </div>
                         <div style="background:#f8fafc;padding:10px;border-radius:8px;">
-                            <div style="font-size:11px;color:#6b7280;margin-bottom:4px;">Total</div>
+                            <div style="font-size:11px;color:#6b7280;margin-bottom:4px;">{{ __('messages.total') }}</div>
                             <div style="font-size:16px;font-weight:700;color:#10b981;">${{ number_format($order->total, 2) }}</div>
                         </div>
                     </div>
 
                     <!-- Payment Method -->
                     <div style="margin-bottom:16px;">
-                        <div style="font-size:11px;color:#6b7280;margin-bottom:6px;">Payment Method</div>
+                        <div style="font-size:11px;color:#6b7280;margin-bottom:6px;">{{ __('messages.payment_method') }}</div>
                         <div style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#eff6ff;border-radius:6px;">
                             <i class="fas fa-{{ $order->payment_method == 'cash' ? 'money-bill-wave' : ($order->payment_method == 'card' ? 'credit-card' : 'wallet') }}" style="color:#3b82f6;font-size:12px;"></i>
-                            <span style="font-size:12px;font-weight:500;color:#1e40af;">{{ ucfirst($order->payment_method) }}</span>
+                            <span style="font-size:12px;font-weight:500;color:#1e40af;">{{ __('messages.' . $order->payment_method) }}</span>
                         </div>
                     </div>
 
@@ -154,7 +154,7 @@
                             <i class="fas fa-clock"></i> {{ $order->created_at->format('M d, Y H:i') }}
                         </div>
                         <div style="color:#3b82f6;font-size:12px;font-weight:500;">
-                            View Details <i class="fas fa-arrow-right"></i>
+                            {{ __('messages.view_details') }} <i class="fas fa-arrow-right"></i>
                         </div>
                     </div>
 
@@ -163,8 +163,8 @@
         @empty
             <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
                 <i class="fas fa-shopping-cart" style="font-size:64px;color:#cbd5e0;margin-bottom:20px;"></i>
-                <h3 style="color:#4a5568;font-size:20px;margin-bottom:10px;">No Orders Found</h3>
-                <p style="color:#9ca3af;font-size:14px;">There are no orders matching your criteria.</p>
+                <h3 style="color:#4a5568;font-size:20px;margin-bottom:10px;">{{ __('messages.no_orders_found') }}</h3>
+                <p style="color:#9ca3af;font-size:14px;">{{ __('messages.no_orders_match') }}</p>
             </div>
         @endforelse
     </div>

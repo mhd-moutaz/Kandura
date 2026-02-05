@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Role')
+@section('title', __('messages.edit_role'))
 
 @push('styles')
 <link href="{{ asset('css/admin/admin-management.css') }}" rel="stylesheet">
@@ -11,11 +11,11 @@
 <!-- Header -->
 <div class="header">
     <div class="header-left">
-        <h2>Edit Role: {{ ucwords(str_replace('_', ' ', $role->name)) }}</h2>
+        <h2>{{ __('messages.edit_role') }}: {{ ucwords(str_replace('_', ' ', $role->name)) }}</h2>
     </div>
     <div class="header-right">
         <a href="{{ route('super-admin.roles.index') }}" class="btn" style="background:#f3f4f6;color:#4b5563;">
-            <i class="fas fa-arrow-left"></i> Back to List
+            <i class="fas fa-arrow-left"></i> {{ __('messages.back_to_list') }}
         </a>
     </div>
 </div>
@@ -40,7 +40,7 @@
     @if(in_array($role->name, ['user', 'admin', 'super_admin']))
     <div class="alert-auto-hide" style="background:#fef3c7;color:#92400e;margin-bottom:20px;">
         <i class="fas fa-exclamation-triangle"></i>
-        <strong>Warning:</strong> This is a system role. You can modify permissions but cannot change the role name.
+        <strong>{{ __('messages.warning') }}:</strong> {{ __('messages.system_role_warning') }}
     </div>
     @endif
 
@@ -50,17 +50,17 @@
 
         <div class="form-grid">
             <div class="form-field">
-                <label>Role Name *</label>
+                <label>{{ __('messages.role_name') }} *</label>
                 <input type="text"
                        name="name"
                        value="{{ old('name', $role->name) }}"
-                       placeholder="e.g., content_manager, moderator"
+                       placeholder="{{ __('messages.role_name_placeholder') }}"
                        {{ in_array($role->name, ['user', 'admin', 'super_admin']) ? 'readonly' : 'required' }}>
                 <small style="color:#6b7280;font-size:13px;margin-top:5px;display:block;">
                     @if(in_array($role->name, ['user', 'admin', 'super_admin']))
-                    System role names cannot be changed
+                    {{ __('messages.system_role_name_locked') }}
                     @else
-                    Use lowercase letters and underscores only
+                    {{ __('messages.use_lowercase_underscores') }}
                     @endif
                 </small>
                 @error('name')
@@ -71,13 +71,13 @@
 
         <hr class="section-divider">
 
-        <h3 class="section-header">Manage Permissions</h3>
-        <p class="section-description">Update the permissions for this role</p>
+        <h3 class="section-header">{{ __('messages.manage_permissions') }}</h3>
+        <p class="section-description">{{ __('messages.update_permissions_description') }}</p>
 
         <div style="margin-bottom:15px;">
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;background:#f9fafb;padding:10px 15px;border-radius:6px;width:fit-content;">
                 <input type="checkbox" id="select-all-permissions" style="cursor:pointer;">
-                <strong>Select All Permissions</strong>
+                <strong>{{ __('messages.select_all_permissions') }}</strong>
             </label>
         </div>
 
@@ -86,7 +86,7 @@
                 @foreach($permissions as $resource => $resourcePermissions)
                     <div class="perm-group-title">
                         <i class="fas fa-shield-alt" style="color:#3b82f6;"></i>
-                        {{ ucwords($resource) }} Permissions
+                        {{ ucwords($resource) }} {{ __('messages.permissions') }}
                         <span style="color:#6b7280;font-size:12px;font-weight:normal;margin-left:5px;">
                             ({{ count($resourcePermissions) }})
                         </span>
@@ -110,16 +110,15 @@
 
         <div style="background:#dbeafe;color:#1e40af;padding:15px;border-radius:8px;margin-top:20px;margin-bottom:20px;">
             <i class="fas fa-info-circle"></i>
-            This role is currently assigned to <strong>{{ $role->users->count() }}</strong> user(s).
-            Changes to permissions will affect all users with this role.
+            {!! __('messages.role_assigned_to_users', ['count' => $role->users->count()]) !!}
         </div>
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Update Role
+                <i class="fas fa-save"></i> {{ __('messages.update_role') }}
             </button>
             <a href="{{ route('super-admin.roles.index') }}" class="btn" style="background:#f3f4f6;color:#4b5563;">
-                <i class="fas fa-times"></i> Cancel
+                <i class="fas fa-times"></i> {{ __('messages.cancel') }}
             </a>
         </div>
     </form>

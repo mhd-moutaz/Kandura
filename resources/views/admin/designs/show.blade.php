@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Design Details')
+@section('title', __('messages.design_details'))
 
 @push('styles')
     <link href="{{ asset('css/admin/designs.css') }}" rel="stylesheet">
@@ -17,7 +17,7 @@
                 <a href="{{ route('designs.index') }}"
                     style="display:flex;align-items:center;gap:6px;color:#6b7280;text-decoration:none;padding:8px 14px;background:white;border-radius:6px;border:1px solid #e2e8f0;transition:all 0.2s;font-size:14px;">
                     <i class="fas fa-arrow-left"></i>
-                    <span>Back to Designs</span>
+                    <span>{{ __('messages.back_to_designs') }}</span>
                 </a>
             </div>
         </div>
@@ -45,7 +45,7 @@
                     <h3
                         style="font-size:18px;font-weight:600;color:#1f2937;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
                         <i class="fas fa-images" style="color:#3b82f6;"></i>
-                        Design Images
+                        {{ __('messages.design_images') }}
                     </h3>
 
                     @if ($design->designImages->count() > 0)
@@ -56,7 +56,7 @@
                                 style="height:400px;display:flex;align-items:center;justify-content:center;">
                                 @foreach ($design->designImages as $index => $image)
                                     <img src="{{ asset('storage/' . $image->image_path) }}"
-                                        alt="{{ $design->name['ar'] ?? 'Design' }}" class="main-gallery-image"
+                                        alt="{{ $design->getTranslation('name', app()->getLocale()) }}" class="main-gallery-image"
                                         data-index="{{ $index }}"
                                         style="width:100%;height:100%;object-fit:contain;display:{{ $index == 0 ? 'block' : 'none' }};">
                                 @endforeach
@@ -93,7 +93,7 @@
                         <div
                             style="height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;border-radius:10px;">
                             <i class="fas fa-image" style="font-size:60px;color:#cbd5e0;margin-bottom:12px;"></i>
-                            <p style="color:#9ca3af;font-size:14px;">No images available</p>
+                            <p style="color:#9ca3af;font-size:14px;">{{ __('messages.no_images_available') }}</p>
                         </div>
                     @endif
                 </div>
@@ -109,7 +109,7 @@
                         <h3
                             style="font-size:18px;font-weight:600;color:#1f2937;display:flex;align-items:center;gap:8px;margin:0;">
                             <i class="fas fa-info-circle" style="color:#3b82f6;"></i>
-                            Basic Information
+                            {{ __('messages.basic_information') }}
                         </h3>
                         <span
                             style="background:#edf2f7;color:#4a5568;padding:4px 10px;border-radius:6px;font-size:13px;font-weight:600;">
@@ -122,47 +122,47 @@
                         <!-- Name -->
                         <div>
                             <label style="font-size:12px;color:#6b7280;font-weight:500;display:block;margin-bottom:4px;">
-                                Name (Arabic)
+                                {{ __('messages.name_arabic') }}
                             </label>
                             <div style="padding:10px;background:#f8fafc;border-radius:6px;color:#1f2937;font-size:14px;">
-                                {{ $design->name['ar'] ?? 'N/A' }}
+                                {{ $design->getTranslation('name', 'ar') ?: __('messages.n_a') }}
                             </div>
                         </div>
 
                         <div>
                             <label style="font-size:12px;color:#6b7280;font-weight:500;display:block;margin-bottom:4px;">
-                                Name (English)
+                                {{ __('messages.name_english') }}
                             </label>
                             <div style="padding:10px;background:#f8fafc;border-radius:6px;color:#1f2937;font-size:14px;">
-                                {{ $design->name['en'] ?? 'N/A' }}
+                                {{ $design->getTranslation('name', 'en') ?: __('messages.n_a') }}
                             </div>
                         </div>
 
                         <!-- Description -->
                         <div>
                             <label style="font-size:12px;color:#6b7280;font-weight:500;display:block;margin-bottom:4px;">
-                                Description (Arabic)
+                                {{ __('messages.description') }} ({{ __('messages.name_ar') }})
                             </label>
                             <div
                                 style="padding:10px;background:#f8fafc;border-radius:6px;color:#1f2937;font-size:13px;line-height:1.5;min-height:50px;">
-                                {{ $design->description['ar'] ?? 'N/A' }}
+                                {{ $design->getTranslation('description', 'ar') ?: __('messages.n_a') }}
                             </div>
                         </div>
 
                         <div>
                             <label style="font-size:12px;color:#6b7280;font-weight:500;display:block;margin-bottom:4px;">
-                                Description (English)
+                                {{ __('messages.description') }} ({{ __('messages.name_en') }})
                             </label>
                             <div
                                 style="padding:10px;background:#f8fafc;border-radius:6px;color:#1f2937;font-size:13px;line-height:1.5;min-height:50px;">
-                                {{ $design->description['en'] ?? 'N/A' }}
+                                {{ $design->getTranslation('description', 'en') ?: __('messages.n_a') }}
                             </div>
                         </div>
 
                         <!-- Price -->
                         <div>
                             <label style="font-size:12px;color:#6b7280;font-weight:500;display:block;margin-bottom:4px;">
-                                Price
+                                {{ __('messages.price') }}
                             </label>
                             <div
                                 style="padding:14px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:8px;color:white;font-size:24px;font-weight:700;text-align:center;">
@@ -173,7 +173,7 @@
                         <!-- State -->
                         <div>
                             <label style="font-size:12px;color:#6b7280;font-weight:500;display:block;margin-bottom:4px;">
-                                Status
+                                {{ __('messages.status') }}
                             </label>
                             <div
                                 style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:{{ $design->state ? '#f0fdf4' : '#fef2f2' }};border-radius:8px;border:1px solid {{ $design->state ? '#bbf7d0' : '#fecaca' }};">
@@ -182,7 +182,7 @@
                                         style="width:12px;height:12px;border-radius:50%;background:{{ $design->state ? '#22c55e' : '#ef4444' }};"></span>
                                     <span
                                         style="font-size:14px;font-weight:600;color:{{ $design->state ? '#16a34a' : '#dc2626' }};">
-                                        {{ $design->state ? 'Active' : 'Inactive' }}
+                                        {{ $design->state ? __('messages.active') : __('messages.inactive') }}
                                     </span>
                                 </div>
                                 <form action="{{ route('designs.toggleState', $design->id) }}" method="POST"
@@ -190,11 +190,11 @@
                                     @csrf
                                     @method('PATCH')
                                     <button type="submit"
-                                        onclick="return confirm('{{ $design->state ? 'Are you sure you want to deactivate this design?' : 'Are you sure you want to activate this design?' }}')"
+                                        onclick="return confirm('{{ $design->state ? __('messages.deactivate_confirm') : __('messages.activate_confirm') }}')"
                                         style="padding:8px 16px;background:{{ $design->state ? '#dc2626' : '#16a34a' }};color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;transition:all 0.2s;display:flex;align-items:center;gap:6px;"
                                         onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                                         <i class="fas {{ $design->state ? 'fa-toggle-off' : 'fa-toggle-on' }}"></i>
-                                        {{ $design->state ? 'Deactivate' : 'Activate' }}
+                                        {{ $design->state ? __('messages.deactivate') : __('messages.activate') }}
                                     </button>
                                 </form>
                             </div>
@@ -210,13 +210,13 @@
             <h3
                 style="font-size:18px;font-weight:600;color:#1f2937;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
                 <i class="fas fa-user-circle" style="color:#6366f1;"></i>
-                Creator & Dates
+                {{ __('messages.creator_dates') }}
             </h3>
 
             <!-- Created By -->
             <div style="margin-bottom:12px;">
                 <label style="font-size:12px;color:#6b7280;font-weight:500;display:block;margin-bottom:4px;">
-                    Created By
+                    {{ __('messages.created_by') }}
                 </label>
                 <div
                     style="padding:10px;background:#f8fafc;border-radius:6px;color:#1f2937;font-size:13px;display:flex;align-items:center;gap:6px;">
@@ -224,7 +224,7 @@
                         style="width:28px;height:28px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:600;">
                         {{ substr($design->user->name ?? 'N', 0, 1) }}
                     </div>
-                    <span>{{ $design->user->name ?? 'N/A' }}</span>
+                    <span>{{ $design->user->name ?? __('messages.n_a') }}</span>
                 </div>
             </div>
 
@@ -232,7 +232,7 @@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 <div>
                     <label style="font-size:12px;color:#6b7280;font-weight:500;display:block;margin-bottom:4px;">
-                        Created Date
+                        {{ __('messages.created_date') }}
                     </label>
                     <div style="padding:10px;background:#f8fafc;border-radius:6px;color:#1f2937;font-size:13px;">
                         {{ $design->created_at->format('Y-m-d H:i') }}
@@ -240,7 +240,7 @@
                 </div>
                 <div>
                     <label style="font-size:12px;color:#6b7280;font-weight:500;display:block;margin-bottom:4px;">
-                        Last Updated
+                        {{ __('messages.last_updated') }}
                     </label>
                     <div style="padding:10px;background:#f8fafc;border-radius:6px;color:#1f2937;font-size:13px;">
                         {{ $design->updated_at->format('Y-m-d H:i') }}
@@ -256,7 +256,7 @@
                 <h3
                     style="font-size:18px;font-weight:600;color:#1f2937;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
                     <i class="fas fa-ruler-combined" style="color:#10b981;"></i>
-                    Available Sizes & Measurements
+                    {{ __('messages.available_sizes_measurements') }}
                 </h3>
 
                 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;">
@@ -267,7 +267,7 @@
                                 {{ $measurement->size }}
                             </div>
                             <div style="font-size:10px;color:#059669;font-weight:500;letter-spacing:0.5px;">
-                                SIZE
+                                {{ __('messages.size') }}
                             </div>
                         </div>
                     @endforeach
@@ -282,7 +282,7 @@
                 <h3
                     style="font-size:18px;font-weight:600;color:#1f2937;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
                     <i class="fas fa-palette" style="color:#f59e0b;"></i>
-                    Design Options
+                    {{ __('messages.design_options') }}
                 </h3>
 
                 <div style="display:flex;flex-direction:column;gap:12px;">
@@ -317,7 +317,7 @@
                                 @foreach ($options as $option)
                                     <span
                                         style="padding:6px 12px;background:white;color:{{ $colors['text'] }};border-radius:6px;font-size:12px;font-weight:500;border:1px solid {{ $colors['itemBorder'] }};">
-                                        {{ $option->name['en'] ?? ($option->name['ar'] ?? 'N/A') }}
+                                        {{ $option->getTranslation('name', app()->getLocale()) ?? __('messages.n_a') }}
                                     </span>
                                 @endforeach
                             </div>

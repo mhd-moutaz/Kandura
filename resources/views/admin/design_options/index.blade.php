@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'Design Options Management')
+@section('title', __('messages.design_options_management'))
 
 @push('styles')
 <link href="{{ asset('css/admin/design-options.css') }}" rel="stylesheet">
@@ -12,29 +12,29 @@
         <div class="search-box">
             <i class="fas fa-search"></i>
             <form action="{{ route('designOptions.index') }}" method="GET" style="display: flex; gap: 10px;">
-                <input type="text" name="search" placeholder="Search options..." value="{{ request('search') }}">
+                <input type="text" name="search" placeholder="{{ __('messages.search_options') }}" value="{{ request('search') }}">
                 <select name="type" class="filter-select" onchange="this.form.submit()">
-                    <option value="">All Types</option>
-                    <option value="color" {{ request('type') == 'color' ? 'selected' : '' }}>Color</option>
-                    <option value="dome_type" {{ request('type') == 'dome_type' ? 'selected' : '' }}>Dome Type</option>
-                    <option value="fabric_type" {{ request('type') == 'fabric_type' ? 'selected' : '' }}>Fabric Type
+                    <option value="">{{ __('messages.all_types') }}</option>
+                    <option value="color" {{ request('type') == 'color' ? 'selected' : '' }}>{{ __('messages.color') }}</option>
+                    <option value="dome_type" {{ request('type') == 'dome_type' ? 'selected' : '' }}>{{ __('messages.dome_type') }}</option>
+                    <option value="fabric_type" {{ request('type') == 'fabric_type' ? 'selected' : '' }}>{{ __('messages.fabric_type') }}
                     </option>
-                    <option value="sleeve_type" {{ request('type') == 'sleeve_type' ? 'selected' : '' }}>Sleeve Type
+                    <option value="sleeve_type" {{ request('type') == 'sleeve_type' ? 'selected' : '' }}>{{ __('messages.sleeve_type') }}
                     </option>
                 </select>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-filter"></i> Filter
+                    <i class="fas fa-filter"></i> {{ __('messages.filter') }}
                 </button>
                 <a href="{{ route('designs.index') }}"
                     style="background:#6b7280;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
-                    <i class="fas fa-redo"></i>  Reset
+                    <i class="fas fa-redo"></i>  {{ __('messages.reset') }}
                 </a>
 
             </form>
         </div>
         <div class="filter-options">
             <a href="{{ route('designOptions.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add New Option
+                <i class="fas fa-plus"></i> {{ __('messages.add_new_option') }}
             </a>
         </div>
     </div>
@@ -50,27 +50,25 @@
     <!-- Table Card -->
     <div class="table-card">
         <div class="table-header">
-            <h3>Design Options List</h3>
-            <span style="color: #718096; font-size: 14px;">Total: options</span>
+            <h3>{{ __('messages.design_options_list') }}</h3>
+            <span style="color: #718096; font-size: 14px;">{{ __('messages.total') }}: {{ __('messages.options') }}</span>
         </div>
 
         <table>
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Name (EN)</th>
-                    <th>Name (AR)</th>
-                    <th>Type</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
+                    <th>{{ __('messages.name') }}</th>
+                    <th>{{ __('messages.type') }}</th>
+                    <th>{{ __('messages.created_at') }}</th>
+                    <th>{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($designOptions as $option)
                     <tr>
                         <td>{{ $option->id }}</td>
-                        <td>{{ $option->name['en'] ?? 'N/A' }}</td>
-                        <td>{{ $option->name['ar'] ?? 'N/A' }}</td>
+                        <td>{{ $option->getTranslation('name', app()->getLocale()) ?? 'N/A' }}</td>
                         <td>
                             @php
                                 $typeColors = [
@@ -98,15 +96,15 @@
                         <td>
                             <div class="actions">
                                 <a href="{{ route('designOptions.edit', $option->id) }}" class="action-btn edit">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit"></i> {{ __('messages.edit') }}
                                 </a>
                                 <form action="{{ route('designOptions.destroy', $option->id) }}" method="POST"
                                     style="display: inline;"
-                                    onsubmit="return confirm('Are you sure you want to delete this option?');">
+                                    onsubmit="return confirm('{{ __('messages.delete_confirm_option') }}');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="action-btn delete">
-                                        <i class="fas fa-trash"></i> Delete
+                                        <i class="fas fa-trash"></i> {{ __('messages.delete') }}
                                     </button>
                                 </form>
 
@@ -115,9 +113,9 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;">
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #9ca3af;">
                             <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 10px; display: block;"></i>
-                            No design options found
+                            {{ __('messages.no_design_options_found') }}
                         </td>
                     </tr>
                 @endforelse

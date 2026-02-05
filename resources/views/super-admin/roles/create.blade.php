@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Create Role')
+@section('title', __('messages.create_role'))
 
 @push('styles')
 <link href="{{ asset('css/admin/admin-management.css') }}" rel="stylesheet">
@@ -11,11 +11,11 @@
 <!-- Header -->
 <div class="header">
     <div class="header-left">
-        <h2>Create New Role</h2>
+        <h2>{{ __('messages.create_new_role') }}</h2>
     </div>
     <div class="header-right">
         <a href="{{ route('super-admin.roles.index') }}" class="btn" style="background:#f3f4f6;color:#4b5563;">
-            <i class="fas fa-arrow-left"></i> Back to List
+            <i class="fas fa-arrow-left"></i> {{ __('messages.back_to_list') }}
         </a>
     </div>
 </div>
@@ -42,13 +42,13 @@
 
         <div class="form-grid">
             <div class="form-field">
-                <label>Role Name *</label>
+                <label>{{ __('messages.role_name') }} *</label>
                 <input type="text"
                        name="name"
                        value="{{ old('name') }}"
-                       placeholder="e.g., content_manager, moderator"
+                       placeholder="{{ __('messages.role_name_placeholder') }}"
                        required>
-                <small style="color:#6b7280;font-size:13px;margin-top:5px;display:block;">Use lowercase letters and underscores only</small>
+                <small style="color:#6b7280;font-size:13px;margin-top:5px;display:block;">{{ __('messages.use_lowercase_underscores') }}</small>
                 @error('name')
                     <span class="error-message">{{ $message }}</span>
                 @enderror
@@ -57,13 +57,13 @@
 
         <hr class="section-divider">
 
-        <h3 class="section-header">Assign Permissions</h3>
-        <p class="section-description">Select the permissions you want to assign to this role</p>
+        <h3 class="section-header">{{ __('messages.assign_permissions') }}</h3>
+        <p class="section-description">{{ __('messages.select_permissions_description') }}</p>
 
         <div style="margin-bottom:15px;">
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;background:#f9fafb;padding:10px 15px;border-radius:6px;width:fit-content;">
                 <input type="checkbox" id="select-all-permissions" style="cursor:pointer;">
-                <strong>Select All Permissions</strong>
+                <strong>{{ __('messages.select_all_permissions') }}</strong>
             </label>
         </div>
 
@@ -72,7 +72,7 @@
                 @foreach($permissions as $resource => $resourcePermissions)
                     <div class="perm-group-title">
                         <i class="fas fa-shield-alt" style="color:#3b82f6;"></i>
-                        {{ ucwords($resource) }} Permissions
+                        {{ ucwords($resource) }} {{ __('messages.permissions') }}
                         <span style="color:#6b7280;font-size:12px;font-weight:normal;margin-left:5px;">
                             ({{ count($resourcePermissions) }})
                         </span>
@@ -96,10 +96,10 @@
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Create Role
+                <i class="fas fa-save"></i> {{ __('messages.create_role') }}
             </button>
             <a href="{{ route('super-admin.roles.index') }}" class="btn" style="background:#f3f4f6;color:#4b5563;">
-                <i class="fas fa-times"></i> Cancel
+                <i class="fas fa-times"></i> {{ __('messages.cancel') }}
             </a>
         </div>
     </form>

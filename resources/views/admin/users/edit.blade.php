@@ -1,7 +1,7 @@
 {{-- resources/views/admin/users/edit.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', 'Edit User - ' . $user->name)
+@section('title', __('messages.edit_user') . ' - ' . $user->name)
 
 @section('content')
     <div class="edit-user-container" style="max-width: 600px; margin: 0 auto;">
@@ -9,7 +9,7 @@
         <!-- Header -->
         <div class="page-header" style="margin-bottom: 5px;">
             <h1 style="font-size: 24px; font-weight: 600; color: #1f2937; margin-bottom: 0px;">
-                Edit User
+                {{ __('messages.edit_user') }}
             </h1>
         </div>
 
@@ -60,14 +60,14 @@
 
             <h3
                 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">
-                User Information
+                {{ __('messages.user_information') }}
             </h3>
             <div class="user-details-grid"
                 style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
                 <!-- User ID -->
                 <div class="detail-item">
                     <label style="display: block; font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 4px;">
-                        User ID
+                        {{ __('messages.user_id') }}
                     </label>
                     <p style="font-size: 16px; color: #1f2937; font-weight: 500; margin: 0;">
                         #USR-{{ $user->id }}
@@ -77,7 +77,7 @@
                 <!-- Name -->
                 <div class="detail-item">
                     <label style="display: block; font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 4px;">
-                        Full Name
+                        {{ __('messages.full_name') }}
                     </label>
                     <p style="font-size: 16px; color: #1f2937; font-weight: 500; margin: 0;">
                         {{ $user->name }}
@@ -87,7 +87,7 @@
                 <!-- Email -->
                 <div class="detail-item">
                     <label style="display: block; font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 4px;">
-                        Email Address
+                        {{ __('messages.email_address') }}
                     </label>
                     <p style="font-size: 16px; color: #1f2937; font-weight: 500; margin: 0;">
                         {{ $user->email }}
@@ -97,17 +97,17 @@
                 <!-- Phone -->
                 <div class="detail-item">
                     <label style="display: block; font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 4px;">
-                        Phone Number
+                        {{ __('messages.phone_number') }}
                     </label>
                     <p style="font-size: 16px; color: #1f2937; font-weight: 500; margin: 0;">
-                        {{ $user->phone ?? 'N/A' }}
+                        {{ $user->phone ?? __('messages.n_a') }}
                     </p>
                 </div>
 
                 <!-- Registration Date -->
                 <div class="detail-item">
                     <label style="display: block; font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 4px;">
-                        Registration Date
+                        {{ __('messages.registration_date') }}
                     </label>
                     <p style="font-size: 16px; color: #1f2937; font-weight: 500; margin: 0;">
                         {{ $user->created_at->format('M d, Y') }}
@@ -117,7 +117,7 @@
                 <!-- Last Updated -->
                 <div class="detail-item">
                     <label style="display: block; font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 4px;">
-                        Last Updated
+                        {{ __('messages.last_updated') }}
                     </label>
                     <p style="font-size: 16px; color: #1f2937; font-weight: 500; margin: 0;">
                         {{ $user->updated_at->format('M d, Y') }}
@@ -131,7 +131,7 @@
             style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px;">
             <h3
                 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">
-                Account Status
+                {{ __('messages.account_status') }}
             </h3>
 
             <form action="{{ route('users.update', $user) }}" method="POST">
@@ -141,7 +141,7 @@
                 <div class="form-group" style="margin-bottom: 24px;">
                     <label for="is_active"
                         style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">
-                        Account Status
+                        {{ __('messages.account_status') }}
                     </label>
 
                     <div class="status-options" style="display: flex; gap: 16px; flex-wrap: wrap;">
@@ -150,8 +150,8 @@
                             <input type="radio" name="is_active" value="1" {{ $user->is_active ? 'checked' : '' }}
                                 style="margin-right: 8px;">
                             <div>
-                                <div style="font-weight: 500; color: #1f2937;">Active</div>
-                                <div style="font-size: 12px; color: #6b7280;">User can login</div>
+                                <div style="font-weight: 500; color: #1f2937;">{{ __('messages.active') }}</div>
+                                <div style="font-size: 12px; color: #6b7280;">{{ __('messages.user_can_login') }}</div>
                             </div>
                         </label>
 
@@ -160,8 +160,8 @@
                             <input type="radio" name="is_active" value="0" {{ !$user->is_active ? 'checked' : '' }}
                                 style="margin-right: 8px;">
                             <div>
-                                <div style="font-weight: 500; color: #1f2937;">Inactive</div>
-                                <div style="font-size: 12px; color: #6b7280;">User cannot login</div>
+                                <div style="font-weight: 500; color: #1f2937;">{{ __('messages.inactive') }}</div>
+                                <div style="font-size: 12px; color: #6b7280;">{{ __('messages.user_cannot_login') }}</div>
                             </div>
                         </label>
                     </div>
@@ -175,11 +175,11 @@
                 <div class="current-status"
                     style="background: #f8fafc; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
                     <div style="display: flex; align-items: center; justify-content: between;">
-                        <span style="font-size: 14px; color: #6b7280;">Current Status:</span>
+                        <span style="font-size: 14px; color: #6b7280;">{{ __('messages.current_status') }}:</span>
                         <span class="status-badge {{ $user->is_active ? 'active' : 'inactive' }}"
                             style="margin-left: 8px; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500;
                                  {{ $user->is_active ? 'background: #d1fae5; color: #065f46;' : 'background: #fee2e2; color: #991b1b;' }}">
-                            {{ $user->is_active ? 'Active' : 'Inactive' }}
+                            {{ $user->is_active ? __('messages.active') : __('messages.inactive') }}
                         </span>
                     </div>
                 </div>
@@ -190,18 +190,18 @@
                     <div>
                         <a href="{{ route('users.index') }}" class="back-btn"
                             style="display: inline-flex; align-items: center; padding: 8px 16px; background: #f3f4f6; color: #374151; text-decoration: none; border-radius: 6px; font-weight: 500; transition: background 0.2s;">
-                            ← Back to Users
+                            ← {{ __('messages.back_to_users') }}
                         </a>
                     </div>
 
                     <div style="display: flex; gap: 12px;">
                         <button type="reset" class="reset-btn"
                             style="padding: 10px 20px; background: #f3f4f6; color: #374151; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; transition: background 0.2s;">
-                            Reset
+                            {{ __('messages.reset') }}
                         </button>
                         <button type="submit" class="submit-btn"
                             style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; transition: background 0.2s;">
-                            Update Status
+                            {{ __('messages.update_status') }}
                         </button>
                     </div>
                 </div>

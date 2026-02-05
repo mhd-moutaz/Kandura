@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Designs Management')
+@section('title', __('messages.designs_management'))
 
 @push('styles')
 <link href="{{ asset('css/admin/designs.css') }}" rel="stylesheet">
@@ -16,15 +16,15 @@
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;">
 
                     <div>
-                        <label>Search</label>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search..."
+                        <label>{{ __('messages.search') }}</label>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('messages.search') }}..."
                             style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                     </div>
 
                     <div>
-                        <label>Size</label>
+                        <label>{{ __('messages.size') }}</label>
                         <select name="size" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                            <option value="">All Sizes</option>
+                            <option value="">{{ __('messages.all_sizes') }}</option>
                             <option value="XS" {{ request('size') == 'XS' ? 'selected' : '' }}>XS</option>
                             <option value="S" {{ request('size') == 'S' ? 'selected' : '' }}>S</option>
                             <option value="M" {{ request('size') == 'M' ? 'selected' : '' }}>M</option>
@@ -35,22 +35,22 @@
                     </div>
 
                     <div>
-                        <label>Min Price</label>
+                        <label>{{ __('messages.min_price') }}</label>
                         <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="0"
                             style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                     </div>
 
                     <div>
-                        <label>Max Price</label>
+                        <label>{{ __('messages.max_price') }}</label>
                         <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="1000"
                             style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                     </div>
 
                     <div>
-                        <label>Design Option Type</label>
+                        <label>{{ __('messages.design_option_type') }}</label>
                         <select name="design_option_type" id="designOptionType"
                             style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                            <option value="">All Types</option>
+                            <option value="">{{ __('messages.all_types') }}</option>
                             @foreach ($designOptions->pluck('type')->unique() as $type)
                                 <option value="{{ $type }}"
                                     {{ request('design_option_type') == $type ? 'selected' : '' }}>
@@ -62,15 +62,15 @@
 
                     <div id="designOptionValuesContainer"
                         style="display: {{ request('design_option_type') ? 'block' : 'none' }};">
-                        <label>Design Option Value</label>
+                        <label>{{ __('messages.design_option_value') }}</label>
                         <select name="design_option" id="designOptionValue"
                             style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                            <option value="">All Values</option>
+                            <option value="">{{ __('messages.all_values') }}</option>
                             @if (request('design_option_type'))
                                 @foreach ($designOptions->where('type', request('design_option_type')) as $option)
                                     <option value="{{ $option->id }}"
                                         {{ request('design_option') == $option->id ? 'selected' : '' }}>
-                                        {{ $option->name['en'] ?? ($option->name['ar'] ?? 'N/A') }}
+                                        {{ $option->getTranslation('name', app()->getLocale()) ?? 'N/A' }}
                                     </option>
                                 @endforeach
                             @endif
@@ -78,31 +78,29 @@
                     </div>
 
                     <div>
-                        <label>Sort By</label>
+                        <label>{{ __('messages.sort_by') }}</label>
                         <select name="sort_by" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                            <option value="created_at" {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>Created
-                                Date</option>
-                            <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>Name</option>
-                            <option value="price" {{ request('sort_by') == 'price' ? 'selected' : '' }}>Price</option>
-                            <option value="updated_at" {{ request('sort_by') == 'updated_at' ? 'selected' : '' }}>Updated
-                                Date</option>
+                            <option value="created_at" {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>{{ __('messages.created_date') }}</option>
+                            <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>{{ __('messages.name') }}</option>
+                            <option value="price" {{ request('sort_by') == 'price' ? 'selected' : '' }}>{{ __('messages.price') }}</option>
+                            <option value="updated_at" {{ request('sort_by') == 'updated_at' ? 'selected' : '' }}>{{ __('messages.updated_date') }}</option>
                         </select>
                     </div>
 
                     <div>
-                        <label>Sort Direction</label>
+                        <label>{{ __('messages.sort_direction') }}</label>
                         <select name="sort_dir" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                            <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>ASC</option>
-                            <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>DESC</option>
+                            <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>{{ __('messages.asc') }}</option>
+                            <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>{{ __('messages.desc') }}</option>
                         </select>
                     </div>
 
                     <div>
-                        <label>Status</label>
+                        <label>{{ __('messages.status') }}</label>
                         <select name="state" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                            <option value="">All Status</option>
-                            <option value="1" {{ request('state') === '1' ? 'selected' : '' }}>Active</option>
-                            <option value="0" {{ request('state') === '0' ? 'selected' : '' }}>Inactive</option>
+                            <option value="">{{ __('messages.all_status') }}</option>
+                            <option value="1" {{ request('state') === '1' ? 'selected' : '' }}>{{ __('messages.active') }}</option>
+                            <option value="0" {{ request('state') === '0' ? 'selected' : '' }}>{{ __('messages.inactive') }}</option>
                         </select>
                     </div>
 
@@ -110,11 +108,11 @@
 
                 <div style="margin-top:15px;display:flex;gap:10px;">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-filter"></i> Filter
+                        <i class="fas fa-filter"></i> {{ __('messages.filter') }}
                     </button>
                     <a href="{{ route('designs.index') }}"
                         style="background:#6b7280;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
-                        <i class="fas fa-redo"></i> Reset
+                        <i class="fas fa-redo"></i> {{ __('messages.reset') }}
                     </a>
                 </div>
 
@@ -135,7 +133,7 @@
         @endif
 
         <div class="table-header">
-            <h3>Designs List ({{ $designs->total() }} designs)</h3>
+            <h3>{{ __('messages.designs_list') }} ({{ __('messages.designs_count', ['count' => $designs->total()]) }})</h3>
         </div>
 
         <!-- Designs Cards Grid -->
@@ -150,7 +148,7 @@
                         @if ($design->designImages->count() > 0)
                             @foreach ($design->designImages as $index => $image)
                                 <img src="{{ asset('storage/' . $image->image_path) }}"
-                                    alt="{{ $design->name['ar'] ?? 'Design' }}"
+                                    alt="{{ $design->getTranslation('name', app()->getLocale()) }}"
                                     class="slider-image slider-image-{{ $design->id }}"
                                     style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:{{ $index == 0 ? '1' : '0' }};transition:opacity 0.5s ease;">
                             @endforeach
@@ -183,7 +181,7 @@
                         @else
                             <div style="text-align:center;color:#9ca3af;">
                                 <i class="fas fa-image" style="font-size:48px;margin-bottom:10px;"></i>
-                                <p style="font-size:14px;">No Image</p>
+                                <p style="font-size:14px;">{{ __('messages.no_image') }}</p>
                             </div>
                         @endif
 
@@ -198,7 +196,7 @@
                         <!-- State Badge -->
                         <span style="position:absolute;top:10px;left:10px;background:{{ $design->state ? '#10b981' : '#ef4444' }};color:white;padding:4px 10px;border-radius:20px;font-size:11px;z-index:10;font-weight:500;">
                             <i class="fas {{ $design->state ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
-                            {{ $design->state ? 'Active' : 'Inactive' }}
+                            {{ $design->state ? __('messages.active') : __('messages.inactive') }}
                         </span>
                     </div>
 
@@ -216,21 +214,21 @@
                         <!-- Name -->
                         <h4
                             style="font-size:18px;font-weight:600;color:#2d3748;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                            {{ $design->name['ar'] ?? ($design->name['en'] ?? 'N/A') }}
+                            {{ $design->getTranslation('name', app()->getLocale()) }}
                         </h4>
 
                         <!-- Description -->
-                        @if (isset($design->description['ar']) || isset($design->description['en']))
+                        @if ($design->getTranslation('description', app()->getLocale()))
                             <p
                                 style="font-size:13px;color:#718096;margin-bottom:15px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
-                                {{ $design->description['ar'] ?? ($design->description['en'] ?? '') }}
+                                {{ $design->getTranslation('description', app()->getLocale()) }}
                             </p>
                         @endif
 
                         <!-- Price -->
                         <div
                             style="background:#f0f4ff;padding:10px;border-radius:8px;margin-bottom:15px;text-align:center;">
-                            <div style="font-size:11px;color:#5a67d8;margin-bottom:2px;">السعر</div>
+                            <div style="font-size:11px;color:#5a67d8;margin-bottom:2px;">{{ __('messages.price') }}</div>
                             <div style="font-size:18px;font-weight:700;color:#5a67d8;">
                                 ${{ number_format($design->price, 2) }}
                             </div>
@@ -256,8 +254,7 @@
                         <!-- Measurements Info -->
                         @if ($design->measurements->count() > 0)
                             <div style="margin-bottom:15px;">
-                                <div style="font-size:11px;color:#6b7280;margin-bottom:6px;font-weight:500;">Available
-                                    Sizes:</div>
+                                <div style="font-size:11px;color:#6b7280;margin-bottom:6px;font-weight:500;">{{ __('messages.available_sizes') }}:</div>
                                 <div style="display:flex;gap:6px;flex-wrap:wrap;">
                                     @foreach ($design->measurements->take(5) as $measurement)
                                         <span
@@ -280,7 +277,7 @@
                             <!-- View Details Button -->
                             <a href="{{ route('designs.show', $design->id) }}"
                                style="flex:1;text-align:center;padding:10px;background:#dbeafe;color:#1e40af;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;">
-                                <i class="fas fa-eye"></i> View Details
+                                <i class="fas fa-eye"></i> {{ __('messages.view_details') }}
                             </a>
 
                             <!-- Toggle State Button -->
@@ -288,10 +285,10 @@
                                 @csrf
                                 @method('PATCH')
                                 <button type="submit"
-                                        onclick="return confirm('{{ $design->state ? 'Are you sure you want to deactivate this design?' : 'Are you sure you want to activate this design?' }}')"
+                                        onclick="return confirm('{{ $design->state ? __('messages.deactivate_confirm') : __('messages.activate_confirm') }}')"
                                         style="width:100%;padding:10px;background:{{ $design->state ? '#fef2f2' : '#f0fdf4' }};color:{{ $design->state ? '#dc2626' : '#16a34a' }};border:1px solid {{ $design->state ? '#fecaca' : '#bbf7d0' }};border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;">
                                     <i class="fas {{ $design->state ? 'fa-toggle-off' : 'fa-toggle-on' }}"></i>
-                                    {{ $design->state ? 'Deactivate' : 'Activate' }}
+                                    {{ $design->state ? __('messages.deactivate') : __('messages.activate') }}
                                 </button>
                             </form>
                         </div>
@@ -301,8 +298,8 @@
             @empty
                 <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
                     <i class="fas fa-inbox" style="font-size:64px;color:#cbd5e0;margin-bottom:20px;"></i>
-                    <h3 style="color:#4a5568;font-size:20px;margin-bottom:10px;">No Designs Found</h3>
-                    <p style="color:#9ca3af;font-size:14px;">Try adjusting your filters or create a new design.</p>
+                    <h3 style="color:#4a5568;font-size:20px;margin-bottom:10px;">{{ __('messages.no_designs_found') }}</h3>
+                    <p style="color:#9ca3af;font-size:14px;">{{ __('messages.no_designs_match') }}</p>
                 </div>
             @endforelse
         </div>

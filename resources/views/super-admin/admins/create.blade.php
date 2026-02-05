@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Create Admin')
+@section('title', __('messages.create_admin'))
 
 @push('styles')
 <link href="{{ asset('css/admin/admin-management.css') }}" rel="stylesheet">
@@ -11,31 +11,31 @@
 <!-- Header -->
 <div class="header">
     <div class="header-left">
-        <h2>Create New Admin</h2>
+        <h2>{{ __('messages.create_new_admin') }}</h2>
     </div>
     <div class="header-right">
         <a href="{{ route('super-admin.admins.index') }}" class="btn" style="background:#f3f4f6;color:#4b5563;">
-            <i class="fas fa-arrow-left"></i> Back to List
+            <i class="fas fa-arrow-left"></i> {{ __('messages.back_to_list') }}
         </a>
     </div>
 </div>
 
 <div class="table-card">
-    <form action="{{ route('super-admin.admins.store') }}" method="POST">
+    <form action="{{ route('super-admin.admins.store') }}" method="POST" autocomplete="off">
         @csrf
 
         <div class="form-grid">
             <div class="form-field">
-                <label>Name *</label>
-                <input type="text" name="name" value="{{ old('name') }}" required>
+                <label>{{ __('messages.name') }} *</label>
+                <input type="text" name="name" value="{{ old('name') }}" autocomplete="off" required>
                 @error('name')
                     <span class="error-message">{{ $message }}</span>
                 @enderror
             </div>
 
             <div class="form-field">
-                <label>Email *</label>
-                <input type="email" name="email" value="{{ old('email') }}" required>
+                <label>{{ __('messages.email') }} *</label>
+                <input type="email" name="email" value="{{ old('email') }}" autocomplete="off" required>
                 @error('email')
                     <span class="error-message">{{ $message }}</span>
                 @enderror
@@ -44,8 +44,8 @@
 
         <div class="form-grid">
             <div class="form-field">
-                <label>Phone *</label>
-                <input type="text" name="phone" value="{{ old('phone') }}" required>
+                <label>{{ __('messages.phone') }} *</label>
+                <input type="text" name="phone" value="{{ old('phone') }}" autocomplete="off" required>
                 @error('phone')
                     <span class="error-message">{{ $message }}</span>
                 @enderror
@@ -54,23 +54,23 @@
 
         <div class="form-grid">
             <div class="form-field">
-                <label>Password *</label>
-                <input type="password" name="password" required>
+                <label>{{ __('messages.password') }} *</label>
+                <input type="password" name="password" autocomplete="new-password" required>
                 @error('password')
                     <span class="error-message">{{ $message }}</span>
                 @enderror
             </div>
 
             <div class="form-field">
-                <label>Confirm Password *</label>
-                <input type="password" name="password_confirmation" required>
+                <label>{{ __('messages.password_confirmation') }} *</label>
+                <input type="password" name="password_confirmation" autocomplete="new-password" required>
             </div>
         </div>
 
         <hr class="section-divider">
 
-        <h3 class="section-header">Assign Role</h3>
-        <p class="section-description">Select one or more roles to assign to this admin</p>
+        <h3 class="section-header">{{ __('messages.assign_role') }}</h3>
+        <p class="section-description">{{ __('messages.select_roles_description') }}</p>
 
         <div class="roles-grid-container" style="margin-bottom:30px;">
             @foreach($roles as $role)
@@ -84,7 +84,7 @@
                     <div class="role-info">
                         <span class="role-title">{{ ucwords(str_replace('_', ' ', $role->name)) }}</span>
                         <span class="role-count">
-                            <i class="fas fa-key"></i> {{ $role->permissions->count() }} Permissions
+                            <i class="fas fa-key"></i> {{ $role->permissions->count() }} {{ __('messages.permissions') }}
                         </span>
                     </div>
                     <div class="check-icon">
@@ -97,15 +97,15 @@
             <span class="error-message" style="display:block;margin-top:-20px;margin-bottom:20px;">{{ $message }}</span>
         @enderror
 
-        <h3 class="section-header">Role Permissions</h3>
-        <p class="section-description">Permissions from selected roles (display only)</p>
+        <h3 class="section-header">{{ __('messages.role_permissions') }}</h3>
+        <p class="section-description">{{ __('messages.permissions_display_only') }}</p>
 
         <div class="permissions-wrapper">
             <div class="permissions-group-grid">
                 @foreach($permissions as $group => $groupPermissions)
                     <div class="perm-group-title">
                         <i class="fas fa-shield-alt" style="color:#3b82f6;"></i>
-                        {{ $group }} Permissions
+                        {{ $group }} {{ __('messages.permissions') }}
                         <span style="color:#6b7280;font-size:12px;font-weight:normal;margin-left:5px;">({{ $groupPermissions->count() }})</span>
                     </div>
                     @foreach($groupPermissions as $permission)
@@ -120,10 +120,10 @@
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Create Admin
+                <i class="fas fa-save"></i> {{ __('messages.create_admin') }}
             </button>
             <a href="{{ route('super-admin.admins.index') }}" class="btn" style="background:#6b7280;color:white;">
-                <i class="fas fa-times"></i> Cancel
+                <i class="fas fa-times"></i> {{ __('messages.cancel') }}
             </a>
         </div>
     </form>

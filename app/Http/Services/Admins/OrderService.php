@@ -32,7 +32,8 @@ class OrderService
             'address.city',
             'orderItems.design.designImages',
             'orderItems.measurement',
-            'orderItems.designOptions'
+            'orderItems.designOptions',
+            'review'
         ])->findOrFail($orderId);
     }
 

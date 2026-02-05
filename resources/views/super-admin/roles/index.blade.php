@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Roles Management')
+@section('title', __('messages.roles_management'))
 
 @push('styles')
 <link href="{{ asset('css/admin/users.css') }}" rel="stylesheet">
@@ -28,24 +28,24 @@
 
                 <!-- Search Input -->
                 <div class="search-group">
-                    <label for="search">Search</label>
+                    <label for="search">{{ __('messages.search') }}</label>
                     <input type="text" name="search" id="search" value="{{ request('search') }}"
-                        placeholder="Search by role name...">
+                        placeholder="{{ __('messages.search_by_role_name') }}">
                 </div>
 
                 <!-- Guard Filter -->
                 <div class="filter-group">
-                    <label for="guard_name">Guard Type</label>
+                    <label for="guard_name">{{ __('messages.guard_type') }}</label>
                     <select name="guard_name" id="guard_name">
-                        <option value="">All Guards</option>
-                        <option value="web" {{ request('guard_name') == 'web' ? 'selected' : '' }}>Web (Admin Panel)</option>
-                        <option value="api" {{ request('guard_name') == 'api' ? 'selected' : '' }}>API (Mobile)</option>
+                        <option value="">{{ __('messages.all_guards') }}</option>
+                        <option value="web" {{ request('guard_name') == 'web' ? 'selected' : '' }}>{{ __('messages.web_admin_panel') }}</option>
+                        <option value="api" {{ request('guard_name') == 'api' ? 'selected' : '' }}>{{ __('messages.api_mobile') }}</option>
                     </select>
                 </div>
 
                 <!-- Sort Direction -->
                 <div class="sort-group">
-                    <label for="sort_dir">Sort Direction</label>
+                    <label for="sort_dir">{{ __('messages.sort_direction') }}</label>
                     <select name="sort_dir" id="sort_dir">
                         <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>A-Z</option>
                         <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>Z-A</option>
@@ -56,13 +56,13 @@
             <!-- Action Buttons -->
             <div class="filter-actions">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-filter"></i> Filter
+                    <i class="fas fa-filter"></i> {{ __('messages.filter') }}
                 </button>
                 <a href="{{ route('super-admin.roles.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-redo"></i> Reset
+                    <i class="fas fa-redo"></i> {{ __('messages.reset') }}
                 </a>
                 <a href="{{ route('super-admin.roles.create') }}" class="btn btn-primary" style="margin-left: auto;">
-                    <i class="fas fa-plus"></i> Create New Role
+                    <i class="fas fa-plus"></i> {{ __('messages.create_new_role') }}
                 </a>
             </div>
         </form>
@@ -102,27 +102,27 @@
                     <!-- Role Details -->
                     <div class="user-details">
                         <div class="detail-item">
-                            <label>Role Type</label>
+                            <label>{{ __('messages.role_type') }}</label>
                             @if(in_array($role->name, ['user', 'admin', 'super_admin']))
-                                <p><span style="color:#f59e0b;">●</span> System Role</p>
+                                <p><span style="color:#f59e0b;">●</span> {{ __('messages.system_role') }}</p>
                             @else
-                                <p><span style="color:#3b82f6;">●</span> Custom Role</p>
+                                <p><span style="color:#3b82f6;">●</span> {{ __('messages.custom_role') }}</p>
                             @endif
                         </div>
 
                         <div class="detail-item">
-                            <label>Guard</label>
+                            <label>{{ __('messages.guard') }}</label>
                             <p>{{ $role->guard_name }}</p>
                         </div>
 
                         <div class="detail-item">
-                            <label>Permissions</label>
-                            <p class="wallet-balance">{{ $role->permissions->count() }} permissions</p>
+                            <label>{{ __('messages.permissions') }}</label>
+                            <p class="wallet-balance">{{ $role->permissions->count() }} {{ __('messages.permissions') }}</p>
                         </div>
 
                         <div class="detail-item">
-                            <label>Users</label>
-                            <p>{{ $role->users->count() }} users</p>
+                            <label>{{ __('messages.users') }}</label>
+                            <p>{{ $role->users->count() }} {{ __('messages.users') }}</p>
                         </div>
                     </div>
                 </div>
@@ -130,11 +130,11 @@
                 <!-- Card Footer -->
                 <div class="card-footer">
                     <a href="{{ route('super-admin.roles.show', $role) }}" class="btn-action edit">
-                        <i class="fas fa-eye"></i> View
+                        <i class="fas fa-eye"></i> {{ __('messages.view') }}
                     </a>
 
                     <a href="{{ route('super-admin.roles.edit', $role) }}" class="btn-action wallet">
-                        <i class="fas fa-edit"></i> Edit
+                        <i class="fas fa-edit"></i> {{ __('messages.edit') }}
                     </a>
 
                     @if(!in_array($role->name, ['user', 'admin', 'super_admin']) && $role->users->count() == 0)
@@ -142,8 +142,8 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-action delete"
-                            onclick="return confirm('Are you sure you want to delete this role?')">
-                            <i class="fas fa-trash"></i> Delete
+                            onclick="return confirm('{{ __('messages.delete_role_confirm') }}')">
+                            <i class="fas fa-trash"></i> {{ __('messages.delete') }}
                         </button>
                     </form>
                     @endif
@@ -152,8 +152,8 @@
         @empty
             <div class="empty-state">
                 <i class="fas fa-user-tag"></i>
-                <h3>No Roles Found</h3>
-                <p>No roles match your search criteria</p>
+                <h3>{{ __('messages.no_roles_found') }}</h3>
+                <p>{{ __('messages.no_roles_match') }}</p>
             </div>
         @endforelse
     </div>

@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Spatie\Translatable\HasTranslations;
 
 class Design extends Model
 {
+    use HasTranslations;
+
     protected $fillable = [
         'name',
         'description',
@@ -19,8 +22,6 @@ class Design extends Model
     protected function casts(): array
     {
         return [
-            'name' => 'array',
-            'description' => 'array',
             'price' => 'decimal:2',
             'state' => 'boolean',
         ];

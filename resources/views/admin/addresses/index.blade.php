@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Addresses Management')
+@section('title', __('messages.addresses_management'))
 
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -21,20 +21,20 @@
 
                 <!-- Search -->
                 <div>
-                    <label>Search</label>
+                    <label>{{ __('messages.search') }}</label>
                     <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Search by street, district..."
+                        placeholder="{{ __('messages.search_by_street_district') }}"
                         style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                 </div>
 
                 <!-- City Filter -->
                 <div>
-                    <label>City</label>
+                    <label>{{ __('messages.city') }}</label>
                     <select name="city" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                        <option value="">All Cities</option>
+                        <option value="">{{ __('messages.all_cities') }}</option>
                         @foreach ($cities as $city)
-                            <option value="{{ $city->name['en'] }}" {{ request('city') == $city->name['en'] ? 'selected' : '' }}>
-                                {{ $city->name['en'] }}
+                            <option value="{{ $city->getTranslation('name', 'en') }}" {{ request('city') == $city->getTranslation('name', 'en') ? 'selected' : '' }}>
+                                {{ $city->getTranslation('name', app()->getLocale()) }}
                             </option>
                         @endforeach
                     </select>
@@ -42,21 +42,21 @@
 
                 <!-- Sort Direction -->
                 <div>
-                    <label>Sort Direction</label>
+                    <label>{{ __('messages.sort_direction') }}</label>
                     <select name="sort_dir" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                        <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>Newest First</option>
-                        <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>Oldest First</option>
+                        <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>{{ __('messages.newest_first') }}</option>
+                        <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>{{ __('messages.oldest_first') }}</option>
                     </select>
                 </div>
 
                 <!-- Per Page -->
                 <div>
-                    <label>Items Per Page</label>
+                    <label>{{ __('messages.items_per_page') }}</label>
                     <select name="per_page" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                        <option value="6" {{ request('per_page', 6) == 6 ? 'selected' : '' }}>6 cards per page</option>
-                        <option value="12" {{ request('per_page') == 12 ? 'selected' : '' }}>12 cards per page</option>
-                        <option value="18" {{ request('per_page') == 18 ? 'selected' : '' }}>18 cards per page</option>
-                        <option value="24" {{ request('per_page') == 24 ? 'selected' : '' }}>24 cards per page</option>
+                        <option value="6" {{ request('per_page', 6) == 6 ? 'selected' : '' }}>{{ __('messages.cards_per_page', ['count' => 6]) }}</option>
+                        <option value="12" {{ request('per_page') == 12 ? 'selected' : '' }}>{{ __('messages.cards_per_page', ['count' => 12]) }}</option>
+                        <option value="18" {{ request('per_page') == 18 ? 'selected' : '' }}>{{ __('messages.cards_per_page', ['count' => 18]) }}</option>
+                        <option value="24" {{ request('per_page') == 24 ? 'selected' : '' }}>{{ __('messages.cards_per_page', ['count' => 24]) }}</option>
                     </select>
                 </div>
 
@@ -64,11 +64,11 @@
 
             <div style="margin-top:15px;display:flex;gap:10px;">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-filter"></i> Filter
+                    <i class="fas fa-filter"></i> {{ __('messages.filter') }}
                 </button>
                 <a href="{{ route('addresses.index') }}"
                     style="background:#6b7280;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
-                    <i class="fas fa-redo"></i> Reset
+                    <i class="fas fa-redo"></i> {{ __('messages.reset') }}
                 </a>
             </div>
 
@@ -83,7 +83,7 @@
 
     <!-- Header -->
     <div class="table-header" style="margin-bottom:20px;">
-        <h3>Addresses List ({{ $addresses->total() }} addresses) - Page {{ $addresses->currentPage() }} of {{ $addresses->lastPage() }}</h3>
+        <h3>{{ __('messages.addresses_list') }} ({{ __('messages.total_addresses', ['count' => $addresses->total()]) }}) - {{ __('messages.page_of', ['current' => $addresses->currentPage(), 'last' => $addresses->lastPage()]) }}</h3>
     </div>
 
     <!-- Addresses Grid - Updated for 6 cards per page -->
@@ -96,7 +96,7 @@
                 <!-- Header -->
                 <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #f0f0f0;">
                     <div>
-                        <div style="font-size:12px;color:#6b7280;margin-bottom:4px;">Address ID</div>
+                        <div style="font-size:12px;color:#6b7280;margin-bottom:4px;">{{ __('messages.address_id') }}</div>
                         <div style="font-size:18px;font-weight:700;color:#1f2937;">#{{ $address->id }}</div>
                     </div>
                 </div>
@@ -120,10 +120,10 @@
                     <div style="display:flex;align-items:center;gap:8px;padding:10px;background:#f8fafc;border-radius:8px;">
                         <i class="fas fa-city" style="color:#3b82f6;font-size:14px;"></i>
                         <div style="flex:1;">
-                            <div style="font-size:11px;color:#6b7280;">City</div>
+                            <div style="font-size:11px;color:#6b7280;">{{ __('messages.city') }}</div>
                             <div style="font-size:13px;font-weight:600;color:#1f2937;">
-                                {{ $address->city->name['en'] ?? 'N/A' }}
-                                <span style="color:#9ca3af;font-weight:400;">/ {{ $address->city->name['ar'] ?? '' }}</span>
+                                {{ $address->city?->getTranslation('name', 'en') ?? __('messages.n_a') }}
+                                <span style="color:#9ca3af;font-weight:400;">/ {{ $address->city?->getTranslation('name', 'ar') ?? '' }}</span>
                             </div>
                         </div>
                     </div>
@@ -132,13 +132,13 @@
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                         <div style="padding:10px;background:#f0fdf4;border-radius:8px;">
                             <div style="font-size:11px;color:#065f46;margin-bottom:4px;">
-                                <i class="fas fa-location-arrow"></i> District
+                                <i class="fas fa-location-arrow"></i> {{ __('messages.district') }}
                             </div>
                             <div style="font-size:13px;font-weight:600;color:#065f46;">{{ $address->district }}</div>
                         </div>
                         <div style="padding:10px;background:#fef3c7;border-radius:8px;">
                             <div style="font-size:11px;color:#92400e;margin-bottom:4px;">
-                                <i class="fas fa-road"></i> House
+                                <i class="fas fa-road"></i> {{ __('messages.house') }}
                             </div>
                             <div style="font-size:13px;font-weight:600;color:#92400e;">{{ $address->house_number }}</div>
                         </div>
@@ -147,7 +147,7 @@
                     <!-- Street -->
                     <div style="padding:10px;background:#eff6ff;border-radius:8px;">
                         <div style="font-size:11px;color:#1e40af;margin-bottom:4px;">
-                            <i class="fas fa-map"></i> Street
+                            <i class="fas fa-map"></i> {{ __('messages.street') }}
                         </div>
                         <div style="font-size:13px;font-weight:600;color:#1e40af;">{{ $address->street }}</div>
                     </div>
@@ -157,7 +157,7 @@
                 @if($address->notes)
                     <div style="padding:10px;background:#fef2f2;border-radius:8px;margin-bottom:16px;">
                         <div style="font-size:11px;color:#991b1b;margin-bottom:4px;">
-                            <i class="fas fa-sticky-note"></i> Notes
+                            <i class="fas fa-sticky-note"></i> {{ __('messages.notes') }}
                         </div>
                         <div style="font-size:12px;color:#7f1d1d;line-height:1.4;">{{ $address->notes }}</div>
                     </div>
@@ -167,11 +167,11 @@
                 @if($address->Langitude && $address->Latitude)
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
                         <div style="padding:8px;background:#f8fafc;border-radius:6px;text-align:center;">
-                            <div style="font-size:10px;color:#6b7280;margin-bottom:2px;">Longitude</div>
+                            <div style="font-size:10px;color:#6b7280;margin-bottom:2px;">{{ __('messages.longitude') }}</div>
                             <div style="font-size:12px;font-weight:600;color:#1f2937;">{{ $address->Langitude }}</div>
                         </div>
                         <div style="padding:8px;background:#f8fafc;border-radius:6px;text-align:center;">
-                            <div style="font-size:10px;color:#6b7280;margin-bottom:2px;">Latitude</div>
+                            <div style="font-size:10px;color:#6b7280;margin-bottom:2px;">{{ __('messages.latitude') }}</div>
                             <div style="font-size:12px;font-weight:600;color:#1f2937;">{{ $address->Latitude }}</div>
                         </div>
                     </div>
@@ -187,7 +187,7 @@
                                 style="padding:6px 12px;background:#dbeafe;color:#1e40af;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;transition:all 0.2s;"
                                 onmouseover="this.style.background='#bfdbfe'"
                                 onmouseout="this.style.background='#dbeafe'">
-                            <i class="fas fa-map-marked-alt"></i> Map
+                            <i class="fas fa-map-marked-alt"></i> {{ __('messages.map') }}
                         </button>
                     </div>
                 </div>
@@ -196,8 +196,8 @@
         @empty
             <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
                 <i class="fas fa-map-marker-alt" style="font-size:64px;color:#cbd5e0;margin-bottom:20px;"></i>
-                <h3 style="color:#4a5568;font-size:20px;margin-bottom:10px;">No Addresses Found</h3>
-                <p style="color:#9ca3af;font-size:14px;">There are no addresses matching your criteria.</p>
+                <h3 style="color:#4a5568;font-size:20px;margin-bottom:10px;">{{ __('messages.no_addresses_found') }}</h3>
+                <p style="color:#9ca3af;font-size:14px;">{{ __('messages.no_addresses_match') }}</p>
             </div>
         @endforelse
     </div>
@@ -217,16 +217,16 @@
         <button onclick="closeMapModal()" style="position:absolute;top:15px;right:15px;background:#fee2e2;color:#991b1b;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-weight:bold;">
             ×
         </button>
-        <h3 id="mapTitle" style="margin-bottom:15px;color:#1f2937;">Address Location</h3>
+        <h3 id="mapTitle" style="margin-bottom:15px;color:#1f2937;">{{ __('messages.address_location') }}</h3>
         <div id="map" style="width:100%;height:400px;border-radius:8px;"></div>
         <div id="mapInfo" style="margin-top:15px;padding:15px;background:#f8fafc;border-radius:6px;font-size:14px;">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 <div>
-                    <span style="color:#6b7280;">Latitude:</span>
+                    <span style="color:#6b7280;">{{ __('messages.latitude') }}:</span>
                     <span id="infoLat" style="font-weight:600;color:#1f2937;"></span>
                 </div>
                 <div>
-                    <span style="color:#6b7280;">Longitude:</span>
+                    <span style="color:#6b7280;">{{ __('messages.longitude') }}:</span>
                     <span id="infoLng" style="font-weight:600;color:#1f2937;"></span>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Admin Details')
+@section('title', __('messages.admin_details'))
 
 @push('styles')
     <link href="{{ asset('css/admin/admin-management.css') }}" rel="stylesheet">
@@ -11,11 +11,11 @@
     <!-- Header -->
     <div class="header">
         <div class="header-left">
-            <h2>Admin Details</h2>
+            <h2>{{ __('messages.admin_details') }}</h2>
         </div>
         <div class="header-right">
             <a href="{{ route('super-admin.admins.index') }}" class="btn" style="background:#f3f4f6;color:#4b5563;">
-                <i class="fas fa-arrow-left"></i> Back to List
+                <i class="fas fa-arrow-left"></i> {{ __('messages.back_to_list') }}
             </a>
         </div>
     </div>
@@ -32,21 +32,21 @@
                 <div style="display:flex;gap:15px;flex-wrap:wrap;">
                     @if ($admin->is_active)
                         <span class="badge success" style="background:#d1fae5;color:#065f46;">
-                            <i class="fas fa-check-circle"></i> Active
+                            <i class="fas fa-check-circle"></i> {{ __('messages.active') }}
                         </span>
                     @else
                         <span class="badge" style="background:#f3f4f6;color:#6b7280;">
-                            <i class="fas fa-pause-circle"></i> Inactive
+                            <i class="fas fa-pause-circle"></i> {{ __('messages.inactive') }}
                         </span>
                     @endif
                     <span class="badge" style="background:#dbeafe;color:#1e40af;">
-                        <i class="fas fa-user-shield"></i> Admin
+                        <i class="fas fa-user-shield"></i> {{ __('messages.admin') }}
                     </span>
                 </div>
             </div>
             <div style="display:flex;gap:10px;">
                 <a href="{{ route('super-admin.admins.edit', $admin) }}" class="btn btn-primary">
-                    <i class="fas fa-edit"></i> Edit Admin
+                    <i class="fas fa-edit"></i> {{ __('messages.edit_admin') }}
                 </a>
             </div>
         </div>
@@ -54,27 +54,27 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;">
             <div>
                 <h3 style="margin:0 0 15px 0;color:#1f2937;font-size:16px;">
-                    <i class="fas fa-info-circle" style="color:#3b82f6;"></i> Basic Information
+                    <i class="fas fa-info-circle" style="color:#3b82f6;"></i> {{ __('messages.basic_information') }}
                 </h3>
                 <div style="background:#f8fafc;padding:15px;border-radius:8px;">
                     <div class="admin-detail">
                         <i class="fas fa-envelope"></i>
-                        <span class="label">Email:</span>
+                        <span class="label">{{ __('messages.email') }}:</span>
                         <span class="value">{{ $admin->email }}</span>
                     </div>
                     <div class="admin-detail">
                         <i class="fas fa-phone"></i>
-                        <span class="label">Phone:</span>
+                        <span class="label">{{ __('messages.phone') }}:</span>
                         <span class="value">{{ $admin->phone }}</span>
                     </div>
                     <div class="admin-detail">
                         <i class="fas fa-calendar-plus"></i>
-                        <span class="label">Created:</span>
+                        <span class="label">{{ __('messages.created_at') }}:</span>
                         <span class="value">{{ $admin->created_at->format('Y-m-d H:i') }}</span>
                     </div>
                     <div class="admin-detail">
                         <i class="fas fa-calendar-check"></i>
-                        <span class="label">Last Updated:</span>
+                        <span class="label">{{ __('messages.last_updated') }}:</span>
                         <span class="value">{{ $admin->updated_at->format('Y-m-d H:i') }}</span>
                     </div>
                 </div>
@@ -82,27 +82,27 @@
 
             <div>
                 <h3 style="margin:0 0 15px 0;color:#1f2937;font-size:16px;">
-                    <i class="fas fa-chart-line" style="color:#10b981;"></i> Statistics
+                    <i class="fas fa-chart-line" style="color:#10b981;"></i> {{ __('messages.statistics') }}
                 </h3>
                 <div style="background:#f8fafc;padding:15px;border-radius:8px;">
                     <div class="admin-detail">
                         <i class="fas fa-user-tag"></i>
-                        <span class="label">Roles:</span>
+                        <span class="label">{{ __('messages.roles') }}:</span>
                         <span class="value">
-                            <strong style="color:#3b82f6;">{{ $admin->roles->count() }}</strong> assigned
+                            <strong style="color:#3b82f6;">{{ $admin->roles->count() }}</strong> {{ __('messages.assigned') }}
                         </span>
                     </div>
                     <div class="admin-detail">
                         <i class="fas fa-check-circle"></i>
-                        <span class="label">Email Verified:</span>
+                        <span class="label">{{ __('messages.email_verified') }}:</span>
                         <span class="value">
                             @if ($admin->email_verified_at)
                                 <span style="color:#10b981;">
-                                    <i class="fas fa-check"></i> Yes
+                                    <i class="fas fa-check"></i> {{ __('messages.yes') }}
                                 </span>
                             @else
                                 <span style="color:#ef4444;">
-                                    <i class="fas fa-times"></i> No
+                                    <i class="fas fa-times"></i> {{ __('messages.no') }}
                                 </span>
                             @endif
                         </span>
@@ -116,8 +116,8 @@
     <div class="table-card" style="margin-bottom:20px;">
         <div style="margin-bottom:20px;padding-bottom:15px;border-bottom:2px solid #e5e7eb;">
             <h3 style="margin:0;color:#1f2937;">
-                <i class="fas fa-user-shield" style="color:#8b5cf6;"></i> Assigned Roles
-                <span style="color:#6b7280;font-size:14px;font-weight:normal;">({{ $admin->roles->count() }} roles)</span>
+                <i class="fas fa-user-shield" style="color:#8b5cf6;"></i> {{ __('messages.assigned_roles') }}
+                <span style="color:#6b7280;font-size:14px;font-weight:normal;">({{ $admin->roles->count() }} {{ __('messages.roles') }})</span>
             </h3>
         </div>
 
@@ -128,7 +128,7 @@
                         <div class="role-info">
                             <span class="role-title">{{ ucwords(str_replace('_', ' ', $role->name)) }}</span>
                             <span class="role-count">
-                                <i class="fas fa-key"></i> {{ $role->permissions->count() }} Permissions
+                                <i class="fas fa-key"></i> {{ $role->permissions->count() }} {{ __('messages.permissions') }}
                             </span>
                         </div>
                         <div class="check-icon">
@@ -140,7 +140,7 @@
         @else
             <div style="text-align:center;padding:40px;color:#9ca3af;">
                 <i class="fas fa-user-shield" style="font-size:48px;margin-bottom:15px;"></i>
-                <p style="margin:0;">No roles assigned yet</p>
+                <p style="margin:0;">{{ __('messages.no_roles_assigned_yet') }}</p>
             </div>
         @endif
     </div>
@@ -149,12 +149,12 @@
     <div class="table-card">
         <div style="margin-bottom:20px;padding-bottom:15px;border-bottom:2px solid #e5e7eb;">
             <h3 style="margin:0;color:#1f2937;">
-                <i class="fas fa-key" style="color:#f59e0b;"></i> Effective Permissions
+                <i class="fas fa-key" style="color:#f59e0b;"></i> {{ __('messages.effective_permissions') }}
                 <span style="color:#6b7280;font-size:14px;font-weight:normal;">({{ $admin->getAllPermissions()->count() }}
-                    permissions)</span>
+                    {{ __('messages.permissions') }})</span>
             </h3>
             <p style="margin:5px 0 0 0;font-size:13px;color:#6b7280;">
-                Permissions inherited from assigned roles
+                {{ __('messages.permissions_from_roles') }}
             </p>
         </div>
 
@@ -169,7 +169,7 @@
             @foreach ($permissions as $group => $groupPermissions)
                 <div class="perm-group-title">
                     <i class="fas fa-shield-alt" style="color:#3b82f6;"></i>
-                    {{ $group }} Permissions
+                    {{ $group }} {{ __('messages.permissions') }}
                     <span style="color:#6b7280;font-size:12px;font-weight:normal;margin-left:5px;">
                         ({{ $groupPermissions->filter(function($perm) use ($adminPermissionNames) {
                             return in_array($perm->name, $adminPermissionNames);
@@ -188,11 +188,11 @@
         @else
             <div style="text-align:center;padding:60px;color:#9ca3af;">
                 <i class="fas fa-key" style="font-size:64px;margin-bottom:20px;display:block;opacity:0.3;"></i>
-                <p style="font-size:18px;font-weight:500;">No Permissions Assigned</p>
-                <p style="font-size:14px;margin-top:8px;">This admin has no permissions yet</p>
+                <p style="font-size:18px;font-weight:500;">{{ __('messages.no_permissions_assigned') }}</p>
+                <p style="font-size:14px;margin-top:8px;">{{ __('messages.admin_no_permissions') }}</p>
                 <a href="{{ route('super-admin.admins.edit', $admin) }}" class="btn btn-primary"
                     style="margin-top:20px;">
-                    <i class="fas fa-plus"></i> Assign Permissions
+                    <i class="fas fa-plus"></i> {{ __('messages.assign_permissions') }}
                 </a>
             </div>
         @endif

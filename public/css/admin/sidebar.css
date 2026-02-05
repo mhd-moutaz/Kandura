@@ -382,3 +382,124 @@ body .sidebar.pinned ~ .main-content {
 .sidebar * {
     transition: opacity 0.3s ease, width 0.3s ease;
 }
+
+/* Language Switcher Styles */
+.language-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px 20px;
+    border-top: 1px solid #e2e8f0;
+    margin-top: auto;
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.lang-btn:hover {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.lang-btn.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Collapsed sidebar language switcher - Hidden by default */
+.sidebar.collapsed .language-switcher {
+    display: none;
+}
+
+/* Show language switcher on hover */
+.sidebar.collapsed:hover .language-switcher {
+    display: flex;
+    flex-direction: row;
+    padding: 15px 20px;
+    gap: 8px;
+}
+
+.sidebar.collapsed:hover .lang-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 12px;
+}
+
+/* Always show when pinned */
+.sidebar.pinned .language-switcher {
+    display: flex !important;
+}
+
+/* RTL Support for Sidebar */
+[dir="rtl"] .sidebar {
+    right: 0;
+    left: auto;
+    border-right: none;
+    border-left: 1px solid #e2e8f0;
+}
+
+[dir="rtl"] .sidebar.collapsed {
+    transform: translateX(0);
+}
+
+[dir="rtl"] .main-content {
+    margin-left: 0;
+    margin-right: 70px;
+}
+
+[dir="rtl"] .sidebar:not(.collapsed) ~ .main-content,
+[dir="rtl"] .sidebar.pinned ~ .main-content {
+    margin-right: 260px;
+    margin-left: 0;
+}
+
+[dir="rtl"] .pin-button {
+    right: auto;
+    left: 15px;
+}
+
+[dir="rtl"] .sidebar.collapsed .pin-button {
+    left: 50%;
+    right: auto;
+}
+
+[dir="rtl"] .sidebar.collapsed:hover .pin-button {
+    left: 15px;
+    right: auto;
+}
+
+/* Fix Logo alignment in RTL to prevent overlap with Pin Button */
+[dir="rtl"] .sidebar.pinned .logo,
+[dir="rtl"] .sidebar.collapsed:hover .logo {
+    justify-content: flex-end !important;
+    padding-left: 0 !important;
+    padding-right: 20px !important;
+}
+
+@media (max-width: 768px) {
+    [dir="rtl"] .sidebar {
+        transform: translateX(100%);
+    }
+
+    [dir="rtl"] .sidebar.collapsed:hover,
+    [dir="rtl"] .sidebar.pinned {
+        transform: translateX(0);
+    }
+
+    [dir="rtl"] body .main-content {
+        margin-right: 0 !important;
+    }
+}

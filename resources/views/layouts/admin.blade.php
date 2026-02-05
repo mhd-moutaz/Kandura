@@ -1,18 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'لوحة التحكم') - متجري الإلكتروني</title>
+    <title>@yield('title', __('messages.dashboard')) - {{ __('messages.app_name') }}</title>
 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
+    <!-- Bootstrap CSS (RTL/LTR) -->
+    @if(app()->getLocale() === 'ar')
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    @else
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    @endif
+
     <!-- Custom CSS -->
     <link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
     <link href="{{ asset('css/admin/sidebar.css') }}" rel="stylesheet">
+
+    <!-- RTL Adjustments -->
+    @if(app()->getLocale() === 'ar')
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
+        .sidebar { right: auto; left: 0; }
+        .sidebar.collapsed { transform: translateX(-100%); }
+        .main-content { margin-left: 0; margin-right: auto; }
+        .sidebar:not(.collapsed) ~ .main-content { margin-left: var(--sidebar-width, 250px); }
+    </style>
+    @endif
 
     @stack('styles')
 </head>

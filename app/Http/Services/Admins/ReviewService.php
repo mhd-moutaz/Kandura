@@ -54,20 +54,9 @@ class ReviewService
     public function getReviewStats(): array
     {
         $totalReviews = Review::count();
-        $averageRating = Review::avg('rating');
-
-        $ratingDistribution = [
-            5 => Review::where('rating', 5)->count(),
-            4 => Review::where('rating', 4)->count(),
-            3 => Review::where('rating', 3)->count(),
-            2 => Review::where('rating', 2)->count(),
-            1 => Review::where('rating', 1)->count(),
-        ];
 
         return [
             'total_reviews' => $totalReviews,
-            'average_rating' => round($averageRating, 2),
-            'rating_distribution' => $ratingDistribution,
         ];
     }
 }
