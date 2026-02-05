@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Constants\PermissionConstants;
 use App\Models\Review;
 use App\Models\User;
 
@@ -12,7 +13,7 @@ class ReviewPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('view all reviews', 'web');
+        return $user->hasPermissionTo(PermissionConstants::VIEW_ALL_REVIEWS, 'web');
     }
 
     /**
@@ -22,7 +23,7 @@ class ReviewPolicy
     {
         // User can view their own review or admin can view all
         return $user->id === $review->user_id ||
-               $user->hasPermissionTo('view all reviews', 'web');
+               $user->hasPermissionTo(PermissionConstants::VIEW_ALL_REVIEWS, 'web');
     }
 
     /**
@@ -30,7 +31,7 @@ class ReviewPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('create review', 'api');
+        return $user->hasPermissionTo(PermissionConstants::CREATE_REVIEW, 'api');
     }
 
     /**
@@ -40,6 +41,6 @@ class ReviewPolicy
     {
         // User can delete their own review or admin can delete any
         return $user->id === $review->user_id ||
-               $user->hasPermissionTo('delete review', 'web');
+               $user->hasPermissionTo(PermissionConstants::DELETE_REVIEW_ADMIN, 'web');
     }
 }

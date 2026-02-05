@@ -32,6 +32,7 @@ class OrderResource extends JsonResource
             }),
             'order_items' => OrderItemResource::collection($this->whenLoaded('orderItems')),
             'note' => $this->note,
+            'invoice_download_url' => $this->when($this->invoice_download_url, $this->invoice_download_url),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -199,6 +199,12 @@
                 <span class="amount">${{ number_format($order->total, 2) }}</span>
             </div>
         </div>
+
+        @if(isset($invoiceDownloadUrl) && $invoiceDownloadUrl)
+        <a href="{{ $invoiceDownloadUrl }}" class="btn" target="_blank" style="margin-bottom: 15px;">
+            <i class="fas fa-file-invoice"></i>  Download Invoice
+        </a>
+        @endif
         @endif
     </div>
 </body>

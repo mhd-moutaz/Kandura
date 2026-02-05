@@ -22,6 +22,6 @@ class InvoicePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('view all orders', 'web');
+        return $user->hasPermissionTo('view all order', 'web');
     }
 }

@@ -9,19 +9,22 @@ use App\Exceptions\GeneralException;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\Users\CouponService;
 use App\Http\Services\Global\WalletService;
+use App\Http\Services\Global\InvoiceService;
 
 class OrderService
 {
     protected $walletService;
     protected $couponService;
     protected $stripeService;
+    protected $invoiceService;
 
 
-    public function __construct(WalletService $walletService, CouponService $couponService, StripeService $stripeService)
+    public function __construct(WalletService $walletService, CouponService $couponService, StripeService $stripeService, InvoiceService $invoiceService)
     {
         $this->walletService = $walletService;
         $this->couponService = $couponService;
         $this->stripeService = $stripeService;
+        $this->invoiceService = $invoiceService;
     }
 
     public function createOrder($data)
@@ -145,7 +148,12 @@ class OrderService
             $this->couponService->recordCouponUsage($order->coupon, $order, $user);
         }
 
-        return $order->fresh();
+        // Generate invoice and get download URL
+        $order = $order->fresh();
+        $invoice = $this->invoiceService->generateInvoice($order);
+        $order->invoice_download_url = $this->invoiceService->getDownloadUrl($invoice);
+
+        return $order;
     }
 
     private function processCardPayment(Order $order): array
@@ -178,7 +186,12 @@ class OrderService
             $this->couponService->recordCouponUsage($order->coupon, $order, $user);
         }
 
-        return $order->fresh();
+        // Generate invoice and get download URL
+        $order = $order->fresh();
+        $invoice = $this->invoiceService->generateInvoice($order);
+        $order->invoice_download_url = $this->invoiceService->getDownloadUrl($invoice);
+
+        return $order;
     }
 
     /**

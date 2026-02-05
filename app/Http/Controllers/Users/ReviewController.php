@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
-use App\Http\Services\ReviewService;
+use App\Http\Services\Users\ReviewService;
 use App\Http\Requests\Users\CreateReviewRequest;
 use App\Http\Resources\ReviewResource;
 use App\Models\Order;
@@ -28,10 +28,8 @@ class ReviewController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only(['rating', 'per_page']);
-
-        $reviews = $this->reviewService->getUserReviews($filters);
-
-        return ReviewResource::collection($reviews);
+        $reviews = $this->reviewService->index($filters);
+        return $this->success(ReviewResource::collection($reviews));
     }
 
     /**
@@ -42,9 +40,9 @@ class ReviewController extends Controller
         $this->authorize('create', \App\Models\Review::class);
 
         $user = $request->user();
-        $review = $this->reviewService->createReview($user, $order, $request->validated());
+        $review = $this->reviewService->store($user, $order, $request->validated());
 
-        return new ReviewResource($review);
+        return $this->success(new ReviewResource($review));
     }
 
     /**
@@ -55,8 +53,8 @@ class ReviewController extends Controller
         $this->authorize('delete', $review);
         $this->reviewService->deleteReview($review);
 
-        return response()->json([
-            'message' => 'تم حذف التقييم بنجاح / Review deleted successfully'
+        return $this->success([
+            'message' => 'Review deleted successfully'
         ]);
     }
 }

@@ -41,8 +41,10 @@ class OrderService
         $oldStatus = $order->status;
         $order->update(['status' => $status]);
 
-        // Auto-generate invoice when order is completed
-        if ($status === StatusOrderEnum::COMPLETED && $oldStatus !== StatusOrderEnum::COMPLETED) {
+        // Auto-generate invoice when order is confirmed or completed
+        if (
+            ($status === StatusOrderEnum::CONFIRMED && $oldStatus !== StatusOrderEnum::CONFIRMED) 
+        ) {
             $this->invoiceService->generateInvoice($order);
         }
 

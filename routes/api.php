@@ -91,7 +91,7 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('reviews')->group(function () {
             Route::get('/', [ReviewController::class, 'index'])->middleware('permission:view review');
             Route::post('/orders/{order}', [ReviewController::class, 'store'])->middleware('permission:create review');
-            // Route::delete('/{review}', [ReviewController::class, 'destroy'])->middleware('permission:view review');
+            Route::delete('/{review}', [ReviewController::class, 'destroy'])->middleware('permission:delete review');
         });
     });
 });

@@ -31,12 +31,12 @@ class CreateReviewRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'rating.required' => 'التقييم مطلوب / Rating is required',
-            'rating.integer' => 'يجب أن يكون التقييم رقماً صحيحاً / Rating must be an integer',
-            'rating.min' => 'يجب أن يكون التقييم على الأقل 1 / Rating must be at least 1',
-            'rating.max' => 'يجب أن يكون التقييم على الأكثر 5 / Rating must be at most 5',
-            'comment.string' => 'يجب أن يكون التعليق نصاً / Comment must be a string',
-            'comment.max' => 'يجب ألا يتجاوز التعليق 1000 حرف / Comment must not exceed 1000 characters',
+            'rating.required' => 'Rating is required',
+            'rating.integer' => 'Rating must be an integer',
+            'rating.min' => 'Rating must be at least 1',
+            'rating.max' => 'Rating must be at most 5',
+            'comment.string' => 'Comment must be a string',
+            'comment.max' => 'Comment must not exceed 1000 characters',
         ];
     }
 }
