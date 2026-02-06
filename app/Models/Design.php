@@ -15,6 +15,7 @@ class Design extends Model
         'name',
         'description',
         'price',
+        'quantity',
         'state',
         'user_id'
     ];
@@ -23,6 +24,7 @@ class Design extends Model
     {
         return [
             'price' => 'decimal:2',
+            'quantity' => 'integer',
             'state' => 'boolean',
         ];
     }
@@ -47,6 +49,16 @@ class Design extends Model
     public function designOptions()
     {
         return $this->belongsToMany(DesignOption::class, 'design_option_selection');
+    }
+
+    public function scopeInStock($query)
+    {
+        return $query->where('quantity', '>', 0);
+    }
+
+    public function scopeOutOfStock($query)
+    {
+        return $query->where('quantity', '=', 0);
     }
 
     public function scopeFilter(Builder $query, array $filters): void

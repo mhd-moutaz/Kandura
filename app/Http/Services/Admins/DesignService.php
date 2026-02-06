@@ -6,6 +6,7 @@ use App\Models\DesignOption;
 use App\Models\OrderItems;
 use App\Exceptions\GeneralException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 class DesignService{
@@ -50,6 +51,39 @@ class DesignService{
             'message' => $newState
                 ? 'Design activated successfully.'
                 : 'Design deactivated successfully.'
+        ];
+    }
+
+    /**
+     * Update design quantity (increment or decrement)
+     */
+    public function updateQuantity(Design $design, array $data): array
+    {
+        DB::transaction(function() use ($design, $data) {
+            $designLocked = Design::lockForUpdate()->find($design->id);
+            $quantity = $data['quantity'];
+            $action = $data['action'];
+
+            switch($action) {
+                case 'increment':
+                    $designLocked->increment('quantity', $quantity);
+                    break;
+                case 'decrement':
+                    if ($designLocked->quantity >= $quantity) {
+                        $designLocked->decrement('quantity', $quantity);
+                    } else {
+                        throw new GeneralException(
+                            'Cannot decrement below zero',
+                            400
+                        );
+                    }
+                    break;
+            }
+        });
+
+        return [
+            'success' => true,
+            'message' => __('messages.quantity_updated')
         ];
     }
 }

@@ -34,6 +34,8 @@ class UpdateDesignRequest extends FormRequest
 
             'price' => 'sometimes|numeric|min:0',
 
+            'quantity' => 'sometimes|integer|min:0|max:999999',
+
             'images' => 'sometimes|array',
             'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
 

@@ -14,13 +14,19 @@ class AddressResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // Handle city name (could be string or array/JSON)
+        $cityName = $this->city->name ?? [];
+        if (is_string($cityName)) {
+            $cityName = json_decode($cityName, true) ?? [];
+        }
+
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
             'city' => [
                 'id'        => $this->city->id,
-                'name_en' => $this->city->name['en'],
-                'name_ar' => $this->city->name['ar'],
+                'name_en' => $cityName['en'] ?? '',
+                'name_ar' => $cityName['ar'] ?? '',
             ],
             'district' => $this->district,
             'street' => $this->street,

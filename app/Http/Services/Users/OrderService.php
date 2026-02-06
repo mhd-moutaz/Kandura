@@ -2,9 +2,15 @@
 
 namespace App\Http\Services\Users;
 
+use Carbon\Carbon;
 use App\Models\Order;
+use App\Models\Coupon;
+use App\Models\Design;
+use App\Models\CouponUsage;
 use App\Enum\StatusOrderEnum;
+use App\Models\CardTransactions;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Exceptions\GeneralException;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\Users\CouponService;
@@ -43,42 +49,8 @@ class OrderService
             ->with('orderItems', 'address')
             ->get();
     }
-    public function applyCoupon(Order $order, string $couponCode): Order
-    {
-        if ($order->status !== StatusOrderEnum::PENDING) {
-            throw new GeneralException('Can only apply coupons to pending orders', 400);
-        }
 
-        $user = Auth::user();
 
-        // Remove existing coupon if any
-        if ($order->coupon_id) {
-            $order = $this->couponService->removeCouponFromOrder($order);
-        }
-
-        // Validate and calculate discount
-        $couponData = $this->couponService->validateAndApplyCoupon($couponCode, $order, $user);
-
-        // Apply coupon to order
-        $order = $this->couponService->applyCouponToOrder(
-            $couponData['coupon'],
-            $order,
-            $couponData['discount']
-        );
-
-        return $order->fresh(['coupon', 'orderItems']);
-    }
-    /**
-     * Remove coupon from order
-     */
-    public function removeCoupon(Order $order): Order
-    {
-        if ($order->status !== StatusOrderEnum::PENDING) {
-            throw new GeneralException('Can only remove coupons from pending orders', 400);
-        }
-
-        return $this->couponService->removeCouponFromOrder($order);
-    }
 
     public function confirmOrder(Order $order, $data)
     {
@@ -139,6 +111,9 @@ class OrderService
             ]
         );
 
+        // تقليل المخزون لجميع التصاميم
+        $this->reduceStockForOrder($order);
+
         $order->update([
             'payment_method' => 'wallet',
             'status' => StatusOrderEnum::CONFIRMED,
@@ -176,6 +151,9 @@ class OrderService
     {
         $user = Auth::user();
 
+        // تقليل المخزون لجميع التصاميم
+        $this->reduceStockForOrder($order);
+
         $order->update([
             'payment_method' => 'cash',
             'status' => StatusOrderEnum::CONFIRMED,
@@ -208,6 +186,9 @@ class OrderService
                 throw new GeneralException('Order payment method is not card', 400);
             }
 
+            // تقليل المخزون لجميع التصاميم
+            $this->reduceStockForOrder($order);
+
             $order->update([
                 'status' => StatusOrderEnum::CONFIRMED,
             ]);
@@ -222,6 +203,70 @@ class OrderService
     }
 
     /**
+     * تقليل المخزون لجميع التصاميم في الطلب
+     * يتم استدعاؤه عند تأكيد الطلب
+     */
+    private function reduceStockForOrder(Order $order): void
+    {
+        foreach ($order->orderItems as $orderItem) {
+            $design = Design::lockForUpdate()->find($orderItem->design_id);
+
+            if (!$design) {
+                throw new GeneralException(
+                    "Design #{$orderItem->design_id} not found",
+                    404
+                );
+            }
+
+            // التحقق النهائي من الكمية قبل التقليل
+            if ($design->quantity < $orderItem->quantity) {
+                $designName = $design->getTranslation('name', app()->getLocale());
+                throw new GeneralException(
+                    "Insufficient stock for design: {$designName}. Available: {$design->quantity}, Required: {$orderItem->quantity}",
+                    400
+                );
+            }
+
+            $design->decrement('quantity', $orderItem->quantity);
+
+            \Log::info('Stock reduced for design', [
+                'design_id' => $design->id,
+                'order_id' => $order->id,
+                'quantity_reduced' => $orderItem->quantity,
+                'remaining_quantity' => $design->fresh()->quantity
+            ]);
+        }
+    }
+
+    /**
+     * استعادة المخزون لجميع التصاميم في الطلب
+     * يتم استدعاؤه عند إلغاء الطلب
+     */
+    private function restoreStockForOrder(Order $order): void
+    {
+        foreach ($order->orderItems as $orderItem) {
+            $design = Design::lockForUpdate()->find($orderItem->design_id);
+
+            if ($design) {
+                $design->increment('quantity', $orderItem->quantity);
+
+                \Log::info('Stock restored for design', [
+                    'design_id' => $design->id,
+                    'order_id' => $order->id,
+                    'quantity_restored' => $orderItem->quantity,
+                    'new_quantity' => $design->fresh()->quantity
+                ]);
+            } else {
+                \Log::warning('Design not found during stock restoration', [
+                    'design_id' => $orderItem->design_id,
+                    'order_id' => $order->id,
+                    'quantity_to_restore' => $orderItem->quantity
+                ]);
+            }
+        }
+    }
+
+    /**
      * إلغاء الطلب
      */
     public function cancelOrder(Order $order, $reason = null): Order
@@ -229,17 +274,28 @@ class OrderService
         return DB::transaction(function () use ($order, $reason) {
             $user = Auth::user();
 
-            // التحقق من إمكانية الإلغاء
-            if ($order->status === StatusOrderEnum::COMPLETED) {
-                throw new GeneralException('Cannot cancel a completed order', 400);
+            // التحقق من إمكانية الإلغاء - يجب أن تكون الحالة CONFIRMED
+            if ($order->status !== StatusOrderEnum::CONFIRMED) {
+                throw new GeneralException('Only confirmed orders can be cancelled', 400);
             }
 
             if ($order->status === StatusOrderEnum::CANCELLED) {
                 throw new GeneralException('Order is already cancelled', 400);
             }
 
-            // إذا كان الطلب مؤكد والدفع من المحفظة - نرجع المبلغ
-            if ($order->status === StatusOrderEnum::CONFIRMED && $order->payment_method === 'wallet') {
+            // التحقق من أن الطلب تم تأكيده خلال ساعة واحدة
+            // نستخدم updated_at لأنه يتم تحديثه عند تأكيد الطلب
+            $orderConfirmedAt = Carbon::parse($order->updated_at);
+            $now = Carbon::now();
+            $hoursSinceConfirmation = $orderConfirmedAt->diffInHours($now, false);
+
+            if ($hoursSinceConfirmation >= 1) {
+                throw new GeneralException('Orders can only be cancelled within 1 hour of confirmation', 400);
+            }
+
+            // معالجة الاسترداد بناءً على طريقة الدفع
+            if ($order->payment_method === 'wallet') {
+                // استرداد المبلغ إلى المحفظة
                 $this->walletService->refund(
                     $user,
                     $order->total,
@@ -251,7 +307,60 @@ class OrderService
                         'coupon_code' => $order->coupon->code ?? null,
                     ]
                 );
+            } elseif ($order->payment_method === 'card') {
+                // استرداد المبلغ عبر Stripe
+                $paymentIntentId = $this->getPaymentIntentForOrder($order);
+
+                if (!$paymentIntentId) {
+                    // تسجيل المشكلة في logs
+                    Log::warning('Payment intent not found for card order cancellation', [
+                        'order_id' => $order->id,
+                        'user_id' => $order->user_id,
+                        'payment_method' => $order->payment_method,
+                    ]);
+
+                    throw new GeneralException(
+                        'Payment intent not found for this order. The payment may not have been processed through Stripe yet, or the order may have been paid using a different method.',
+                        400
+                    );
+                }
+
+                // استدعاء Stripe لاسترداد المبلغ
+                $this->stripeService->refundPayment(
+                    $paymentIntentId,
+                    $order->total,
+                    'requested_by_customer',
+                    [
+                        'order_id' => $order->id,
+                        'refund_amount' => $order->total,
+                        'cancelled_at' => now()->toDateTimeString(),
+                    ]
+                );
+
+                // تسجيل الاسترداد في card_transactions
+                CardTransactions::create([
+                    'user_id' => $user->id,
+                    'amount' => -$order->total, // سالب للاسترداد
+                    'description' => "Refund for cancelled Order #{$order->id}",
+                    'metadata' => [
+                        'order_id' => $order->id,
+                        'payment_intent_id' => $paymentIntentId,
+                        'type' => 'refund',
+                        'reason' => $reason,
+                        'cancelled_at' => now()->toDateTimeString(),
+                    ]
+                ]);
+            } elseif ($order->payment_method === 'cash') {
+                // الدفع نقدي - لا حاجة لاسترداد
             }
+
+            // إرجاع الكوبون إلى المستخدم إذا كان مستخدماً
+            if ($order->coupon_id) {
+                $this->returnCouponToUser($order);
+            }
+
+            // استعادة المخزون لجميع التصاميم
+            $this->restoreStockForOrder($order);
 
             // تحديث حالة الطلب
             $order->update([
@@ -301,29 +410,54 @@ class OrderService
             ->first();
     }
 
-    /**
-     * تحديث عنوان الطلب
-     */
-    public function updateOrderAddress(Order $order, $addressId): Order
+
+    private function getPaymentIntentForOrder(Order $order): ?string
     {
-        return DB::transaction(function () use ($order, $addressId) {
-            // التحقق من الحالة
-            if ($order->status !== StatusOrderEnum::PENDING) {
-                throw new GeneralException('Cannot update address of a non-pending order', 400);
-            }
+        // البحث عن transaction ناجح لهذا الطلب
+        $transaction = CardTransactions::where('user_id', $order->user_id)
+            ->where(function ($query) use ($order) {
+                // استخدام JSON operator المباشر
+                $query->where('metadata->order_id', $order->id)
+                      ->orWhereRaw("JSON_EXTRACT(metadata, '$.order_id') = ?", [$order->id]);
+            })
+            ->where(function ($query) {
+                // البحث عن status = success
+                $query->where('metadata->status', 'success')
+                      ->orWhereRaw("JSON_EXTRACT(metadata, '$.status') = ?", ['success']);
+            })
+            ->whereNotNull('metadata->payment_intent_id')
+            ->latest()
+            ->first();
 
-            // التحقق من العنوان
-            $user = Auth::user();
-            $address = $user->addresses()->findOrFail($addressId);
+        if (!$transaction) {
+            return null;
+        }
 
-            $order->update([
-                'address_id' => $address->id,
-            ]);
+        // محاولة استخراج payment_intent_id من metadata
+        if (is_array($transaction->metadata)) {
+            return $transaction->metadata['payment_intent_id'] ?? null;
+        } elseif (is_string($transaction->metadata)) {
+            $metadata = json_decode($transaction->metadata, true);
+            return $metadata['payment_intent_id'] ?? null;
+        }
 
-            return $order->fresh();
-        });
+        return null;
     }
 
+    private function returnCouponToUser(Order $order): void
+    {
+        $couponUsage = CouponUsage::where('order_id', $order->id)->first();
 
+        if ($couponUsage) {
+            $couponId = $couponUsage->coupon_id;
+            $couponUsage->delete();
+
+            // Decrement the coupon's used_count
+            $coupon = Coupon::find($couponId);
+            if ($coupon && $coupon->used_count > 0) {
+                $coupon->decrement('used_count');
+            }
+        }
+    }
 
 }

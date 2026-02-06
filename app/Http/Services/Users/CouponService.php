@@ -2,19 +2,44 @@
 
 namespace App\Http\Services\Users;
 
-use App\Models\Coupon;
-use App\Models\Order;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Coupon;
 use App\Models\CouponUsage;
-use App\Exceptions\GeneralException;
+use App\Enum\StatusOrderEnum;
 use Illuminate\Support\Facades\DB;
+use App\Exceptions\GeneralException;
+use Illuminate\Support\Facades\Auth;
 
 class CouponService
 {
-    /**
-     * Validate and apply coupon to order
-     */
-    public function validateAndApplyCoupon(string $code, Order $order, User $user): array
+    public function applyCoupon(Order $order, string $couponCode): Order
+    {
+        if ($order->status !== StatusOrderEnum::PENDING) {
+            throw new GeneralException('Can only apply coupons to pending orders', 400);
+        }
+
+        $user = Auth::user();
+
+        // Remove existing coupon if any
+        if ($order->coupon_id) {
+            $order = $this->removeCouponFromOrder($order);
+        }
+
+        // Validate and calculate discount
+        $couponData = $this->validateAndApplyCoupon($couponCode, $order, $user);
+
+        // Apply coupon to order
+        $order = $this->applyCouponToOrder(
+            $couponData['coupon'],
+            $order,
+            $couponData['discount']
+        );
+
+        return $order->fresh(['coupon', 'orderItems']);
+    }
+
+    private function validateAndApplyCoupon(string $code, Order $order, User $user): array
     {
         $coupon = Coupon::byCode($code)->first();
 
@@ -71,7 +96,7 @@ class CouponService
     /**
      * Apply coupon to order (update order with coupon details)
      */
-    public function applyCouponToOrder(Coupon $coupon, Order $order, float $discount): Order
+    private function applyCouponToOrder(Coupon $coupon, Order $order, float $discount): Order
     {
         return DB::transaction(function () use ($coupon, $order, $discount) {
             $order->update([
@@ -109,6 +134,10 @@ class CouponService
      */
     public function removeCouponFromOrder(Order $order): Order
     {
+        if ($order->status !== StatusOrderEnum::PENDING) {
+            throw new GeneralException('Can only remove coupons from pending orders', 400);
+        }
+
         return DB::transaction(function () use ($order) {
             if ($order->coupon_id) {
                 $order->update([
@@ -121,26 +150,5 @@ class CouponService
 
             return $order->fresh();
         });
-    }
-
-    /**
-     * Get coupon by code
-     */
-    public function getCouponByCode(string $code): ?Coupon
-    {
-        return Coupon::byCode($code)->first();
-    }
-
-    /**
-     * Check if coupon can be applied to order
-     */
-    public function canApplyCoupon(string $code, Order $order, User $user): bool
-    {
-        try {
-            $this->validateAndApplyCoupon($code, $order, $user);
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
     }
 }

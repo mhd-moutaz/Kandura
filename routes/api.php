@@ -73,10 +73,10 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/pending', [OrderController::class, 'getPending'])->middleware('permission:view order');
             Route::get('/{order}', [OrderController::class, 'show'])->middleware('permission:view order');
             Route::put('/{order}/confirm', [OrderController::class, 'confirmOrder'])->middleware('permission:update order');
+            Route::put('/{order}/cancel', [OrderController::class, 'cancelOrder'])->middleware('permission:update order');
             // Coupon routes for orders
             Route::post('/{order}/coupon/apply', [CouponController::class, 'apply'])->middleware('permission:apply coupon');
             Route::delete('/{order}/coupon/remove', [CouponController::class, 'remove'])->middleware('permission:remove coupon');
-            Route::post('/{order}/coupon/validate', [CouponController::class, 'validate'])->middleware('permission:validate coupon');
             // Invoice route for orders
             Route::get('/{order}/invoice', [InvoiceController::class, 'show'])->middleware('permission:view invoice');
         });

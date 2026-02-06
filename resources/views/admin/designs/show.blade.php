@@ -170,6 +170,22 @@
                             </div>
                         </div>
 
+                        <!-- Quantity -->
+                        <div>
+                            <label style="font-size:12px;color:#6b7280;font-weight:500;display:block;margin-bottom:4px;">
+                                {{ __('messages.available_quantity') }}
+                            </label>
+                            <div
+                                style="padding:14px;background:{{ $design->quantity > 0 ? 'linear-gradient(135deg,#6ee7b7 0%,#10b981 100%)' : 'linear-gradient(135deg,#fca5a5 0%,#ef4444 100%)' }};border-radius:8px;color:white;font-size:24px;font-weight:700;text-align:center;">
+                                {{ $design->quantity }} {{ __('messages.units') ?? 'units' }}
+                                @if($design->quantity == 0)
+                                    <div style="font-size:11px;margin-top:4px;opacity:0.9;">{{ __('messages.out_of_stock') }}</div>
+                                @elseif($design->quantity < 10)
+                                    <div style="font-size:11px;margin-top:4px;opacity:0.9;">{{ __('messages.low_stock') }}</div>
+                                @endif
+                            </div>
+                        </div>
+
                         <!-- State -->
                         <div>
                             <label style="font-size:12px;color:#6b7280;font-weight:500;display:block;margin-bottom:4px;">
@@ -204,6 +220,76 @@
                 </div>
             </div>
         </div>
+
+        <!-- Quantity Management -->
+        <div
+            style="background:white;border-radius:10px;padding:20px;margin:10px 0px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:1px solid #e2e8f0;">
+            <h3
+                style="font-size:18px;font-weight:600;color:#1f2937;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+                <i class="fas fa-box" style="color:#8b5cf6;"></i>
+                {{ __('messages.quantity_management') ?? 'Quantity Management' }}
+            </h3>
+
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+
+                <!-- Increment Quantity -->
+                <form action="{{ route('designs.updateQuantity', $design->id) }}" method="POST"
+                    style="background:#f0fdf4;border:2px solid #10b981;border-radius:8px;padding:16px;">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="action" value="increment">
+
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:12px;color:#065f46;font-weight:600;display:block;margin-bottom:6px;">
+                            <i class="fas fa-plus-circle"></i> {{ __('messages.add_stock') ?? 'Add Stock' }}
+                        </label>
+                        <input type="number" name="quantity" min="1" max="999999" required
+                            style="width:100%;padding:10px;border:1px solid #86efac;border-radius:6px;font-size:14px;font-weight:500;">
+                    </div>
+
+                    <button type="submit"
+                        style="width:100%;padding:10px;background:#10b981;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;"
+                        onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                        <i class="fas fa-arrow-up"></i> {{ __('messages.increase') ?? 'Increase' }}
+                    </button>
+                </form>
+
+                <!-- Decrement Quantity -->
+                <form action="{{ route('designs.updateQuantity', $design->id) }}" method="POST"
+                    style="background:#fef2f2;border:2px solid #ef4444;border-radius:8px;padding:16px;">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="action" value="decrement">
+
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:12px;color:#991b1b;font-weight:600;display:block;margin-bottom:6px;">
+                            <i class="fas fa-minus-circle"></i> {{ __('messages.remove_stock') ?? 'Remove Stock' }}
+                        </label>
+                        <input type="number" name="quantity" min="1" max="{{ $design->quantity }}" required
+                            style="width:100%;padding:10px;border:1px solid #fca5a5;border-radius:6px;font-size:14px;font-weight:500;">
+                    </div>
+
+                    <button type="submit"
+                        style="width:100%;padding:10px;background:#ef4444;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;"
+                        onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'"
+                        onclick="return confirm('{{ __('messages.confirm_decrease_stock') ?? 'Are you sure you want to decrease stock?' }}')">
+                        <i class="fas fa-arrow-down"></i> {{ __('messages.decrease') ?? 'Decrease' }}
+                    </button>
+                </form>
+
+            </div>
+
+            <div style="margin-top:16px;padding:12px;background:#eff6ff;border-radius:6px;border-left:3px solid #3b82f6;">
+                <div style="display:flex;align-items:start;gap:8px;">
+                    <i class="fas fa-info-circle" style="color:#3b82f6;margin-top:2px;"></i>
+                    <div style="font-size:12px;color:#1e40af;line-height:1.5;">
+                        <strong>{{ __('messages.note') ?? 'Note' }}:</strong>
+                        {{ __('messages.quantity_management_note') ?? 'Quantity is automatically reduced when orders are confirmed and restored when orders are cancelled within 1 hour.' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Creator & Dates -->
         <div
             style="background:white;border-radius:10px;padding:20px;margin: 10px 0px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:1px solid #e2e8f0;">
@@ -316,7 +402,10 @@
                             <div style="display:flex;flex-wrap:wrap;gap:6px;">
                                 @foreach ($options as $option)
                                     <span
-                                        style="padding:6px 12px;background:white;color:{{ $colors['text'] }};border-radius:6px;font-size:12px;font-weight:500;border:1px solid {{ $colors['itemBorder'] }};">
+                                        style="padding:6px 12px;background:white;color:{{ $colors['text'] }};border-radius:6px;font-size:12px;font-weight:500;border:1px solid {{ $colors['itemBorder'] }}; display: inline-flex; align-items: center; gap: 6px;">
+                                        @if($option->type === 'color' && $option->hex_color)
+                                            <span style="width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); background: {{ $option->hex_color }}; display: inline-block;"></span>
+                                        @endif
                                         {{ $option->getTranslation('name', app()->getLocale()) ?? __('messages.n_a') }}
                                     </span>
                                 @endforeach

@@ -4,6 +4,7 @@ namespace App\Http\Services\Users;
 use App\Models\Design;
 use App\Models\Measurement;
 use App\Models\DesignOption;
+use App\Models\OrderItems;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Exceptions\GeneralException;
@@ -39,6 +40,7 @@ class DesignService
                 'name' => $data['name'],
                 'description' => $data['description'],
                 'price' => $data['price'],
+                'quantity' => $data['quantity'] ?? 0,
                 'user_id' => Auth::id(),
             ]);
 
@@ -63,6 +65,7 @@ class DesignService
                 'name' => $data['name'] ?? $design->name,
                 'description' => $data['description'] ?? $design->description,
                 'price' => $data['price'] ?? $design->price,
+                'quantity' => $data['quantity'] ?? $design->quantity,
             ]);
 
             // تحديث الصور إذا تم إرسالها
@@ -87,6 +90,34 @@ class DesignService
 
     public function destroy($design)
     {
+        // التحقق من وجود طلبات معلقة تحتوي على هذا التصميم
+        $hasPendingOrders = OrderItems::where('design_id', $design->id)
+            ->whereHas('order', function($q) {
+                $q->where('status', 'pending');
+            })
+            ->exists();
+
+        if ($hasPendingOrders) {
+            throw new GeneralException(
+                'Cannot delete design. It is currently in pending orders.',
+                400
+            );
+        }
+
+        // التحقق من وجود طلبات مؤكدة أو قيد المعالجة
+        $hasActiveOrders = OrderItems::where('design_id', $design->id)
+            ->whereHas('order', function($q) {
+                $q->whereIn('status', ['confirmed', 'processing']);
+            })
+            ->exists();
+
+        if ($hasActiveOrders) {
+            throw new GeneralException(
+                'Cannot delete design. It has confirmed or processing orders.',
+                400
+            );
+        }
+
         DB::transaction(function () use ($design) {
             // حذف الصور المرتبطة
             $this->deleteOldImages($design);

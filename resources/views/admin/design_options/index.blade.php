@@ -68,7 +68,14 @@
                 @forelse($designOptions as $option)
                     <tr>
                         <td>{{ $option->id }}</td>
-                        <td>{{ $option->getTranslation('name', app()->getLocale()) ?? 'N/A' }}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                @if($option->type === 'color' && $option->hex_color)
+                                    <div style="width: 28px; height: 28px; border-radius: 6px; border: 2px solid #e5e7eb; background: {{ $option->hex_color }}; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></div>
+                                @endif
+                                <span>{{ $option->getTranslation('name', app()->getLocale()) ?? 'N/A' }}</span>
+                            </div>
+                        </td>
                         <td>
                             @php
                                 $typeColors = [

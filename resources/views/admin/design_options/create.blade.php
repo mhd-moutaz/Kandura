@@ -65,7 +65,34 @@
                 @enderror
             </div>
 
-
+            <!-- Color Picker Section (shown only for color type) -->
+            <div id="colorPickerSection" style="display: none;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">
+                    {{ __('messages.hex_color') }} <span style="color: #ef4444;">*</span>
+                </label>
+                <div style="display: flex; gap: 12px; align-items: start;">
+                    <div style="flex: 0 0 60px;">
+                        <input type="color" id="colorPicker" value="{{ old('hex_color', '#000000') }}"
+                               style="width: 60px; height: 60px; border: 2px solid #d1d5db; border-radius: 8px; cursor: pointer;">
+                    </div>
+                    <div style="flex: 1;">
+                        <input type="text" name="hex_color" id="hexColorInput"
+                               value="{{ old('hex_color') }}"
+                               placeholder="#000000"
+                               pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                               style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; font-family: monospace;">
+                        <div style="margin-top: 6px; font-size: 12px; color: #6b7280;">
+                            <i class="fas fa-info-circle"></i> {{ __('messages.hex_color_format_hint') }}
+                        </div>
+                    </div>
+                    <div style="flex: 0 0 80px;">
+                        <div id="colorPreview" style="width: 80px; height: 60px; border: 2px solid #d1d5db; border-radius: 8px; background: {{ old('hex_color', '#000000') }};"></div>
+                    </div>
+                </div>
+                @error('hex_color')
+                    <span style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;">{{ $message }}</span>
+                @enderror
+            </div>
 
             <!-- Form Actions -->
             <div style="display: flex; gap: 12px; padding-top: 20px; border-top: 1px solid #e5e7eb;">

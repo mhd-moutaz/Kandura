@@ -28,11 +28,20 @@ class StripeService
 
             $lineItems = [];
             foreach ($order->orderItems as $item) {
+                // Handle design name (could be string or array/JSON)
+                $designName = $item->design->name;
+                if (is_string($designName)) {
+                    $nameArray = json_decode($designName, true);
+                    $designName = $nameArray['en'] ?? $nameArray['ar'] ?? $designName;
+                } elseif (is_array($designName)) {
+                    $designName = $designName['en'] ?? $designName['ar'] ?? 'Design';
+                }
+
                 $lineItems[] = [
                     'price_data' => [
                         'currency' => 'usd',
                         'product_data' => [
-                            'name' => $item->design->name['en'] ?? $item->design->name['ar'],
+                            'name' => $designName,
                             'description' => 'Size: ' . $item->measurement->size,
                         ],
                         'unit_amount' => (int) round($item->unit_price * 100),
@@ -122,6 +131,40 @@ class StripeService
 
         } catch (\Exception $e) {
             throw new GeneralException('Error creating Stripe coupon: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Process a refund for a Stripe payment
+     *
+     * @param string $paymentIntentId The Stripe payment intent ID
+     * @param float $amount The amount to refund (in dollars)
+     * @param string $reason Refund reason (default: 'requested_by_customer')
+     * @param array $metadata Additional metadata for the refund
+     * @return \Stripe\Refund
+     * @throws GeneralException
+     */
+    public function refundPayment(string $paymentIntentId, float $amount, string $reason = 'requested_by_customer', array $metadata = [])
+    {
+        try {
+            Stripe::setApiKey(config('stripe.secret'));
+
+            // Create refund in Stripe
+            $refund = \Stripe\Refund::create([
+                'payment_intent' => $paymentIntentId,
+                'amount' => (int) round($amount * 100), // Convert to cents
+                'reason' => $reason,
+                'metadata' => $metadata,
+            ]);
+
+            return $refund;
+
+        } catch (\Stripe\Exception\InvalidRequestException $e) {
+            throw new GeneralException('Invalid refund request: ' . $e->getMessage(), 400);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            throw new GeneralException('Stripe API error during refund: ' . $e->getMessage(), 500);
+        } catch (\Exception $e) {
+            throw new GeneralException('Error processing refund: ' . $e->getMessage(), 500);
         }
     }
 

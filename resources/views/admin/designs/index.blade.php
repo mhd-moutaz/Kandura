@@ -234,6 +234,22 @@
                             </div>
                         </div>
 
+                        <!-- Quantity -->
+                        <div
+                            style="background:{{ $design->quantity > 0 ? '#f0fdf4' : '#fef2f2' }};padding:10px;border-radius:8px;margin-bottom:15px;text-align:center;">
+                            <div style="font-size:11px;color:{{ $design->quantity > 0 ? '#065f46' : '#991b1b' }};margin-bottom:2px;">
+                                {{ __('messages.available_quantity') }}
+                            </div>
+                            <div style="font-size:18px;font-weight:700;color:{{ $design->quantity > 0 ? '#065f46' : '#991b1b' }};">
+                                {{ $design->quantity }}
+                                @if($design->quantity == 0)
+                                    <span style="font-size:11px;display:block;margin-top:2px;">{{ __('messages.out_of_stock') }}</span>
+                                @elseif($design->quantity < 10)
+                                    <span style="font-size:11px;display:block;margin-top:2px;">{{ __('messages.low_stock') }}</span>
+                                @endif
+                            </div>
+                        </div>
+
                         <!-- Creator & Date -->
                         <div
                             style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;border-bottom:1px solid #e2e8f0;margin-bottom:15px;">

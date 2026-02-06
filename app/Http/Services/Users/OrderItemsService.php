@@ -26,7 +26,7 @@ class OrderItemsService
             $user = Auth::user();
 
             // 1. التحقق من وجود التصميم
-            $design = Design::find($data['design_id']);
+            $design = Design::lockForUpdate()->find($data['design_id']);
             if (!$design) {
                 throw new GeneralException('Design not found.', 404);
             }
@@ -35,6 +35,29 @@ class OrderItemsService
             }
             if (!$design->designOptions()->exists()) {
                 throw new GeneralException('This design has no design options.', 400);
+            }
+
+            // 2. التحقق من الكمية المتوفرة
+            if ($design->quantity <= 0) {
+                throw new GeneralException('This design is currently out of stock.', 400);
+            }
+
+            // 3. حساب الكمية المطلوبة (العناصر الموجودة في السلة + الكمية المطلوبة)
+            $requestedQuantity = $data['quantity'];
+            $existingOrderItems = OrderItems::where('design_id', $design->id)
+                ->whereHas('order', function($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                      ->where('status', 'pending');
+                })
+                ->sum('quantity');
+
+            $totalNeeded = $existingOrderItems + $requestedQuantity;
+
+            if ($totalNeeded > $design->quantity) {
+                throw new GeneralException(
+                    "Insufficient stock. Available: {$design->quantity}, In cart: {$existingOrderItems}, Requested: {$requestedQuantity}",
+                    400
+                );
             }
             // 2. البحث عن المقاس
             $measurement = Measurement::find($data['measurement_id']);
@@ -158,6 +181,32 @@ class OrderItemsService
 
             // إذا تم تغيير الكمية
             if (isset($data['quantity'])) {
+                $quantityDifference = $data['quantity'] - $orderItem->quantity;
+
+                // إذا كانت الكمية تزيد، نتحقق من توفر المخزون
+                if ($quantityDifference > 0) {
+                    // قفل التصميم للتحديث المتزامن
+                    $designLocked = Design::lockForUpdate()->find($orderItem->design_id);
+
+                    // حساب الكمية الموجودة في السلة (باستثناء العنصر الحالي)
+                    $existingOrderItems = OrderItems::where('design_id', $designLocked->id)
+                        ->where('id', '!=', $orderItem->id)
+                        ->whereHas('order', function($q) use ($user) {
+                            $q->where('user_id', $user->id)
+                              ->where('status', 'pending');
+                        })
+                        ->sum('quantity');
+
+                    $totalNeeded = $existingOrderItems + $data['quantity'];
+
+                    if ($totalNeeded > $designLocked->quantity) {
+                        throw new GeneralException(
+                            "Insufficient stock. Available: {$designLocked->quantity}, In cart: {$existingOrderItems}, Requested: {$data['quantity']}",
+                            400
+                        );
+                    }
+                }
+
                 $quantity = $data['quantity'];
                 $unitPrice = $design->price;
                 $totalPrice = $unitPrice * $quantity;

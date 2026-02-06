@@ -93,6 +93,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('{design}/edit', [DesignController::class, 'edit'])->name('designs.edit')->middleware('permission:update all designs');
         Route::put('{design}', [DesignController::class, 'update'])->name('designs.update')->middleware('permission:update all designs');
         Route::patch('{design}/toggle-state', [DesignController::class, 'toggleState'])->name('designs.toggleState')->middleware('permission:update all designs');
+        Route::patch('{design}/quantity', [DesignController::class, 'updateQuantity'])->name('designs.updateQuantity')->middleware('permission:update all designs');
         Route::delete('{design}', [DesignController::class, 'destroy'])->name('designs.destroy')->middleware('permission:delete all designs');
     });
 
