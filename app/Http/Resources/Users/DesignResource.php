@@ -14,18 +14,8 @@ class DesignResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // Handle name (could be string or array/JSON)
-        $name = $this->name ?? [];
-        if (is_string($name)) {
-            $name = json_decode($name, true) ?? [];
-        }
-
-        // Handle description (could be string or array/JSON)
-        $description = $this->description ?? [];
-        if (is_string($description)) {
-            $description = json_decode($description, true) ?? [];
-        }
-
+        $name = $this->getTranslations('name');
+        $description = $this->getTranslations('description');
         return [
             'id' => $this->id,
             'name' => [

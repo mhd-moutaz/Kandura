@@ -22,7 +22,7 @@ class DesignService
     public function myDesigns($data)
     {
         $user = Auth::user();
-        return $user->designs()->filterUser($data)
+        return $user->designs()->filter($data)
             ->with('designImages', 'measurements', 'designOptions')
             ->paginate($data['per_page'] ?? 15);
     }

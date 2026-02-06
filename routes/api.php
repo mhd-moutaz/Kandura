@@ -25,14 +25,6 @@ Route::post('stripe/webhook', [StripeWebhookController::class, 'handle']);
 Route::middleware('auth:api')->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
 
-    // Notification routes
-    // Route::prefix('notifications')->group(function () {
-    //     Route::post('/update-fcm-token', [NotificationController::class, 'updateFcmToken']);
-    //     Route::get('/', [NotificationController::class, 'index']);
-    //     Route::put('/{id}/read', [NotificationController::class, 'markAsRead']);
-    //     Route::put('/read-all', [NotificationController::class, 'markAllAsRead']);
-    //     Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
-    // });
 
     // User routes
     Route::prefix('users')->group(function () {
@@ -73,12 +65,10 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/pending', [OrderController::class, 'getPending'])->middleware('permission:view order');
             Route::get('/{order}', [OrderController::class, 'show'])->middleware('permission:view order');
             Route::put('/{order}/confirm', [OrderController::class, 'confirmOrder'])->middleware('permission:update order');
-            Route::put('/{order}/cancel', [OrderController::class, 'cancelOrder'])->middleware('permission:update order');
+            Route::put('/{order}/cancel', [OrderController::class, 'cancelOrder'])->middleware('permission:delete order');
             // Coupon routes for orders
             Route::post('/{order}/coupon/apply', [CouponController::class, 'apply'])->middleware('permission:apply coupon');
             Route::delete('/{order}/coupon/remove', [CouponController::class, 'remove'])->middleware('permission:remove coupon');
-            // Invoice route for orders
-            Route::get('/{order}/invoice', [InvoiceController::class, 'show'])->middleware('permission:view invoice');
         });
 
         // Wallet routes
@@ -92,6 +82,14 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/', [ReviewController::class, 'index'])->middleware('permission:view review');
             Route::post('/orders/{order}', [ReviewController::class, 'store'])->middleware('permission:create review');
             Route::delete('/{review}', [ReviewController::class, 'destroy'])->middleware('permission:delete review');
+        });
+
+        // Notification routes
+        Route::prefix('notifications')->group(function () {
+            Route::post('/update-fcm-token', [NotificationController::class, 'updateFcmToken']);
+            Route::get('/', [NotificationController::class, 'index']);
+            Route::put('/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+
         });
     });
 });

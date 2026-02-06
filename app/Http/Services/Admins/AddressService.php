@@ -9,7 +9,7 @@ class AddressService
 {
     public function index($filters)
     {
-        return Address::filter($filters)->paginate(5)->withQueryString();
+        return Address::with('city')->filter($filters)->paginate(5)->withQueryString();
     }
     public function getAllCities()
     {

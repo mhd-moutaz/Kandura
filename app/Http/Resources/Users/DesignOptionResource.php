@@ -14,11 +14,8 @@ class DesignOptionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $name = $this->name ?? [];
-        if (is_string($name)) {
-            $name = json_decode($name, true) ?? [];
-        }
-
+        
+        $name = $this->getTranslations('name');
         return [
             'id' => $this->id,
             'type' => $this->type,

@@ -14,11 +14,8 @@ class AddressResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // Handle city name (could be string or array/JSON)
-        $cityName = $this->city->name ?? [];
-        if (is_string($cityName)) {
-            $cityName = json_decode($cityName, true) ?? [];
-        }
+        // Get all translations for the city name
+        $cityName = $this->city->getTranslations('name');
 
         return [
             'id' => $this->id,

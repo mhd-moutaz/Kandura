@@ -28,7 +28,7 @@ class AddressService
             $data['city_id'] = $this->getCityIdByName($data['city']);
             unset($data['city']);
 
-            return Address::create($data);
+            return Address::create($data)->load('city');
         });
     }
 
@@ -44,7 +44,7 @@ class AddressService
             }
 
             $address->update($data);
-            return $address->fresh();
+            return $address->fresh('city');
         });
     }
 

@@ -5,8 +5,7 @@ namespace App\Http\Services\Admins;
 use App\Models\Order;
 use App\Enum\StatusOrderEnum;
 use App\Http\Services\Global\InvoiceService;
-use App\Mail\InvoiceCreated;
-use Illuminate\Support\Facades\Mail;
+
 
 class OrderService
 {
@@ -44,7 +43,7 @@ class OrderService
 
         // Auto-generate invoice when order is confirmed or completed
         if (
-            ($status === StatusOrderEnum::CONFIRMED && $oldStatus !== StatusOrderEnum::CONFIRMED) 
+            ($status === StatusOrderEnum::CONFIRMED && $oldStatus !== StatusOrderEnum::CONFIRMED)
         ) {
             $this->invoiceService->generateInvoice($order);
         }
