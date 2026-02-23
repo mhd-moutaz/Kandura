@@ -17,11 +17,4 @@ class InvoicePolicy
         return $user->id === $order->user_id;
     }
 
-    /**
-     * Determine whether the admin can view any invoice.
-     */
-    public function viewAny(User $user): bool
-    {
-        return $user->hasPermissionTo('view all order', 'web');
-    }
 }

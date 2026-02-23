@@ -3,8 +3,9 @@ namespace App\Http\Services\Global;
 
 use App\Models\User;
 use App\Models\WalletTransaction;
-use Illuminate\Container\Attributes\Auth;
+// use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class WalletService
 {

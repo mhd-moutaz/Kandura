@@ -25,7 +25,6 @@ class ReviewController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Review::class);
 
         $filters = $request->only(['rating', 'search', 'sort_by', 'sort_dir', 'per_page']);
         $reviews = $this->reviewService->getAllReviews($filters);
@@ -38,7 +37,6 @@ class ReviewController extends Controller
      */
     public function stats()
     {
-        $this->authorize('viewAny', Review::class);
 
         $stats = $this->reviewService->getReviewStats();
 
@@ -50,7 +48,6 @@ class ReviewController extends Controller
      */
     public function destroy(Review $review)
     {
-        $this->authorize('delete', $review);
 
         $this->reviewService->deleteReview($review);
 

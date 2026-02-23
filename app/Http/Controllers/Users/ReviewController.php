@@ -37,7 +37,6 @@ class ReviewController extends Controller
      */
     public function store(CreateReviewRequest $request, Order $order)
     {
-        $this->authorize('create', \App\Models\Review::class);
 
         $user = $request->user();
         $review = $this->reviewService->store($user, $order, $request->validated());
@@ -50,9 +49,7 @@ class ReviewController extends Controller
      */
     public function destroy(Review $review)
     {
-        $this->authorize('delete', $review);
         $this->reviewService->deleteReview($review);
-
         return $this->success([
             'message' => 'Review deleted successfully'
         ]);

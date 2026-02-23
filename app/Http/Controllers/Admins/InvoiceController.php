@@ -25,7 +25,6 @@ class InvoiceController extends Controller
      */
     public function show(Order $order)
     {
-        $this->authorize('viewAny', Order::class);
         if (!$order->invoice) {
             return response()->json([
                 'message' => 'Invoice not found for this order'
